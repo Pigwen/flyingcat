@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://etherx.jabber.org/streams"
+  xmlns:tns="http://www.example.org/rfc6120" elementFormDefault="qualified">
+
+</schema>
