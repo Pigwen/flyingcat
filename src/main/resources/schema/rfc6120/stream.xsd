@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://etherx.jabber.org/streams" xmlns:tns="http://etherx.jabber.org/streams"
-  xmlns:xml="http://www.w3.org/XML/1998/namespace"
   elementFormDefault="qualified" attributeFormDefault="unqualified">
   <import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/03/xml.xsd"/>
   <element name="stream"></element>
   <complexType name="streamType">
-    <!-- It is possible that implementations based on [RFC3920] will not include the 'from' address on any stream headers 
-      (even ones whose confidentiality and integrity are protected); an entity SHOULD be liberal in accepting such stream headers. -->
-    <attribute name="from" use="optional" type="string" />
-    <attribute name="to" use="optional" type="string" />
-    <attribute name="id" use="optional" type="string" />
+    <attribute name="from" type="string" />
+    <attribute name="to" type="string" />
+    <attribute name="id" type="string" />
     <attribute ref="xml:lang" default="en"/>
-    <attribute name="version" use="required" type="string" default="1.0"/>
+    <attribute name="version" type="string" default="1.0"/>
   </complexType>
 </schema>

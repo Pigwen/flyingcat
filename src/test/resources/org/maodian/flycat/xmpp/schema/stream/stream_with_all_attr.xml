@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stream:stream
+       from='im.example.com'
+       id='++TR84Sm6A3hnt3Q065SnAbbk3Y='
+       to='juliet@im.example.com'
+       version='1.0'
+       xml:lang='en'
+       xmlns='jabber:client'
+       xmlns:stream='http://etherx.jabber.org/streams'>
+</stream:stream>
