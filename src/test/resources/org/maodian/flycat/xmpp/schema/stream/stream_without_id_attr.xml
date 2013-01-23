@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Interoperability Note: In RFC 3920, the text regarding inclusion of the 'id' attribute was ambiguous, leading 
-  some implementations to leave the attribute off the response stream header. -->
-<stream:stream from='im.example.com' to='juliet@im.example.com' version='1.0' xml:lang='en'
-  xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>
-</stream:stream>

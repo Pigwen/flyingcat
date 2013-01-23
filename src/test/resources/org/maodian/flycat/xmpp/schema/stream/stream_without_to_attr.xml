@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Interoperability Note: It is possible that implementations based on [RFC3920] will not include the 'to' 
-  address on stream headers; an entity SHOULD be liberal in accepting such stream headers. -->
-<stream:stream from='im.example.com' id='++TR84Sm6A3hnt3Q065SnAbbk3Y=' version='1.0' xml:lang='en'
-  xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>
-</stream:stream>
