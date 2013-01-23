@@ -3,14 +3,13 @@
  */
 package org.maodian.flycat.netty.handler;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 
+import java.io.StringReader;
+import java.io.StringWriter;
+
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
@@ -41,7 +40,6 @@ public class StreamNegotiationHandler extends ChannelInboundMessageHandlerAdapte
   @Override
   protected void messageReceived(ChannelHandlerContext ctx, String msg) throws Exception {
     msg = msg.trim();
-    System.out.println(msg);
     if (StringUtils.startsWith(msg, XML_DECLARATION)) {
       xml.append(msg);
     } else if (StringUtils.startsWith(msg, STREAM_OPEN_TAG)) {

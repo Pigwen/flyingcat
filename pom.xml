@@ -37,78 +37,22 @@
               <goal>xjc</goal>
             </goals>
           </execution>
-          <!-- <execution>
-            <id>xjc-stream</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <schemaFiles>streams.xsd</schemaFiles>
-              <packageName>com.maodian.flycat.xml.bean.stream</packageName>
-              <staleFile>${project.build.directory}/jaxb2/.streamXjcStaleFlag</staleFile>
-            </configuration>
-          </execution>
-          <execution>
-            <id>xjc-jabber-client</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <schemaFiles>jabber-client.xsd</schemaFiles>
-              <packageName>com.maodian.flycat.xml.bean.jabberclient</packageName>
-              <staleFile>${project.build.directory}/jaxb2/.jabberclientXjcStaleFlag</staleFile>
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-          <execution>
-            <id>xjc-jabber-server</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <schemaFiles>jabber-server.xsd</schemaFiles>
-              <packageName>com.maodian.flycat.xml.bean.jabberserver</packageName>
-              <staleFile>${project.build.directory}/jaxb2/.jabberserverXjcStaleFlag</staleFile>
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-          <execution>
-            <id>xjc-sasl</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <schemaFiles>sasl.xsd</schemaFiles>
-              <packageName>com.maodian.flycat.xml.bean.sasl</packageName>
-              <staleFile>${project.build.directory}/jaxb2/.saslXjcStaleFlag</staleFile>
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-          <execution>
-            <id>xjc-streamerror</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <schemaFiles>streamerror.xsd</schemaFiles>
-              <packageName>com.maodian.flycat.xml.bean.streamerror</packageName>
-              <staleFile>${project.build.directory}/jaxb2/.streamerrorXjcStaleFlag</staleFile>
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-          <execution>
-            <id>xjc-tls</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <schemaFiles>tls.xsd</schemaFiles>
-              <packageName>com.maodian.flycat.xml.bean.tls</packageName>
-              <staleFile>${project.build.directory}/jaxb2/.tlsXjcStaleFlag</staleFile>
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution> -->
-        </executions> 
+          <!-- <execution> <id>xjc-stream</id> <goals> <goal>xjc</goal> </goals> <configuration> <schemaFiles>streams.xsd</schemaFiles> 
+            <packageName>com.maodian.flycat.xml.bean.stream</packageName> <staleFile>${project.build.directory}/jaxb2/.streamXjcStaleFlag</staleFile> 
+            </configuration> </execution> <execution> <id>xjc-jabber-client</id> <goals> <goal>xjc</goal> </goals> <configuration> <schemaFiles>jabber-client.xsd</schemaFiles> 
+            <packageName>com.maodian.flycat.xml.bean.jabberclient</packageName> <staleFile>${project.build.directory}/jaxb2/.jabberclientXjcStaleFlag</staleFile> 
+            <clearOutputDir>false</clearOutputDir> </configuration> </execution> <execution> <id>xjc-jabber-server</id> <goals> <goal>xjc</goal> 
+            </goals> <configuration> <schemaFiles>jabber-server.xsd</schemaFiles> <packageName>com.maodian.flycat.xml.bean.jabberserver</packageName> 
+            <staleFile>${project.build.directory}/jaxb2/.jabberserverXjcStaleFlag</staleFile> <clearOutputDir>false</clearOutputDir> 
+            </configuration> </execution> <execution> <id>xjc-sasl</id> <goals> <goal>xjc</goal> </goals> <configuration> <schemaFiles>sasl.xsd</schemaFiles> 
+            <packageName>com.maodian.flycat.xml.bean.sasl</packageName> <staleFile>${project.build.directory}/jaxb2/.saslXjcStaleFlag</staleFile> 
+            <clearOutputDir>false</clearOutputDir> </configuration> </execution> <execution> <id>xjc-streamerror</id> <goals> <goal>xjc</goal> 
+            </goals> <configuration> <schemaFiles>streamerror.xsd</schemaFiles> <packageName>com.maodian.flycat.xml.bean.streamerror</packageName> 
+            <staleFile>${project.build.directory}/jaxb2/.streamerrorXjcStaleFlag</staleFile> <clearOutputDir>false</clearOutputDir> </configuration> 
+            </execution> <execution> <id>xjc-tls</id> <goals> <goal>xjc</goal> </goals> <configuration> <schemaFiles>tls.xsd</schemaFiles> 
+            <packageName>com.maodian.flycat.xml.bean.tls</packageName> <staleFile>${project.build.directory}/jaxb2/.tlsXjcStaleFlag</staleFile> 
+            <clearOutputDir>false</clearOutputDir> </configuration> </execution> -->
+        </executions>
         <configuration>
           <outputDirectory>${project.build.sourceDirectory}/../generated-sources/jaxb</outputDirectory>
         </configuration>
@@ -117,8 +61,7 @@
   </build>
 
   <dependencies>
-    <!-- <dependency> <groupId>javax.xml.bind</groupId> <artifactId>jaxb-api</artifactId> <version>2.2.7</version> 
-      </dependency> -->
+    <!-- <dependency> <groupId>javax.xml.bind</groupId> <artifactId>jaxb-api</artifactId> <version>2.2.7</version> </dependency> -->
 
     <dependency>
       <groupId>io.netty</groupId>
@@ -133,6 +76,24 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>3.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>1.0.9</version>
+    </dependency>
+
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.0.9</version>
     </dependency>
 
     <dependency>

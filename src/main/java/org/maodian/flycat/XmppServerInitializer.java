@@ -14,6 +14,8 @@ import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
+import org.maodian.flycat.netty.handler.LoggerEnabledStringDecoder;
+import org.maodian.flycat.netty.handler.LoggerEnabledStringEncoder;
 import org.maodian.flycat.netty.handler.StreamNegotiationHandler;
 import org.maodian.flycat.netty.handler.XmppMessageInboundHandler;
 
@@ -22,8 +24,10 @@ import org.maodian.flycat.netty.handler.XmppMessageInboundHandler;
  *
  */
 public class XmppServerInitializer extends ChannelInitializer<SocketChannel> implements ChannelHandler {
-  private static final StringDecoder DECODER = new StringDecoder(Charset.forName("UTF-8"));
-  private static final StringEncoder ENCODER = new StringEncoder(Charset.forName("utf-8"));
+  /*private static final StringDecoder DECODER = new StringDecoder(Charset.forName("UTF-8"));
+  private static final StringEncoder ENCODER = new StringEncoder(Charset.forName("utf-8"));*/
+  private static final LoggerEnabledStringDecoder DECODER = new LoggerEnabledStringDecoder();
+  private static final LoggerEnabledStringEncoder ENCODER = new LoggerEnabledStringEncoder();
   
   /* (non-Javadoc)
    * @see io.netty.channel.ChannelInitializer#initChannel(io.netty.channel.Channel)
@@ -34,7 +38,7 @@ public class XmppServerInitializer extends ChannelInitializer<SocketChannel> imp
     
     String delimiter = ">";//XmppMessageInboundHandler.STREAM_NAME + ">";
     p.addLast("Frame", new DelimiterBasedFrameDecoder(8192, false, true, Unpooled.wrappedBuffer(delimiter.getBytes(Charset.forName("utf-8")))));
-    p.addLast("Decoder", DECODER);
+    p.addLast("Logger", DECODER);
     p.addLast("Encoder", ENCODER);
 //    p.addLast("Echo", new XmppMessageInboundHandler());
     p.addLast("Echo", new StreamNegotiationHandler());
