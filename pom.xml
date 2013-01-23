@@ -14,18 +14,120 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.0</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxb2-maven-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <id>xjc</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+          </execution>
+          <!-- <execution>
+            <id>xjc-stream</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <schemaFiles>streams.xsd</schemaFiles>
+              <packageName>com.maodian.flycat.xml.bean.stream</packageName>
+              <staleFile>${project.build.directory}/jaxb2/.streamXjcStaleFlag</staleFile>
+            </configuration>
+          </execution>
+          <execution>
+            <id>xjc-jabber-client</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <schemaFiles>jabber-client.xsd</schemaFiles>
+              <packageName>com.maodian.flycat.xml.bean.jabberclient</packageName>
+              <staleFile>${project.build.directory}/jaxb2/.jabberclientXjcStaleFlag</staleFile>
+              <clearOutputDir>false</clearOutputDir>
+            </configuration>
+          </execution>
+          <execution>
+            <id>xjc-jabber-server</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <schemaFiles>jabber-server.xsd</schemaFiles>
+              <packageName>com.maodian.flycat.xml.bean.jabberserver</packageName>
+              <staleFile>${project.build.directory}/jaxb2/.jabberserverXjcStaleFlag</staleFile>
+              <clearOutputDir>false</clearOutputDir>
+            </configuration>
+          </execution>
+          <execution>
+            <id>xjc-sasl</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <schemaFiles>sasl.xsd</schemaFiles>
+              <packageName>com.maodian.flycat.xml.bean.sasl</packageName>
+              <staleFile>${project.build.directory}/jaxb2/.saslXjcStaleFlag</staleFile>
+              <clearOutputDir>false</clearOutputDir>
+            </configuration>
+          </execution>
+          <execution>
+            <id>xjc-streamerror</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <schemaFiles>streamerror.xsd</schemaFiles>
+              <packageName>com.maodian.flycat.xml.bean.streamerror</packageName>
+              <staleFile>${project.build.directory}/jaxb2/.streamerrorXjcStaleFlag</staleFile>
+              <clearOutputDir>false</clearOutputDir>
+            </configuration>
+          </execution>
+          <execution>
+            <id>xjc-tls</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <schemaFiles>tls.xsd</schemaFiles>
+              <packageName>com.maodian.flycat.xml.bean.tls</packageName>
+              <staleFile>${project.build.directory}/jaxb2/.tlsXjcStaleFlag</staleFile>
+              <clearOutputDir>false</clearOutputDir>
+            </configuration>
+          </execution> -->
+        </executions> 
+        <configuration>
+          <outputDirectory>${project.build.sourceDirectory}/../generated-sources/jaxb</outputDirectory>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
+    <!-- <dependency> <groupId>javax.xml.bind</groupId> <artifactId>jaxb-api</artifactId> <version>2.2.7</version> 
+      </dependency> -->
+
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty</artifactId>
       <version>4.0.0.Beta1-SNAPSHOT</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.codehaus.woodstox</groupId>
-      <artifactId>woodstox-core-asl</artifactId>
-      <version>4.1.4</version>
-    </dependency>
+    <!-- <dependency> <groupId>org.codehaus.woodstox</groupId> <artifactId>woodstox-core-asl</artifactId> <version>4.1.4</version> 
+      </dependency> -->
 
     <dependency>
       <groupId>org.apache.commons</groupId>
