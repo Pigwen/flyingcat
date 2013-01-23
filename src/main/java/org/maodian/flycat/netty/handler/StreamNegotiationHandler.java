@@ -24,7 +24,7 @@ import org.jabber.etherx.streams.Stream;
  * 
  */
 public class StreamNegotiationHandler extends ChannelInboundMessageHandlerAdapter<String> {
-  private static final String XML_DECLARATION = "<?xml version='1.0' ";
+  private static final String XML_DECLARATION = "<?xml ";
   private static final String STREAM_OPEN_TAG = "<stream:stream ";
   private static final String STREAM_CLOSE_TAG = "</stream:stream>";
 
@@ -40,6 +40,7 @@ public class StreamNegotiationHandler extends ChannelInboundMessageHandlerAdapte
 
   @Override
   protected void messageReceived(ChannelHandlerContext ctx, String msg) throws Exception {
+    msg = msg.trim();
     System.out.println(msg);
     if (StringUtils.startsWith(msg, XML_DECLARATION)) {
       xml.append(msg);
