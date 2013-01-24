@@ -27,7 +27,7 @@ public class LoggerEnabledStringDecoder extends StringDecoder {
 
   @Override
   protected Object decode(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
-    String inboundMsg = (String) super.decode(ctx, msg);
+    String inboundMsg = ((String) super.decode(ctx, msg)).trim();
     logger.debug("Inbound String: {}", inboundMsg);
     return inboundMsg;
   }
