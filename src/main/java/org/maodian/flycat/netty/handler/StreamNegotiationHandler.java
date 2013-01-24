@@ -47,8 +47,6 @@ public class StreamNegotiationHandler extends ChannelInboundMessageHandlerAdapte
       JAXBContext jaxbCtx = JAXBContext.newInstance("org.jabber.etherx.streams");
       Unmarshaller unmarshaller = jaxbCtx.createUnmarshaller();
       Stream stream =  (Stream) unmarshaller.unmarshal(new StringReader(xml.toString()));
-      System.out.println(xml.toString());
-      System.out.println(stream);
       String domain = stream.getTo();
       stream.setFrom(domain);
       stream.setFrom(null);
