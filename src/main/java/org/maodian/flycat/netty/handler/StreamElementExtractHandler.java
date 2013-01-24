@@ -3,15 +3,19 @@
  */
 package org.maodian.flycat.netty.handler;
 
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundMessageHandlerAdapter;
+
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
-
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundMessageHandlerAdapter;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,13 +36,17 @@ public class StreamElementExtractHandler extends ChannelInboundMessageHandlerAda
   private Unmarshaller unmarshaller;
   private Marshaller marshaller;
   private String language;
+  private Schema schema;
 
   @Override
   public void channelActive(ChannelHandlerContext ctx) throws Exception {
     xml = new StringBuilder(256);
-    unmarshaller = JAXBContextHolder.getJAXBContext().createUnmarshaller();
     marshaller = JAXBContextHolder.getJAXBContext().createMarshaller();
     language = "en";
+    SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+    schema = schemaFactory.newSchema(StreamElementExtractHandler.class.getResource("/xsd/streams.xsd"));
+    unmarshaller = JAXBContextHolder.getJAXBContext().createUnmarshaller();
+    unmarshaller.setSchema(schema);
     super.channelActive(ctx);
   }
 
@@ -69,7 +77,14 @@ public class StreamElementExtractHandler extends ChannelInboundMessageHandlerAda
       String cloesTag = "</" + prefix + ":stream>";
       xml.append(msg).append(cloesTag);
       
-      Stream initStream = (Stream) unmarshaller.unmarshal(new StringReader(xml.toString()));
+      Stream initStream;
+      try {
+        initStream = (Stream) unmarshaller.unmarshal(new StringReader(xml.toString()));
+      } catch (UnmarshalException e) {
+        // TODO: deal with invalid stream xml and respond <invalid-namespace/> or ,bad-format/>
+        // 4.8.1.  Stream Namespace
+        throw new RuntimeException("");
+      }
       Stream respStream = new Stream();
       if (StringUtils.isNotBlank(initStream.getFrom())) {
         respStream.setTo(initStream.getFrom());
@@ -99,5 +114,4 @@ public class StreamElementExtractHandler extends ChannelInboundMessageHandlerAda
     // TODO: deal with duplicated stream tag
     throw new RuntimeException("deal with duplicated stream tag");
   }
-
 }
