@@ -57,6 +57,7 @@
           <outputDirectory>${project.build.sourceDirectory}/../generated-sources/jaxb</outputDirectory>
           <schemaDirectory>${basedir}/src/main/resources/xsd</schemaDirectory>
           <bindingDirectory>${basedir}/src/main/resources/xjb</bindingDirectory>
+          <npa>true</npa> <!-- suppress generating the package-info.java -->
         </configuration>
       </plugin>
     </plugins>
