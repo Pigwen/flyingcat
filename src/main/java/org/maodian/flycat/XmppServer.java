@@ -4,7 +4,7 @@
 package org.maodian.flycat;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.socket.nio.NioEventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 /**
