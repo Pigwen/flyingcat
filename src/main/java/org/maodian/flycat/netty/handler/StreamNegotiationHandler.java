@@ -6,17 +6,11 @@ package org.maodian.flycat.netty.handler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jabber.etherx.streams.Features;
-import org.jabber.etherx.streams.Stream;
 
 /**
  * @author Cole Wen
@@ -46,7 +40,7 @@ public class StreamNegotiationHandler extends ChannelInboundMessageHandlerAdapte
       xml.append(msg).append(STREAM_CLOSE_TAG);
       JAXBContext jaxbCtx = JAXBContext.newInstance("org.jabber.etherx.streams");
       Unmarshaller unmarshaller = jaxbCtx.createUnmarshaller();
-      Stream stream =  (Stream) unmarshaller.unmarshal(new StringReader(xml.toString()));
+      /*Stream stream =  (Stream) unmarshaller.unmarshal(new StringReader(xml.toString()));
       String domain = stream.getTo();
       stream.setFrom(domain);
       stream.setFrom(null);
@@ -57,7 +51,7 @@ public class StreamNegotiationHandler extends ChannelInboundMessageHandlerAdapte
       Marshaller marshaller = jaxbCtx.createMarshaller();
       StringWriter writer = new StringWriter();
       marshaller.marshal(stream, writer);
-      ctx.write(writer.toString());
+      ctx.write(writer.toString());*/
     } else {
       String tagName = StringUtils.substringBetween(msg, "<", " ");
       xml.append("</").append(tagName).append(">");

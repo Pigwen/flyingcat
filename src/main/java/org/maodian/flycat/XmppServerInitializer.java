@@ -15,7 +15,6 @@ import java.nio.charset.Charset;
 import org.maodian.flycat.netty.handler.LoggerEnabledStringDecoder;
 import org.maodian.flycat.netty.handler.LoggerEnabledStringEncoder;
 import org.maodian.flycat.netty.handler.StreamElementExtractHandler;
-import org.maodian.flycat.netty.handler.StreamNegotiationHandler;
 
 /**
  * @author Cole Wen
@@ -37,7 +36,7 @@ public class XmppServerInitializer extends ChannelInitializer<SocketChannel> imp
     p.addLast("Logger", DECODER);
     p.addLast("Encoder", ENCODER);
 //    p.addLast("Echo", new XmppMessageInboundHandler());
-//    p.addLast("Echo", new StreamNegotiationHandler());
+    //p.addLast("Echo", new StreamNegotiationHandler());
     p.addLast("Echo", new StreamElementExtractHandler());
   }
 
