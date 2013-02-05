@@ -26,8 +26,8 @@ public class LoggerEnabledStringEncoder extends StringEncoder {
   
   @Override
   protected Object encode(ChannelHandlerContext ctx, CharSequence msg) throws Exception {
-    String outboundMsg = ((ByteBuf) super.encode(ctx, msg)).toString(Charset.forName("utf-8"));
-    logger.debug("Outbound String: {}", outboundMsg);
-    return outboundMsg;
+    Object object = super.encode(ctx, msg);
+    logger.debug("Outbound String: {}", ((ByteBuf) object).toString(Charset.forName("utf-8")));
+    return object;
   }
 }

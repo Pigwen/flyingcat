@@ -3,13 +3,14 @@
  */
 package org.maodian.flycat.netty.handler;
 
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.math.BigDecimal;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBElement;
@@ -20,7 +21,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -113,7 +113,9 @@ public class StreamElementExtractHandler extends ChannelInboundMessageHandlerAda
             stmWriter.writeEndElement();
             
             String xmlString = strWriter.toString();
-            ctx.write(xmlString);
+            ChannelFuture future = ctx.write(xmlString);
+            future.addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
+            ctx.flush();
             recvStrmTagFlag = true;
           }
         } catch (XMLStreamException xse) {
