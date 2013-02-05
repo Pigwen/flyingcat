@@ -6,14 +6,29 @@ package org.maodian.flycat.netty.handler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.math.BigDecimal;
+
 import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jabber.etherx.streams.Stream;
 import org.maodian.flycat.holder.JAXBContextHolder;
+import org.maodian.flycat.holder.XMLInputFactoryHolder;
+import org.maodian.flycat.holder.XMLOutputFactoryHolder;
+import org.maodian.flycat.xmpp.XmppNamespace;
 
 /**
  * @author Cole Wen
@@ -21,26 +36,24 @@ import org.maodian.flycat.holder.JAXBContextHolder;
  */
 public class StreamElementExtractHandler extends ChannelInboundMessageHandlerAdapter<String> {
   private static final String XML_DECLARATION_MARK = "<?xml ";
-  private static final String testXml = "<stream:stream id=\"mnmaiUHfvPcXrDnNMBhgjNYCoDtoZZJl\" version=\"1.0\" xml:lang=\"en\" xmlns=\"jabber:client\" xmlns:ns4=\"urn:ietf:params:xml:ns:xmpp-stanzas\" xmlns:stream=\"http://etherx.jabber.org/streams\" xmlns:ns3=\"urn:ietf:params:xml:ns:xmpp-sasl\" xmlns:ns5=\"urn:ietf:params:xml:ns:xmpp-streams\">"
-    + "<stream:features><starttls xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\"><required/></starttls></stream:features>";
 
   private StringBuilder xml;
   private boolean recvXmlDeclFlag = false;
   private boolean recvStrmTagFlag = false;
-  private Unmarshaller unmarshaller;
-  private Marshaller marshaller;
   private String language;
   private Schema schema;
-
+  
+  private Unmarshaller unmarshaller;
+  private Marshaller marshaller;
+  
   @Override
   public void channelActive(ChannelHandlerContext ctx) throws Exception {
     xml = new StringBuilder(256);
-    marshaller = JAXBContextHolder.getJAXBContext().createMarshaller();
     language = "en";
-    SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-    schema = schemaFactory.newSchema(StreamElementExtractHandler.class.getResource("/xsd/streams.xsd"));
+    //SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+    //schema = schemaFactory.newSchema(StreamElementExtractHandler.class.getResource("/xsd/streams.xsd"));
     unmarshaller = JAXBContextHolder.getJAXBContext().createUnmarshaller();
-    unmarshaller.setSchema(schema);
+    marshaller = JAXBContextHolder.getJAXBContext().createMarshaller();
     super.channelActive(ctx);
   }
 
@@ -66,63 +79,57 @@ public class StreamElementExtractHandler extends ChannelInboundMessageHandlerAda
 
     // get namespace prefix of <stream /> or <prefix:stream />
     if (!recvStrmTagFlag) {
-      String prefix = StringUtils.startsWith(msg, "<stream ") ? "</stream>" : StringUtils.substringBetween(msg, "<",
-          ":stream ");
-      String cloesTag = "</" + prefix + ":stream>";
-      xml.append(msg).append(cloesTag);
-
-      /*Stream initStream;
-      try {
-        initStream = (Stream) unmarshaller.unmarshal(new StringReader(xml.toString()));
-      } catch (UnmarshalException ue) {
-        // TODO: deal with invalid stream xml and respond <invalid-namespace/>
-        // or ,bad-format/>
-        // 4.8.1. Stream Namespace
-        throw new RuntimeException(ue);
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      try (Reader strReader = new StringReader(xml.append(msg).append("</stream:stream>").toString())) {
+        XMLStreamReader stmReader = null;
+        XMLStreamWriter stmWriter = null;
+        try {
+          stmReader = XMLInputFactoryHolder.getXMLInputFactory().createXMLStreamReader(strReader);
+          stmReader.nextTag();
+          JAXBElement<Stream> jaxbElement = unmarshaller.unmarshal(stmReader, Stream.class);
+          if (jaxbElement.getName().equals(new QName(XmppNamespace.STREAM, "stream"))) {
+            StringWriter strWriter = new StringWriter(256);
+            stmWriter = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(strWriter);
+            stmWriter.writeStartDocument();
+            stmWriter.writeStartElement("stream", "stream", XmppNamespace.STREAM);
+            stmWriter.writeDefaultNamespace(XmppNamespace.CONTENT);
+            stmWriter.writeNamespace("stream", XmppNamespace.STREAM);
+            
+            Stream inStm = jaxbElement.getValue();
+            if (StringUtils.isNotBlank(inStm.getFrom())) {
+              stmWriter.writeAttribute("to", inStm.getFrom());
+            }
+            if (inStm.getVersion() != null) {
+              stmWriter.writeAttribute("version", "1.0");
+            }
+            stmWriter.writeAttribute(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI, "lang", language);
+            stmWriter.writeAttribute("id", RandomStringUtils.randomAlphabetic(32));
+            
+            // features
+            stmWriter.writeStartElement(XmppNamespace.STREAM, "features");
+            stmWriter.writeStartElement("starttls");
+            stmWriter.writeDefaultNamespace(XmppNamespace.TLS);
+            stmWriter.writeEmptyElement("required");
+            stmWriter.writeEndElement();
+            stmWriter.writeEndElement();
+            
+            String xmlString = strWriter.toString();
+            ctx.write(xmlString);
+            recvStrmTagFlag = true;
+          }
+        } catch (XMLStreamException xse) {
+          // TODO: closing the stream
+          xse.printStackTrace();
+        } finally {
+          if (stmReader != null) {
+            stmReader.close();
+          }
+          if (stmWriter != null) {
+            stmWriter.close();
+          }
+        }
       }
-      
-      Stream respStream = new Stream();
-      StringWriter writer = new StringWriter(256);
-      XMLStreamWriter streamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
-      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-      marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-      streamWriter.writeStartDocument();
-      streamWriter.writeStartElement("stream", "stream", XmppNamespace.STREAM);
-      streamWriter.setPrefix("stream", XmppNamespace.STREAM);
-      streamWriter.writeNamespace("stream", XmppNamespace.STREAM);
-      streamWriter.writeDefaultNamespace(XmppNamespace.CONTENT);
-      streamWriter.writeAttribute("id", RandomStringUtils.randomAlphabetic(32));
-      if (StringUtils.isNotBlank(initStream.getFrom())) {
-        //respStream.setTo(initStream.getFrom());
-        streamWriter.writeAttribute("to", initStream.getFrom());
-      }
+            
 
-      //respStream.setId(RandomStringUtils.randomAlphabetic(32));
-      if (StringUtils.isNotBlank(initStream.getLang())) {
-        // store it for later use
-        language = initStream.getLang();
-      }
-      streamWriter.writeAttribute(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI, "lang", language);
-      //respStream.setLang(language);
-
-      // only present version attribute when initial stream presents it
-      if (initStream.getVersion() != null) {
-//        respStream.setVersion(new BigDecimal("1.0"));
-        streamWriter.writeAttribute("version", "1.0");
-      }
-
-      respStream.setFeatures(supportedFeatures());
-      recvStrmTagFlag = true;
-
-      
-      marshaller.marshal(supportedFeatures(), streamWriter);
-      streamWriter.writeEndDocument();
-      streamWriter.close();
-      String xmlString = writer.toString();
-      String closeTag = StringUtils.substringAfterLast(xmlString, ">");
-      ctx.write(StringUtils.substringBeforeLast(xmlString, "<"));*/
       //ctx.write(testXml);
       return;
     }

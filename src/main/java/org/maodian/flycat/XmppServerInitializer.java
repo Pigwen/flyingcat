@@ -12,6 +12,8 @@ import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 
 import java.nio.charset.Charset;
 
+import javax.xml.stream.XMLInputFactory;
+
 import org.maodian.flycat.netty.handler.LoggerEnabledStringDecoder;
 import org.maodian.flycat.netty.handler.LoggerEnabledStringEncoder;
 import org.maodian.flycat.netty.handler.StreamElementExtractHandler;
@@ -39,5 +41,4 @@ public class XmppServerInitializer extends ChannelInitializer<SocketChannel> imp
     //p.addLast("Echo", new StreamNegotiationHandler());
     p.addLast("Echo", new StreamElementExtractHandler());
   }
-
 }
