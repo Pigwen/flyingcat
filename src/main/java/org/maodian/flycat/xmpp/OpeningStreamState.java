@@ -77,8 +77,12 @@ public class OpeningStreamState implements State {
         }
         xmlsw.writeEndElement();
         
-        // change current state to StartTls state
-        context.setState(new StartTLSState());
+        if (starttls_flag) {
+          // change current state to StartTls state
+          context.setState(new StartTLSState());
+        } else {
+          context.setState(new SASLState());
+        }
         return writer.toString();
         
       } catch (XMLStreamException e) {
