@@ -15,7 +15,6 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.maodian.flycat.holder.XMLInputFactoryHolder;
 import org.maodian.flycat.holder.XMLOutputFactoryHolder;
 
@@ -25,6 +24,11 @@ import org.maodian.flycat.holder.XMLOutputFactoryHolder;
  *
  */
 public class OpeningStreamState implements State {
+  private boolean starttls_flag;
+  
+  public OpeningStreamState(boolean starttls_flag) {
+    this.starttls_flag = starttls_flag;
+  }
 
   /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.State#handle(org.maodian.flycat.xmpp.XmppContext, java.lang.String)
@@ -58,12 +62,23 @@ public class OpeningStreamState implements State {
         
         // features
         xmlsw.writeStartElement(XmppNamespace.STREAM, "features");
-        xmlsw.writeStartElement("starttls");
-        xmlsw.writeDefaultNamespace(XmppNamespace.TLS);
-        xmlsw.writeEmptyElement("required");
-        xmlsw.writeEndElement();
+        if (starttls_flag) {
+          xmlsw.writeStartElement("starttls");
+          xmlsw.writeDefaultNamespace(XmppNamespace.TLS);
+          xmlsw.writeEmptyElement("required");
+          xmlsw.writeEndElement();
+        } else {
+          xmlsw.writeStartElement("mechanisms");
+          xmlsw.writeDefaultNamespace(XmppNamespace.SASL);
+          xmlsw.writeStartElement("mechanism");
+          xmlsw.writeCharacters("PLAIN");
+          xmlsw.writeEndElement();
+          xmlsw.writeEndElement();
+        }
         xmlsw.writeEndElement();
         
+        // change current state to StartTls state
+        context.setState(new StartTLSState());
         return writer.toString();
         
       } catch (XMLStreamException e) {

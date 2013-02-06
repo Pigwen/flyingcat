@@ -17,13 +17,11 @@ import org.maodian.flycat.xmpp.XmppContext;
 public class StreamElementExtractHandler extends ChannelInboundMessageHandlerAdapter<String> {
   private static final String XML_DECLARATION_MARK = "<?xml ";
 
-  private StringBuilder xml;
   private boolean recvXmlDeclFlag = false;
   private XmppContext xmppContext;
   
   @Override
   public void channelActive(ChannelHandlerContext ctx) throws Exception {
-    xml = new StringBuilder(256);
     xmppContext = new XmppContext(ctx);
     super.channelActive(ctx);
   }
@@ -40,16 +38,14 @@ public class StreamElementExtractHandler extends ChannelInboundMessageHandlerAda
     // xml declaration
     if (StringUtils.startsWith(msg, XML_DECLARATION_MARK)) {
       if (!recvXmlDeclFlag) {
-        xml.append(msg);
         recvXmlDeclFlag = true;
         return;
       }
       // TODO: deal with duplicated xml declaration
-      xml = new StringBuilder(256);
       throw new RuntimeException("deal with duplicated xml declaration");
     }
     
-    String result = xmppContext.parseXML(xml.append(msg).toString());
+    String result = xmppContext.parseXML(msg);
     ctx.write(result).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
     ctx.flush();
   }

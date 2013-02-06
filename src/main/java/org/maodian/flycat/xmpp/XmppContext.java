@@ -16,7 +16,7 @@ public class XmppContext {
   
   public XmppContext(ChannelHandlerContext ctx) {
     this.ctx = ctx;
-    this.state = new OpeningStreamState();
+    this.state = new OpeningStreamState(true);
   }
 
   void setState(State state) {
