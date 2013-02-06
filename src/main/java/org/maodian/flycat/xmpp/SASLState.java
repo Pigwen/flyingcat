@@ -7,12 +7,15 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.maodian.flycat.holder.XMLInputFactoryHolder;
 import org.maodian.flycat.holder.XMLOutputFactoryHolder;
 
@@ -47,7 +50,10 @@ public class SASLState implements State {
           throw new RuntimeException("Deal with invalid <auth />");
         }
         
-        String value = xmlsr.getElementText();
+        String base64Data = xmlsr.getElementText();
+        Base64 decoder = new Base64();
+        byte[] value = (new Base64()).decodeBase64(base64Data);
+        String text = new String(value, Charset.forName("utf-8"));
         return SUCCESS_RESPONSE;
         
       } catch (XMLStreamException e) {
