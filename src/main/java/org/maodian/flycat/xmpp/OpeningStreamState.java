@@ -24,7 +24,7 @@ import org.maodian.flycat.holder.XMLOutputFactoryHolder;
  * @author Cole Wen
  *
  */
-public class StartTLSState implements State {
+public class OpeningStreamState implements State {
 
   /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.State#handle(org.maodian.flycat.xmpp.XmppContext, java.lang.String)
