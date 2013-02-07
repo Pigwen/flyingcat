@@ -16,6 +16,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.maodian.flycat.holder.XMLInputFactoryHolder;
+import org.maodian.flycat.xmpp.OpeningStreamState.FeatureType;
 
 /**
  * @author Cole Wen
@@ -46,7 +47,7 @@ public class StartTLSState implements State {
         ctx.pipeline().addFirst("ssl", new SslHandler(engine, true));
         
         // set state back to OpeningStream state since client would start a new stream
-        context.setState(new OpeningStreamState(false));
+        context.setState(new OpeningStreamState(FeatureType.SASL));
         return PROCEED_CMD;
       } catch (XMLStreamException e) {
         e.printStackTrace();

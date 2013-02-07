@@ -24,10 +24,10 @@ import org.maodian.flycat.holder.XMLOutputFactoryHolder;
  *
  */
 public class OpeningStreamState implements State {
-  private boolean starttls_flag;
+  private final FeatureType featureType;
   
-  public OpeningStreamState(boolean starttls_flag) {
-    this.starttls_flag = starttls_flag;
+  public OpeningStreamState(FeatureType featureType) {
+    this.featureType = featureType;
   }
 
   /* (non-Javadoc)
@@ -47,7 +47,11 @@ public class OpeningStreamState implements State {
         
         StringWriter writer = new StringWriter(256);
         XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
-        xmlsw.writeStartDocument();
+        
+        // only send xml declaration at the first time
+        if (featureType == FeatureType.STARTTLS) {
+          xmlsw.writeStartDocument();
+        }
         xmlsw.writeStartElement("stream", "stream", XmppNamespace.STREAM);
         xmlsw.writeNamespace("stream", XmppNamespace.STREAM);
         xmlsw.writeDefaultNamespace(XmppNamespace.CONTENT);
@@ -62,27 +66,36 @@ public class OpeningStreamState implements State {
         
         // features
         xmlsw.writeStartElement(XmppNamespace.STREAM, "features");
-        if (starttls_flag) {
+        State nextState = null;
+        switch (featureType) {
+        case STARTTLS:
           xmlsw.writeStartElement("starttls");
           xmlsw.writeDefaultNamespace(XmppNamespace.TLS);
           xmlsw.writeEmptyElement("required");
           xmlsw.writeEndElement();
-        } else {
+          nextState = new StartTLSState();
+          break;
+        case SASL:
           xmlsw.writeStartElement("mechanisms");
           xmlsw.writeDefaultNamespace(XmppNamespace.SASL);
           xmlsw.writeStartElement("mechanism");
           xmlsw.writeCharacters("PLAIN");
           xmlsw.writeEndElement();
           xmlsw.writeEndElement();
+          nextState = new SASLState();
+          break;
+        case RESOURCE_BIND:
+          xmlsw.writeStartElement("bind");
+          xmlsw.writeDefaultNamespace(XmppNamespace.BIND);
+          xmlsw.writeEmptyElement("required");
+          xmlsw.writeEndElement();
+          break;
+        default:
+          throw new IllegalStateException("The code should not reach here");
         }
         xmlsw.writeEndElement();
         
-        if (starttls_flag) {
-          // change current state to StartTls state
-          context.setState(new StartTLSState());
-        } else {
-          context.setState(new SASLState());
-        }
+        context.setState(nextState);
         return writer.toString();
         
       } catch (XMLStreamException e) {
@@ -92,5 +105,11 @@ public class OpeningStreamState implements State {
       // silent with exception thrown by close method
     }
     return null;
+  }
+  
+  public static enum FeatureType {
+    STARTTLS,
+    SASL,
+    RESOURCE_BIND;
   }
 }

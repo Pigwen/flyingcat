@@ -3,6 +3,8 @@
  */
 package org.maodian.flycat.xmpp;
 
+import org.maodian.flycat.xmpp.OpeningStreamState.FeatureType;
+
 import io.netty.channel.ChannelHandlerContext;
 
 
@@ -16,7 +18,7 @@ public class XmppContext {
   
   public XmppContext(ChannelHandlerContext ctx) {
     this.ctx = ctx;
-    this.state = new OpeningStreamState(true);
+    this.state = new OpeningStreamState(FeatureType.STARTTLS);
   }
 
   void setState(State state) {

@@ -6,19 +6,16 @@ package org.maodian.flycat.xmpp;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.StringWriter;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.maodian.flycat.holder.XMLInputFactoryHolder;
-import org.maodian.flycat.holder.XMLOutputFactoryHolder;
+import org.maodian.flycat.xmpp.OpeningStreamState.FeatureType;
 
 /**
  * @author Cole Wen
@@ -52,9 +49,31 @@ public class SASLState implements State {
         }
         
         String base64Data = xmlsr.getElementText();
-        Base64 decoder = new Base64();
-        byte[] value = (new Base64()).decodeBase64(base64Data);
+        byte[] value = Base64.decodeBase64(base64Data);
         String text = new String(value, StandardCharsets.UTF_8);
+        
+        // apply PLAIN SASL mechanism whose rfc locates at http://tools.ietf.org/html/rfc4616
+        int[] nullPosition = {-1, -1};
+        int nullIndex = 0;
+        for (int i = 0; i < text.length(); ++i) {
+          if (text.codePointAt(i) == 0) {
+            nullPosition[nullIndex++] = i;
+          }
+        }
+        
+        if (nullPosition[0] == -1 || nullPosition[1] == -1) {
+          throw new RuntimeException("The format is invalid");
+        }
+        String authzid = StringUtils.substring(text, 0, nullPosition[0]);
+        String authcid = StringUtils.substring(text, nullPosition[0] + 1, nullPosition[1]);
+        String password = StringUtils.substring(text, nullPosition[1] + 1);
+        
+        if (authzid.getBytes(StandardCharsets.UTF_8).length > 255 || authcid.getBytes(StandardCharsets.UTF_8).length > 255
+            || password.getBytes(StandardCharsets.UTF_8).length > 255) {
+          throw new RuntimeException("authorization id, authentication id and password should be equal or less than 255 bytes");
+        }
+        
+        context.setState(new OpeningStreamState(FeatureType.RESOURCE_BIND));
         return SUCCESS_RESPONSE;
         
       } catch (XMLStreamException e) {
