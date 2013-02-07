@@ -10,7 +10,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.maodian.flycat.netty.handler.LoggerEnabledStringDecoder;
 import org.maodian.flycat.netty.handler.LoggerEnabledStringEncoder;
@@ -32,7 +32,7 @@ public class XmppServerInitializer extends ChannelInitializer<SocketChannel> imp
     ChannelPipeline p = ch.pipeline();
     
     String delimiter = ">";//XmppMessageInboundHandler.STREAM_NAME + ">";
-    p.addLast("Frame", new DelimiterBasedFrameDecoder(8192, false, true, Unpooled.wrappedBuffer(delimiter.getBytes(Charset.forName("utf-8")))));
+    p.addLast("Frame", new DelimiterBasedFrameDecoder(8192, false, true, Unpooled.wrappedBuffer(delimiter.getBytes(StandardCharsets.UTF_8))));
     p.addLast("Logger", DECODER);
     p.addLast("Encoder", ENCODER);
 //    p.addLast("Echo", new XmppMessageInboundHandler());

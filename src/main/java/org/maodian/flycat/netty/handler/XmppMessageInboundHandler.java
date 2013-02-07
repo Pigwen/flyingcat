@@ -7,7 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 
 import java.io.ByteArrayInputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -43,7 +43,7 @@ public class XmppMessageInboundHandler extends ChannelInboundMessageHandlerAdapt
     if (msg.startsWith(STREAM_START_TAG)) {
       cachedXml.append(msg).append(STREAM_CLOSE_TAG);
       XMLStreamReader xmlStreamReader = xmlInputFactory.createXMLStreamReader(new ByteArrayInputStream(cachedXml
-          .toString().getBytes(Charset.forName("utf-8"))));
+          .toString().getBytes(StandardCharsets.UTF_8)));
       while (xmlStreamReader.hasNext()) {
         int event = xmlStreamReader.next();
         if (event == XMLStreamConstants.START_DOCUMENT) {

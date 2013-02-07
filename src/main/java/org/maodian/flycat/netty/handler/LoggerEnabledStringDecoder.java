@@ -1,11 +1,11 @@
 package org.maodian.flycat.netty.handler;
 
-import java.nio.charset.Charset;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.string.StringDecoder;
+
+import java.nio.charset.StandardCharsets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ public class LoggerEnabledStringDecoder extends StringDecoder {
   private final Logger logger;
   
   public LoggerEnabledStringDecoder() {
-    super(Charset.forName("utf-8"));
+    super(StandardCharsets.UTF_8);
     this.logger = LoggerFactory.getLogger(getClass());
   }
 

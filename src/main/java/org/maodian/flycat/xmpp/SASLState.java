@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -53,7 +54,7 @@ public class SASLState implements State {
         String base64Data = xmlsr.getElementText();
         Base64 decoder = new Base64();
         byte[] value = (new Base64()).decodeBase64(base64Data);
-        String text = new String(value, Charset.forName("utf-8"));
+        String text = new String(value, StandardCharsets.UTF_8);
         return SUCCESS_RESPONSE;
         
       } catch (XMLStreamException e) {
