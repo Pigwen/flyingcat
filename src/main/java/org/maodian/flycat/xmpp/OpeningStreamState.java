@@ -60,11 +60,11 @@ public class OpeningStreamState implements State {
         xmlsr.nextTag();
         QName root = new QName(XmppNamespace.STREAM, "stream");
         if (!root.equals(xmlsr.getName())) {
-          //TODO: Deal with invalid stream
-          throw new RuntimeException("Deal with invalid stream");
+          throw new XmppException(StreamError.INVALID_NAMESPACE)
+              .set("QName", root);
         }
         
-        StringWriter writer = new StringWriter(256);
+        StringWriter writer = new StringWriter();
         XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
         
         // only send xml declaration at the first time
@@ -111,7 +111,7 @@ public class OpeningStreamState implements State {
           nextState = new ResourceBindState();
           break;
         default:
-          throw new IllegalStateException("The code should not reach here");
+          throw new XmppException("The code should not reach here", StreamError.INTERNAL_SERVER_ERROR);
         }
         xmlsw.writeEndElement();
         
@@ -120,7 +120,7 @@ public class OpeningStreamState implements State {
         return writer.toString();
         
       } catch (XMLStreamException e) {
-        e.printStackTrace();
+        throw new XmppException(e, StreamError.BAD_FORMAT);
       }
     } catch (IOException e1) {
       // silent with exception thrown by close method
