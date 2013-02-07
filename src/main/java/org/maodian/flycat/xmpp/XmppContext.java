@@ -3,9 +3,9 @@
  */
 package org.maodian.flycat.xmpp;
 
-import org.maodian.flycat.xmpp.OpeningStreamState.FeatureType;
-
 import io.netty.channel.ChannelHandlerContext;
+
+import org.maodian.flycat.xmpp.OpeningStreamState.FeatureType;
 
 
 /**
@@ -15,6 +15,9 @@ import io.netty.channel.ChannelHandlerContext;
 public class XmppContext {
   private final ChannelHandlerContext ctx;
   private State state;
+  private String bareJID;
+  private String resource;
+  private String streamTag;
   
   public XmppContext(ChannelHandlerContext ctx) {
     this.ctx = ctx;
@@ -25,8 +28,32 @@ public class XmppContext {
     this.state = state;
   }
   
+  void setBareJID(String bareJID) {
+    this.bareJID = bareJID;
+  }
+  
+  void setResource(String resource) {
+    this.resource = resource;
+  }
+  
+  public void setStreamTag(String streamTag) {
+    this.streamTag = streamTag;
+  }
+
+  public String getResource() {
+    return resource;
+  }
+
+  public String getBareJID() {
+    return bareJID;
+  }
+  
   ChannelHandlerContext getNettyChannelHandlerContext() {
     return ctx;
+  }
+  
+  String wrapStreamTag(String xml) {
+    return streamTag + xml;
   }
 
   public String parseXML(final String xml) {

@@ -23,7 +23,7 @@ import org.maodian.flycat.xmpp.OpeningStreamState.FeatureType;
  */
 public class SASLState implements State {
   private static final String SUCCESS_RESPONSE = "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>";
-  private StringBuilder cachedXML = new StringBuilder(128);
+  private StringBuilder cachedXML = new StringBuilder();
   private int readCount = 0;
 
   /* (non-Javadoc)
@@ -73,6 +73,7 @@ public class SASLState implements State {
           throw new RuntimeException("authorization id, authentication id and password should be equal or less than 255 bytes");
         }
         
+        context.setBareJID(authcid + "@localhost");
         context.setState(new OpeningStreamState(FeatureType.RESOURCE_BIND));
         return SUCCESS_RESPONSE;
         

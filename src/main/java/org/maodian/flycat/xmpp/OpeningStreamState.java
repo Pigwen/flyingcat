@@ -89,6 +89,7 @@ public class OpeningStreamState implements State {
           xmlsw.writeDefaultNamespace(XmppNamespace.BIND);
           xmlsw.writeEmptyElement("required");
           xmlsw.writeEndElement();
+          nextState = new ResourceBindState();
           break;
         default:
           throw new IllegalStateException("The code should not reach here");
@@ -96,6 +97,7 @@ public class OpeningStreamState implements State {
         xmlsw.writeEndElement();
         
         context.setState(nextState);
+        context.setStreamTag(xml);
         return writer.toString();
         
       } catch (XMLStreamException e) {
