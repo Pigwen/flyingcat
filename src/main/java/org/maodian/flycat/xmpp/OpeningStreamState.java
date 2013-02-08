@@ -78,6 +78,7 @@ public class OpeningStreamState implements State {
         
         xmlsw.writeAttribute("id", RandomStringUtils.randomAlphabetic(32));
         xmlsw.writeAttribute("version", "1.0");
+        xmlsw.writeAttribute("from", "localhost");
         xmlsw.writeAttribute(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI, "lang", "en");
         String from = xmlsr.getAttributeValue(null, "from");
         if (from != null) {
