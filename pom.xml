@@ -55,7 +55,7 @@
     </pluginManagement>
 
     <plugins>
-      <plugin>
+      <!-- <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
         <version>1.4</version>
@@ -71,14 +71,9 @@
               <goal>update-file-header</goal>
             </goals>
             <phase>process-sources</phase>
-            <configuration>
-              <includes>
-                <include>*XmppServer.java</include>
-              </includes>
-            </configuration>
           </execution>
         </executions>
-      </plugin>
+      </plugin> -->
 
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
