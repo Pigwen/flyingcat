@@ -55,45 +55,25 @@
     </pluginManagement>
 
     <plugins>
-      <!-- <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-        <version>1.4</version>
-        <configuration>
-          <verbose>false</verbose>
-          <licenseName>apache_v2</licenseName>
-          <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
-        </configuration>
-        <executions>
-          <execution>
-            <id>first</id>
-            <goals>
-              <goal>update-file-header</goal>
-            </goals>
-            <phase>process-sources</phase>
-          </execution>
-        </executions>
-      </plugin> -->
-
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jaxb2-maven-plugin</artifactId>
-        <version>1.5</version>
-        <executions>
-          <execution>
-            <id>xjc</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-          </execution>
-        </executions>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.0</version>
         <configuration>
-          <outputDirectory>${project.build.sourceDirectory}/../generated-sources/jaxb</outputDirectory>
-          <schemaDirectory>${basedir}/src/main/resources/xsd</schemaDirectory>
-          <bindingDirectory>${basedir}/src/main/resources/xjb</bindingDirectory>
-          <npa>true</npa>
+          <encoding>UTF-8</encoding>
+          <source>1.7</source>
+          <target>1.7</target>
         </configuration>
       </plugin>
+      <!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>license-maven-plugin</artifactId> <version>1.4</version> 
+        <configuration> <verbose>false</verbose> <licenseName>apache_v2</licenseName> <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage> 
+        </configuration> <executions> <execution> <id>first</id> <goals> <goal>update-file-header</goal> </goals> <phase>process-sources</phase> 
+        </execution> </executions> </plugin> -->
+
+      <!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>jaxb2-maven-plugin</artifactId> <version>1.5</version> 
+        <executions> <execution> <id>xjc</id> <goals> <goal>xjc</goal> </goals> </execution> </executions> <configuration> 
+        <outputDirectory>${project.build.sourceDirectory}/../generated-sources/jaxb</outputDirectory> <schemaDirectory>${basedir}/src/main/resources/xsd</schemaDirectory> 
+        <bindingDirectory>${basedir}/src/main/resources/xjb</bindingDirectory> <npa>true</npa> </configuration> </plugin> -->
     </plugins>
   </build>
 
