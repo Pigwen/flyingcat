@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -36,6 +37,7 @@ import org.maodian.flycat.holder.XMLOutputFactoryHolder;
  *
  */
 public class OpeningStreamState implements State {
+  private static final BigDecimal SUPPORTED_VERSION = new BigDecimal("1.0");
   private final FeatureType featureType;
   
   public OpeningStreamState(FeatureType featureType) {
@@ -47,19 +49,25 @@ public class OpeningStreamState implements State {
    */
   @Override
   public String handle(XmppContext context, String xml) {
-    try (Reader reader = new StringReader(xml)) {
+    try (Reader reader = new StringReader(xml);
+        StringWriter writer = new StringWriter();) {
       try {
         XMLStreamReader xmlsr = XMLInputFactoryHolder.getXMLInputFactory().createXMLStreamReader(reader);
         xmlsr.nextTag();
-        QName root = new QName(XmppNamespace.STREAM, "stream");
-        if (!root.equals(xmlsr.getName())) {
+        QName qname = new QName(XmppNamespace.STREAM, "stream");
+        if (!qname.equals(xmlsr.getName())) {
           throw new XmppException(StreamError.INVALID_NAMESPACE)
-              .set("QName", root);
+              .set("QName", qname);
         }
         
-        StringWriter writer = new StringWriter();
-        XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
+        // throw exception if client version > 1.0
+        BigDecimal version = new BigDecimal(xmlsr.getAttributeValue("", "version"));
+        if (version.compareTo(SUPPORTED_VERSION) > 0) {
+          throw new XmppException(StreamError.UNSUPPORTED_VERSION);
+        }
         
+        
+        XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
         // only send xml declaration at the first time
         if (featureType == FeatureType.STARTTLS) {
           xmlsw.writeStartDocument();
@@ -115,10 +123,10 @@ public class OpeningStreamState implements State {
       } catch (XMLStreamException e) {
         throw new XmppException(e, StreamError.BAD_FORMAT);
       }
-    } catch (IOException e1) {
-      // silent with exception thrown by close method
+    } catch (IOException ioe) {
+      // close a StringReader/StringWriter should not cause IOException, though
+      throw new XmppException(ioe, StreamError.INTERNAL_SERVER_ERROR);
     }
-    return null;
   }
   
   public static enum FeatureType {

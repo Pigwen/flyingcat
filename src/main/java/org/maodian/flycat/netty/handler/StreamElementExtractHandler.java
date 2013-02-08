@@ -20,13 +20,18 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 
 import org.apache.commons.lang3.StringUtils;
+import org.maodian.flycat.xmpp.StreamError;
 import org.maodian.flycat.xmpp.XmppContext;
+import org.maodian.flycat.xmpp.XmppException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cole Wen
  * 
  */
 public class StreamElementExtractHandler extends ChannelInboundMessageHandlerAdapter<String> {
+  private static final Logger logger = LoggerFactory.getLogger(StreamElementExtractHandler.class);
   private static final String XML_DECLARATION_MARK = "<?xml ";
 
   private boolean recvXmlDeclFlag = false;
@@ -54,7 +59,7 @@ public class StreamElementExtractHandler extends ChannelInboundMessageHandlerAda
         return;
       }
       // TODO: deal with duplicated xml declaration
-      throw new RuntimeException("deal with duplicated xml declaration");
+      throw new XmppException(StreamError.BAD_FORMAT);
     }
     
     String result = xmppContext.parseXML(msg);
@@ -66,6 +71,13 @@ public class StreamElementExtractHandler extends ChannelInboundMessageHandlerAda
   
   @Override
   public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    if (cause instanceof XmppException) {
+      XmppException xmppException = (XmppException) cause;
+      StringBuilder builder = new StringBuilder("<stream:error>").append(xmppException.getXmppError().toXML())
+          .append("</stream:error></stream:stream>");
+      ctx.write(builder.toString()).addListener(ChannelFutureListener.CLOSE);
+      logger.warn("Close the XMPP Stream due to error", cause);
+    }
     super.exceptionCaught(ctx, cause);
   }
 }

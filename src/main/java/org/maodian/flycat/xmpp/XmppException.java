@@ -52,4 +52,8 @@ public class XmppException extends RuntimeException {
     map.put(key, value);
     return this;
   }
+
+  public XmppError getXmppError() {
+    return xmppError;
+  }
 }

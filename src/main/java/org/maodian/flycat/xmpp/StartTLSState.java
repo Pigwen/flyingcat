@@ -49,8 +49,8 @@ public class StartTLSState implements State {
         xmlsr.nextTag();
         QName qname = new QName(XmppNamespace.TLS, "starttls");
         if (!xmlsr.getName().equals(qname)) {
-          //TODO: Deal with invalid stream
-          throw new RuntimeException("Deal with invalid stream");
+          throw new XmppException(StreamError.INVALID_NAMESPACE)
+              .set("QName", qname);
         }
         
         ChannelHandlerContext ctx = context.getNettyChannelHandlerContext();
@@ -62,13 +62,12 @@ public class StartTLSState implements State {
         context.setState(new OpeningStreamState(FeatureType.SASL));
         return PROCEED_CMD;
       } catch (XMLStreamException e) {
-        e.printStackTrace();
+        throw new XmppException(e, StreamError.BAD_FORMAT);
       }
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    } catch (IOException ioe) {
+      // close a StringReader/StringWriter should not cause IOException, though
+      throw new XmppException(ioe, StreamError.INTERNAL_SERVER_ERROR);
     }
-    return null;
   }
 
 }

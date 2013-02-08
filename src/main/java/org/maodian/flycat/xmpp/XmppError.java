@@ -22,4 +22,6 @@ package org.maodian.flycat.xmpp;
 public interface XmppError {
 
   int getNumber();
+  
+  String toXML();
 }

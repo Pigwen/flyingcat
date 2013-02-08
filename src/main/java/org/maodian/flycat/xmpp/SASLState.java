@@ -54,10 +54,10 @@ public class SASLState implements State {
       try {
         XMLStreamReader xmlsr = XMLInputFactoryHolder.getXMLInputFactory().createXMLStreamReader(reader);
         xmlsr.nextTag();
-        QName root = new QName(XmppNamespace.SASL, "auth");
-        if (!root.equals(xmlsr.getName())) {
-          //TODO: Deal with invalid stream
-          throw new RuntimeException("Deal with invalid <auth />");
+        QName qname = new QName(XmppNamespace.SASL, "auth");
+        if (!qname.equals(xmlsr.getName())) {
+          throw new XmppException(StreamError.INVALID_NAMESPACE)
+              .set("QName", qname);
         }
         
         String base64Data = xmlsr.getElementText();
@@ -90,12 +90,12 @@ public class SASLState implements State {
         return SUCCESS_RESPONSE;
         
       } catch (XMLStreamException e) {
-        e.printStackTrace();
+        throw new XmppException(e, StreamError.BAD_FORMAT);
       }
-    } catch (IOException e1) {
-      // silent with exception thrown by close method
+    } catch (IOException ioe) {
+      // close a StringReader/StringWriter should not cause IOException, though
+      throw new XmppException(ioe, StreamError.INTERNAL_SERVER_ERROR);
     }
-    return null;
   }
 
 }
