@@ -16,6 +16,7 @@
 package org.maodian.flycat;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
@@ -37,7 +38,9 @@ public class XmppServer {
       b.group(new NioEventLoopGroup(), new NioEventLoopGroup())
        .channel(NioServerSocketChannel.class)
        .localAddress(port)
-       .childHandler(new XmppServerInitializer());
+       .childHandler(new XmppServerInitializer())
+       .option(ChannelOption.TCP_NODELAY, true)
+       .option(ChannelOption.SO_KEEPALIVE, true);
 
       b.bind().sync().channel().closeFuture().sync();
   } finally {
