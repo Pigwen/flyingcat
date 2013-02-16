@@ -101,11 +101,11 @@ public class SASLState implements State {
         }
         
       } catch (XMLStreamException e) {
-        throw new XmppException(e, SASLError.NOT_AUTHORIZED);
+        throw new XmppException(e, StreamError.BAD_FORMAT);
       }
     } catch (IOException ioe) {
       // close a StringReader/StringWriter should not cause IOException, though
-      throw new XmppException(ioe, SASLError.NOT_AUTHORIZED);
+      throw new XmppException(ioe, StreamError.INTERNAL_SERVER_ERROR);
     }
   }
 

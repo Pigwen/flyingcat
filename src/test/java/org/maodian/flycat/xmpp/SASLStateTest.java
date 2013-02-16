@@ -24,6 +24,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.maodian.flycat.holder.XMLInputFactoryHolder;
 
@@ -61,11 +62,46 @@ public class SASLStateTest extends StateTest {
   }
   
   @Test
-  public void testInvalidNamespaceOfPlainAuth() throws XMLStreamException {
+  public void testInvalidNamespaceOfPlainAuth() {
     state = new SASLState();
     String inXML1 = "<auth xmlns='invalid name space' mechanism='PLAIN'>";
     String inXML2 = "AGp1bGlldAByMG0zMG15cjBtMzA=</auth>";
     state.handle(context, inXML1);
     expectXmppException(state, inXML2, StreamError.INVALID_NAMESPACE);
+  }
+  
+  @Test
+  public void testInvalidMechanism() {
+    state = new SASLState();
+    String inXML1 = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='invalid'>";
+    String inXML2 = "AGp1bGlldAByMG0zMG15cjBtMzA=</auth>";
+    state.handle(context, inXML1);
+    expectXmppException(state, inXML2, SASLError.INVALID_MECHANISM);
+  }
+  
+  @Test
+  public void testIncorrectEncoding() {
+    state = new SASLState();
+    String inXML1 = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>";
+    String inXML2 = "***</auth>";
+    state.handle(context, inXML1);
+    expectXmppException(state, inXML2, SASLError.INCORRECT_ENCODING);
+  }
+  
+  @Test
+  public void testCredentialIsLongerThan255() {
+    state = new SASLState();
+    String inXML1 = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>";
+    String inXML2 = RandomStringUtils.randomAlphabetic(256) + "</auth>";
+    state.handle(context, inXML1);
+    expectXmppException(state, inXML2, SASLError.MALFORMED_REQUEST);
+  }
+  
+  @Test
+  public void testInvalidXML() {
+    state = new SASLState();
+    String inXML = "invalid xml";
+    state.handle(context, inXML);
+    testInvalidXML(state);
   }
 }
