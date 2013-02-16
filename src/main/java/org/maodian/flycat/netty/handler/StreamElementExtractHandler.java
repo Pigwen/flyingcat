@@ -73,9 +73,7 @@ public class StreamElementExtractHandler extends ChannelInboundMessageHandlerAda
   public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
     if (cause instanceof XmppException) {
       XmppException xmppException = (XmppException) cause;
-      StringBuilder builder = new StringBuilder("<stream:error>").append(xmppException.getXmppError().toXML())
-          .append("</stream:error></stream:stream>");
-      ctx.write(builder.toString()).addListener(ChannelFutureListener.CLOSE);
+      ctx.write(xmppException.getXmppError().toXML()).addListener(ChannelFutureListener.CLOSE);
       logger.warn("Close the XMPP Stream due to error", cause);
     }
     super.exceptionCaught(ctx, cause);

@@ -18,6 +18,9 @@ package org.maodian.flycat.xmpp;
 import org.apache.commons.lang3.StringUtils;
 
 /**
+ * <stream:error>
+     <unsupported-encoding xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>
+   </stream:error>
  * @author Cole Wen
  *
  */
@@ -62,7 +65,7 @@ public enum StreamError implements XmppError {
   }
   
   private String computeXML(String condition, String description, String appElement) {
-    StringBuilder builder = new StringBuilder().append("<").append(condition).append(" xmlns=\"")
+    StringBuilder builder = new StringBuilder("<stream:error><").append(condition).append(" xmlns=\"")
         .append(XmppNamespace.STREAM).append("\"");
     if (StringUtils.isBlank(description)) {
       builder.append("/>");
@@ -74,7 +77,7 @@ public enum StreamError implements XmppError {
     if (StringUtils.isNotBlank(appElement)) {
       builder.append(appElement);
     }
-    
+    builder.append("</stream:error>");
     return builder.toString();
   }
 
