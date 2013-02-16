@@ -16,7 +16,6 @@
 package org.maodian.flycat.xmpp;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -36,17 +35,16 @@ import org.maodian.flycat.xmpp.OpeningStreamState.FeatureType;
  * @author Cole Wen
  * 
  */
-public class OpeningStreamStateTest {
-  private XmppContext context;
+public class OpeningStreamStateTest extends StateTest {
   
   @Before
-  public void setup() {
-    context = mock(XmppContext.class);
+  public void doSetup() {
+    
   }
 
   @Test
   public void testSuccessWithStartTTLsFeatureType() throws XMLStreamException {
-    OpeningStreamState state = new OpeningStreamState(FeatureType.STARTTLS);
+    state = new OpeningStreamState(FeatureType.STARTTLS);
     String inXML = "<stream:stream from='cole@localhost' to='localhost' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>";
     String outXML = state.handle(context, inXML);
     
@@ -62,7 +60,7 @@ public class OpeningStreamStateTest {
   
   @Test
   public void testSuccessWithSASLFeatureType() throws XMLStreamException {
-    OpeningStreamState state = new OpeningStreamState(FeatureType.SASL);
+    state = new OpeningStreamState(FeatureType.SASL);
     String inXML = "<stream:stream from='cole@localhost' to='localhost' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>";
     String outXML = state.handle(context, inXML);
     
@@ -78,7 +76,7 @@ public class OpeningStreamStateTest {
   
   @Test
   public void testSuccessWithResourceBind() throws XMLStreamException {
-    OpeningStreamState state = new OpeningStreamState(FeatureType.RESOURCE_BIND);
+    state = new OpeningStreamState(FeatureType.RESOURCE_BIND);
     String inXML = "<stream:stream from='cole@localhost' to='localhost' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>";
     String outXML = state.handle(context, inXML);
     
@@ -94,7 +92,7 @@ public class OpeningStreamStateTest {
   
   @Test
   public void testIncommingStreamWithoutFromAttribute() throws XMLStreamException {
-    OpeningStreamState state = new OpeningStreamState(FeatureType.STARTTLS);
+    state = new OpeningStreamState(FeatureType.STARTTLS);
     String inXML = "<stream:stream to='localhost' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>";
     String outXML = state.handle(context, inXML);
     
@@ -107,39 +105,22 @@ public class OpeningStreamStateTest {
   
   @Test
   public void testInvalidNamespaceOfStream() {
-    OpeningStreamState state = new OpeningStreamState(FeatureType.STARTTLS);
+    state = new OpeningStreamState(FeatureType.STARTTLS);
     String inXML = "<stream:stream from='cole@localhost' to='localhost' xmlns='jabber:client' xmlns:stream='invalid_namespace' version='1.0'>";
     expectXmppException(state, inXML, StreamError.INVALID_NAMESPACE);
   }
   
   @Test
   public void testUnsupportedVersion() {
-    OpeningStreamState state = new OpeningStreamState(FeatureType.STARTTLS);
+    state = new OpeningStreamState(FeatureType.STARTTLS);
     String inXML = "<stream:stream from='cole@localhost' to='localhost' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.1'>";
     expectXmppException(state, inXML, StreamError.UNSUPPORTED_VERSION);
   }
   
   @Test
   public void testInvalidXML() {
-    OpeningStreamState state = new OpeningStreamState(FeatureType.STARTTLS);
-    String inXML = "invalid xml";
-    expectXmppException(state, inXML, StreamError.BAD_FORMAT);
-  }
-  
-  /**
-   * expect an XmppException with the desired XmppError would be thrown while the 
-   * State parameter handles the xml string 
-   * @param state
-   * @param xml
-   * @param error
-   */
-  private void expectXmppException(State state, String xml, XmppError error) {
-    try {
-      state.handle(context, xml);
-      fail("Should throw an XmppException");
-    } catch (XmppException e) {
-      assertSame(error, e.getXmppError());
-    }
+    state = new OpeningStreamState(FeatureType.STARTTLS);
+    testInvalidXML(state);
   }
   
   /**

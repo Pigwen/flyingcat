@@ -50,7 +50,7 @@ public class StartTLSState implements State {
         QName qname = new QName(XmppNamespace.TLS, "starttls");
         if (!xmlsr.getName().equals(qname)) {
           throw new XmppException(StreamError.INVALID_NAMESPACE)
-              .set("QName", qname);
+              .set("QName", xmlsr.getName());
         }
         
         ChannelHandlerContext ctx = context.getNettyChannelHandlerContext();
