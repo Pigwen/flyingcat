@@ -63,6 +63,11 @@ public class SASLState implements State {
         String mechanism = xmlsr.getAttributeValue("", "mechanism");
         if (StringUtils.equals("PLAIN", mechanism)) {
           String base64Data = xmlsr.getElementText();
+          
+          if (!Base64.isBase64(base64Data)) {
+            throw new XmppException(SASLError.INCORRECT_ENCODING);
+          }
+          
           byte[] value = Base64.decodeBase64(base64Data);
           String text = new String(value, StandardCharsets.UTF_8);
           
@@ -76,7 +81,7 @@ public class SASLState implements State {
           }
           
           if (nullPosition[0] == -1 || nullPosition[1] == -1) {
-            throw new RuntimeException("The format is invalid");
+            throw new XmppException("The format is invalid", SASLError.MALFORMED_REQUEST);
           }
           String authzid = StringUtils.substring(text, 0, nullPosition[0]);
           String authcid = StringUtils.substring(text, nullPosition[0] + 1, nullPosition[1]);
@@ -84,23 +89,23 @@ public class SASLState implements State {
           
           if (authzid.getBytes(StandardCharsets.UTF_8).length > 255 || authcid.getBytes(StandardCharsets.UTF_8).length > 255
               || password.getBytes(StandardCharsets.UTF_8).length > 255) {
-            throw new RuntimeException("authorization id, authentication id and password should be equal or less than 255 bytes");
+            throw new XmppException("authorization id, authentication id and password should be equal or less than 255 bytes", 
+                SASLError.MALFORMED_REQUEST);
           }
           
           context.setBareJID(authcid + "@localhost");
           context.setState(new OpeningStreamState(FeatureType.RESOURCE_BIND));
           return SUCCESS_RESPONSE;
         } else {
-          //TODO: deal with unsupported mechanism
-          throw new RuntimeException("Unsupported mechanism");
+          throw new XmppException(SASLError.INVALID_MECHANISM).set("mechanism", mechanism);
         }
         
       } catch (XMLStreamException e) {
-        throw new XmppException(e, StreamError.BAD_FORMAT);
+        throw new XmppException(e, SASLError.NOT_AUTHORIZED);
       }
     } catch (IOException ioe) {
       // close a StringReader/StringWriter should not cause IOException, though
-      throw new XmppException(ioe, StreamError.INTERNAL_SERVER_ERROR);
+      throw new XmppException(ioe, SASLError.NOT_AUTHORIZED);
     }
   }
 
