@@ -22,6 +22,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 
 import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -53,7 +54,8 @@ public class OpeningStreamState implements State {
       try {
         XMLStreamReader xmlsr = XMLInputFactoryHolder.getXMLInputFactory().createXMLStreamReader(reader);
         xmlsr.nextTag();
-        if (!xmlsr.getName().getNamespaceURI().equals(XmppNamespace.STREAM)) {
+        QName qname = new QName(XmppNamespace.STREAM, "stream");
+        if (!xmlsr.getName().equals(qname)) {
           throw new XmppException(StreamError.INVALID_NAMESPACE)
               .set("QName", xmlsr.getName());
         }
