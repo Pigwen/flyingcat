@@ -22,6 +22,7 @@ import java.io.Reader;
 import java.io.StringReader;
 
 import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -52,13 +53,150 @@ public class OpeningStreamStateTest {
     Reader reader = new StringReader(outXML);
     XMLStreamReader xmlsr = XMLInputFactoryHolder.getXMLInputFactory().createXMLStreamReader(reader);
     assertEquals(XMLStreamConstants.START_DOCUMENT, xmlsr.getEventType());
-    assertEquals("1.0", xmlsr.getVersion());
     assertEquals(XMLStreamConstants.START_ELEMENT, xmlsr.next());
-    assertEquals("cole@localhost", xmlsr.getAttributeValue("", "to"));
-    assertEquals("localhost", xmlsr.getAttributeValue("", "from"));
-    assertEquals("1.0", xmlsr.getAttributeValue("", "version"));
-    assertEquals("en", xmlsr.getAttributeValue(XMLConstants.XML_NS_URI, "lang"));
+    assertStream(xmlsr, "localhost", "cole@localhost", "1.0", "en");
+    
+    xmlsr.next();
+    assertStartTLSIsRequired(xmlsr);
+  }
+  
+  @Test
+  public void testSuccessWithSASLFeatureType() throws XMLStreamException {
+    OpeningStreamState state = new OpeningStreamState(FeatureType.SASL);
+    String inXML = "<stream:stream from='cole@localhost' to='localhost' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>";
+    String outXML = state.handle(context, inXML);
+    
+    Reader reader = new StringReader(outXML);
+    XMLStreamReader xmlsr = XMLInputFactoryHolder.getXMLInputFactory().createXMLStreamReader(reader);
+    assertEquals(XMLStreamConstants.START_DOCUMENT, xmlsr.getEventType());
+    assertEquals(XMLStreamConstants.START_ELEMENT, xmlsr.next());
+    assertStream(xmlsr, "localhost", "cole@localhost", "1.0", "en");
+    
+    xmlsr.next();
+    assertSASLMechanisms(xmlsr);
+  }
+  
+  @Test
+  public void testSuccessWithResourceBind() throws XMLStreamException {
+    OpeningStreamState state = new OpeningStreamState(FeatureType.RESOURCE_BIND);
+    String inXML = "<stream:stream from='cole@localhost' to='localhost' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>";
+    String outXML = state.handle(context, inXML);
+    
+    Reader reader = new StringReader(outXML);
+    XMLStreamReader xmlsr = XMLInputFactoryHolder.getXMLInputFactory().createXMLStreamReader(reader);
+    assertEquals(XMLStreamConstants.START_DOCUMENT, xmlsr.getEventType());
+    assertEquals(XMLStreamConstants.START_ELEMENT, xmlsr.next());
+    assertStream(xmlsr, "localhost", "cole@localhost", "1.0", "en");
+    
+    xmlsr.next();
+    assertResourceBind(xmlsr);
+  }
+  
+  @Test
+  public void testIncommingStreamWithoutFromAttribute() throws XMLStreamException {
+    OpeningStreamState state = new OpeningStreamState(FeatureType.STARTTLS);
+    String inXML = "<stream:stream to='localhost' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>";
+    String outXML = state.handle(context, inXML);
+    
+    Reader reader = new StringReader(outXML);
+    XMLStreamReader xmlsr = XMLInputFactoryHolder.getXMLInputFactory().createXMLStreamReader(reader);
+    assertEquals(XMLStreamConstants.START_DOCUMENT, xmlsr.getEventType());
+    assertEquals(XMLStreamConstants.START_ELEMENT, xmlsr.next());
+    assertStream(xmlsr, "localhost", null, "1.0", "en");
+  }
+  
+  @Test
+  public void testInvalidNamespaceOfStream() {
+    OpeningStreamState state = new OpeningStreamState(FeatureType.STARTTLS);
+    String inXML = "<stream:stream from='cole@localhost' to='localhost' xmlns='jabber:client' xmlns:stream='invalid_namespace' version='1.0'>";
+    expectXmppException(state, inXML, StreamError.INVALID_NAMESPACE);
+  }
+  
+  @Test
+  public void testUnsupportedVersion() {
+    OpeningStreamState state = new OpeningStreamState(FeatureType.STARTTLS);
+    String inXML = "<stream:stream from='cole@localhost' to='localhost' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.1'>";
+    expectXmppException(state, inXML, StreamError.UNSUPPORTED_VERSION);
+  }
+  
+  @Test
+  public void testInvalidXML() {
+    OpeningStreamState state = new OpeningStreamState(FeatureType.STARTTLS);
+    String inXML = "invalid xml";
+    expectXmppException(state, inXML, StreamError.BAD_FORMAT);
+  }
+  
+  /**
+   * expect an XmppException with the desired XmppError would be thrown while the 
+   * State parameter handles the xml string 
+   * @param state
+   * @param xml
+   * @param error
+   */
+  private void expectXmppException(State state, String xml, XmppError error) {
+    try {
+      state.handle(context, xml);
+      fail("Should throw an XmppException");
+    } catch (XmppException e) {
+      assertSame(error, e.getXmppError());
+    }
+  }
+  
+  /**
+   * expect the next element is a stream node and its attribute is equal to the passed 
+   * parameters
+   * @param xmlsr
+   * @param from
+   * @param to
+   * @param version
+   * @param lang
+   */
+  private void assertStream(XMLStreamReader xmlsr, String from, String to, String version, String lang) {
+    assertEquals(from, xmlsr.getAttributeValue("", "from"));
+    assertEquals(to, xmlsr.getAttributeValue("", "to"));
+    assertEquals(version, xmlsr.getAttributeValue("", "version"));
+    assertEquals(lang, xmlsr.getAttributeValue(XMLConstants.XML_NS_URI, "lang"));
     assertNotNull(xmlsr.getAttributeValue("", "id"));
     assertTrue(xmlsr.getAttributeValue("", "id").length() > 0);
+  }
+  
+  private void assertStartTLSIsRequired(XMLStreamReader xmlsr) throws XMLStreamException {
+    QName features = new QName(XmppNamespace.STREAM, "features", "stream");
+    assertEquals(features, xmlsr.getName());
+    
+    xmlsr.next();
+    QName starttls = new QName(XmppNamespace.TLS, "starttls");
+    assertEquals(starttls, xmlsr.getName());
+    
+    xmlsr.next();
+    QName required = new QName(XmppNamespace.TLS, "required");
+    assertEquals(required, xmlsr.getName());
+  }
+  
+  private void assertSASLMechanisms(XMLStreamReader xmlsr) throws XMLStreamException {
+    QName features = new QName(XmppNamespace.STREAM, "features", "stream");
+    assertEquals(features, xmlsr.getName());
+    
+    xmlsr.next();
+    QName mechanisms = new QName(XmppNamespace.SASL, "mechanisms");
+    assertEquals(mechanisms, xmlsr.getName());
+    
+    xmlsr.next();
+    QName plainMech = new QName(XmppNamespace.SASL, "mechanism");
+    assertEquals(plainMech, xmlsr.getName());
+    assertEquals("PLAIN", xmlsr.getElementText());
+  }
+  
+  private void assertResourceBind(XMLStreamReader xmlsr) throws XMLStreamException {
+    QName features = new QName(XmppNamespace.STREAM, "features", "stream");
+    assertEquals(features, xmlsr.getName());
+    
+    xmlsr.next();
+    QName starttls = new QName(XmppNamespace.BIND, "bind");
+    assertEquals(starttls, xmlsr.getName());
+    
+    xmlsr.next();
+    QName required = new QName(XmppNamespace.BIND, "required");
+    assertEquals(required, xmlsr.getName());
   }
 }
