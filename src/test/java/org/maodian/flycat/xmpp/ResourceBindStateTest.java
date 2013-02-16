@@ -73,4 +73,17 @@ public class ResourceBindStateTest extends StateTest {
     assertEquals(jid, xmlsr.getName());
     assertEquals("juliet@im.example.com/balcony", xmlsr.getElementText());
   }
+  
+  @Test
+  public void testInvalidXML() {
+    State state = new ResourceBindState();
+    String inXML = "invalid xml</iq>";
+    String wrappedInXML = "<stream:stream from='juliet@im.example.com' id='gPybzaOzBmaADgxKXu9UClbprp0=' to='im.example.com' "
+        + "version='1.0' xml:lang='en' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
+        + inXML + "</stream:stream>";
+    when(context.wrapStreamTag(inXML)).thenReturn(wrappedInXML);
+    when(context.getBareJID()).thenReturn("juliet@im.example.com");
+    
+    expectXmppException(state, inXML, StreamError.BAD_FORMAT);
+  }
 }
