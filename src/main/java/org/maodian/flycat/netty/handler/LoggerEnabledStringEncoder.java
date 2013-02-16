@@ -15,9 +15,9 @@
  */
 package org.maodian.flycat.netty.handler;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
+import io.netty.buffer.BufType;
 import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.string.StringEncoder;
 
 import java.nio.charset.StandardCharsets;
@@ -34,14 +34,17 @@ public class LoggerEnabledStringEncoder extends StringEncoder {
   private final Logger logger;
 
   public LoggerEnabledStringEncoder() {
-    super(StandardCharsets.UTF_8);
+    super(BufType.BYTE, StandardCharsets.UTF_8);
     this.logger = LoggerFactory.getLogger(getClass());
   }
   
+  /* (non-Javadoc)
+   * @see io.netty.handler.codec.string.StringEncoder#flush(io.netty.channel.ChannelHandlerContext, java.lang.CharSequence)
+   */
   @Override
-  protected Object encode(ChannelHandlerContext ctx, CharSequence msg) throws Exception {
-    Object object = super.encode(ctx, msg);
-    logger.debug("Outbound String: {}", ((ByteBuf) object).toString(StandardCharsets.UTF_8));
-    return object;
+  protected void flush(ChannelHandlerContext ctx, CharSequence msg) throws Exception {
+    String object = msg.toString();
+    logger.debug("Outbound String: {}", object);
+    super.flush(ctx, msg);
   }
 }

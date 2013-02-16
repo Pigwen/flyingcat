@@ -80,8 +80,8 @@
   <dependencies>
     <dependency>
       <groupId>io.netty</groupId>
-      <artifactId>netty</artifactId>
-      <version>4.0.0.Beta1-SNAPSHOT</version>
+      <artifactId>netty-all</artifactId>
+      <version>4.0.0.Beta1</version>
     </dependency>
 
     <!-- <dependency> <groupId>org.codehaus.woodstox</groupId> <artifactId>woodstox-core-asl</artifactId> <version>4.1.4</version> 
