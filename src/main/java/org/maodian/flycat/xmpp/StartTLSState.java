@@ -18,56 +18,50 @@ package org.maodian.flycat.xmpp;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.ssl.SslHandler;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-
 import javax.net.ssl.SSLEngine;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
-import org.maodian.flycat.holder.XMLInputFactoryHolder;
 import org.maodian.flycat.xmpp.OpeningStreamState.FeatureType;
 
 /**
  * @author Cole Wen
  *
  */
-public class StartTLSState implements State {
+public class StartTLSState extends AbstractState {
   
-  private static final String PROCEED_CMD = "<proceed xmlns=\"" + XmppNamespace.TLS + "\"/>";
-
   /* (non-Javadoc)
-   * @see org.maodian.flycat.xmpp.State#handle(org.maodian.flycat.xmpp.XmppContext, java.lang.String)
+   * @see org.maodian.flycat.xmpp.AbstractState#nextState()
    */
   @Override
-  public String handle(XmppContext context, String xml) {
-    try (Reader reader = new StringReader(xml)) {
-      try {
-        XMLStreamReader xmlsr = XMLInputFactoryHolder.getXMLInputFactory().createXMLStreamReader(reader);
-        xmlsr.nextTag();
-        QName qname = new QName(XmppNamespace.TLS, "starttls");
-        if (!xmlsr.getName().equals(qname)) {
-          throw new XmppException(StreamError.INVALID_NAMESPACE)
-              .set("QName", xmlsr.getName());
-        }
-        
-        ChannelHandlerContext ctx = context.getNettyChannelHandlerContext();
-        SSLEngine engine = SecureSslContextFactory.getServerContext().createSSLEngine();
-        engine.setUseClientMode(false);
-        ctx.pipeline().addFirst("ssl", new SslHandler(engine, true));
-        
-        // set state back to OpeningStream state since client would start a new stream
-        context.setState(States.newOpeningStreamState(FeatureType.SASL));
-        return PROCEED_CMD;
-      } catch (XMLStreamException e) {
-        throw new XmppException(e, StreamError.BAD_FORMAT);
-      }
-    } catch (IOException ioe) {
-      // close a StringReader/StringWriter should not cause IOException, though
-      throw new XmppException(ioe, StreamError.INTERNAL_SERVER_ERROR);
+  protected State nextState() {
+    // set state back to OpeningStream state since client would start a new stream
+    return States.newOpeningStreamState(FeatureType.SASL);
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flycat.xmpp.AbstractState#doHandle(org.maodian.flycat.xmpp.XmppContext, javax.xml.stream.XMLStreamReader, javax.xml.stream.XMLStreamWriter)
+   */
+  @Override
+  protected void doHandle(XmppContext context, XMLStreamReader xmlsr, XMLStreamWriter xmlsw) throws XMLStreamException {
+    xmlsr.nextTag();
+    QName qname = new QName(XmppNamespace.TLS, "starttls");
+    if (!xmlsr.getName().equals(qname)) {
+      throw new XmppException(StreamError.INVALID_NAMESPACE)
+          .set("QName", xmlsr.getName());
     }
+    
+    ChannelHandlerContext ctx = context.getNettyChannelHandlerContext();
+    SSLEngine engine = SecureSslContextFactory.getServerContext().createSSLEngine();
+    engine.setUseClientMode(false);
+    ctx.pipeline().addFirst("ssl", new SslHandler(engine, true));
+    
+    xmlsw.writeEmptyElement("", "proceed", XmppNamespace.TLS);
+    xmlsw.setPrefix("", XmppNamespace.TLS);
+    xmlsw.writeNamespace("", XmppNamespace.TLS);
+    xmlsw.writeEndDocument();
   }
 
 }
