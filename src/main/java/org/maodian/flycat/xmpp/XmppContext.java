@@ -33,7 +33,7 @@ public class XmppContext {
   
   public XmppContext(ChannelHandlerContext ctx) {
     this.ctx = ctx;
-    this.state = new OpeningStreamState(FeatureType.STARTTLS);
+    this.state = States.newOpeningStreamState(FeatureType.STARTTLS);
   }
 
   void setState(State state) {

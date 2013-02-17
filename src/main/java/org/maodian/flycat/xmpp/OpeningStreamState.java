@@ -94,7 +94,7 @@ public class OpeningStreamState implements State {
           xmlsw.writeDefaultNamespace(XmppNamespace.TLS);
           xmlsw.writeEmptyElement("required");
           xmlsw.writeEndElement();
-          nextState = new StartTLSState();
+          nextState = States.newStartTLSState();
           break;
         case SASL:
           xmlsw.writeStartElement("mechanisms");
@@ -103,14 +103,14 @@ public class OpeningStreamState implements State {
           xmlsw.writeCharacters("PLAIN");
           xmlsw.writeEndElement();
           xmlsw.writeEndElement();
-          nextState = new SASLState();
+          nextState = States.newSASLState();
           break;
         case RESOURCE_BIND:
           xmlsw.writeStartElement("bind");
           xmlsw.writeDefaultNamespace(XmppNamespace.BIND);
           xmlsw.writeEmptyElement("required");
           xmlsw.writeEndElement();
-          nextState = new ResourceBindState();
+          nextState = States.newResourceBindState();
           break;
         default:
           throw new XmppException("The code should not reach here", StreamError.INTERNAL_SERVER_ERROR);

@@ -98,7 +98,7 @@ public class SASLState implements State {
           }
           
           context.setBareJID(authcid + "@localhost");
-          context.setState(new OpeningStreamState(FeatureType.RESOURCE_BIND));
+          context.setState(States.newOpeningStreamState(FeatureType.RESOURCE_BIND));
           return SUCCESS_RESPONSE;
         } else {
           throw new XmppException(SASLError.INVALID_MECHANISM).set("mechanism", mechanism);

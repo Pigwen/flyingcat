@@ -59,7 +59,7 @@ public class StartTLSState implements State {
         ctx.pipeline().addFirst("ssl", new SslHandler(engine, true));
         
         // set state back to OpeningStream state since client would start a new stream
-        context.setState(new OpeningStreamState(FeatureType.SASL));
+        context.setState(States.newOpeningStreamState(FeatureType.SASL));
         return PROCEED_CMD;
       } catch (XMLStreamException e) {
         throw new XmppException(e, StreamError.BAD_FORMAT);
