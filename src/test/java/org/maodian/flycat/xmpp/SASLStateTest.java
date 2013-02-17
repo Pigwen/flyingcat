@@ -43,12 +43,11 @@ public class SASLStateTest extends StateTest {
    */
   @Override
   public void doSetup() {
-
+    state = new SASLState();
   }
 
   @Test
   public void testPlainMechanismSuccess() throws XMLStreamException {
-    state = new SASLState();
     String inXML1 = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>";
     String inXML2 = "AGp1bGlldAByMG0zMG15cjBtMzA=</auth>";
 
@@ -65,7 +64,6 @@ public class SASLStateTest extends StateTest {
   
   @Test
   public void testInvalidNamespaceOfPlainAuth() {
-    state = new SASLState();
     String inXML1 = "<auth xmlns='invalid name space' mechanism='PLAIN'>";
     String inXML2 = "AGp1bGlldAByMG0zMG15cjBtMzA=</auth>";
     state.handle(context, inXML1);
@@ -74,7 +72,6 @@ public class SASLStateTest extends StateTest {
   
   @Test
   public void testInvalidMechanism() {
-    state = new SASLState();
     String inXML1 = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='invalid'>";
     String inXML2 = "AGp1bGlldAByMG0zMG15cjBtMzA=</auth>";
     state.handle(context, inXML1);
@@ -83,7 +80,6 @@ public class SASLStateTest extends StateTest {
   
   @Test
   public void testIncorrectEncoding() {
-    state = new SASLState();
     String inXML1 = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>";
     String inXML2 = "***</auth>";
     state.handle(context, inXML1);
@@ -92,7 +88,6 @@ public class SASLStateTest extends StateTest {
   
   @Test
   public void testCredentialIsLongerThan255() {
-    state = new SASLState();
     String credential = new StringBuilder(RandomStringUtils.randomAlphabetic(256)).append('\u0000')
         .append(RandomStringUtils.randomAlphabetic(256)).append('\u0000')
         .append(RandomStringUtils.randomAlphabetic(256)).toString();
@@ -104,7 +99,6 @@ public class SASLStateTest extends StateTest {
   
   @Test
   public void testCredentialHasMoreThanTwoUnicodeNullSeperator() {
-    state = new SASLState();
     String credential = new StringBuilder(RandomStringUtils.randomAlphabetic(256)).append('\u0000')
         .append(RandomStringUtils.randomAlphabetic(256)).append('\u0000')
         .append(RandomStringUtils.randomAlphabetic(256)).append('\u0000').toString();
@@ -116,7 +110,6 @@ public class SASLStateTest extends StateTest {
   
   @Test
   public void testInvalidXML() {
-    state = new SASLState();
     String inXML = "invalid xml";
     state.handle(context, inXML);
     testInvalidXML(state);

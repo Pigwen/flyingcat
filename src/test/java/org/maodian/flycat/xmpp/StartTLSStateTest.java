@@ -39,6 +39,7 @@ public class StartTLSStateTest extends StateTest {
   private ChannelPipeline pipeline;
 
   public void doSetup() {
+    state = new StartTLSState();
     nettyContext = mock(ChannelHandlerContext.class);
     pipeline = mock(ChannelPipeline.class);
     
@@ -49,7 +50,6 @@ public class StartTLSStateTest extends StateTest {
   @Test
   public void testSuccess() throws XMLStreamException {
     String inXML = "<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>";
-    state = new StartTLSState();
     String outXML = state.handle(context, inXML);
     Reader reader = new StringReader(outXML);
     XMLStreamReader xmlsr = XMLInputFactoryHolder.getXMLInputFactory().createXMLStreamReader(reader);
@@ -61,13 +61,11 @@ public class StartTLSStateTest extends StateTest {
   @Test
   public void testInvalidNamespaceOfStartTLS() throws XMLStreamException {
     String inXML = "<starttls xmlns='invalid-namespace'/>";
-    state = new StartTLSState();
     expectXmppException(state, inXML, StreamError.INVALID_NAMESPACE);
   }
   
   @Test
   public void testInvalidXML() {
-    state = new StartTLSState();
     testInvalidXML(state);
   }
 }

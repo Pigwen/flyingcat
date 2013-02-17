@@ -39,7 +39,7 @@ public class ResourceBindStateTest extends StateTest {
    */
   @Override
   public void doSetup() {
-    
+    state = new ResourceBindState();
   }
 
   @Test
@@ -49,7 +49,6 @@ public class ResourceBindStateTest extends StateTest {
     String wrappedInXML = "<stream:stream from='juliet@im.example.com' id='gPybzaOzBmaADgxKXu9UClbprp0=' to='im.example.com' "
     		+ "version='1.0' xml:lang='en' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
         + inXML + "</stream:stream>";
-    state = new ResourceBindState();
     
     when(context.wrapStreamTag(inXML)).thenReturn(wrappedInXML);
     when(context.getBareJID()).thenReturn("juliet@im.example.com");
@@ -76,7 +75,6 @@ public class ResourceBindStateTest extends StateTest {
   
   @Test
   public void testInvalidXML() {
-    State state = new ResourceBindState();
     String inXML = "invalid xml</iq>";
     String wrappedInXML = "<stream:stream from='juliet@im.example.com' id='gPybzaOzBmaADgxKXu9UClbprp0=' to='im.example.com' "
         + "version='1.0' xml:lang='en' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
