@@ -76,6 +76,10 @@ public class SASLState implements State {
           int nullIndex = 0;
           for (int i = 0; i < text.length(); ++i) {
             if (text.codePointAt(i) == 0) {
+              // a malicious base64 value may contain more than two null character
+              if (nullIndex > 1) {
+                throw new XmppException(SASLError.MALFORMED_REQUEST);
+              }
               nullPosition[nullIndex++] = i;
             }
           }

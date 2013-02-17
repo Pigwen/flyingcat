@@ -19,11 +19,13 @@ import static org.junit.Assert.*;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.maodian.flycat.holder.XMLInputFactoryHolder;
@@ -91,8 +93,23 @@ public class SASLStateTest extends StateTest {
   @Test
   public void testCredentialIsLongerThan255() {
     state = new SASLState();
+    String credential = new StringBuilder(RandomStringUtils.randomAlphabetic(256)).append('\u0000')
+        .append(RandomStringUtils.randomAlphabetic(256)).append('\u0000')
+        .append(RandomStringUtils.randomAlphabetic(256)).toString();
     String inXML1 = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>";
-    String inXML2 = RandomStringUtils.randomAlphabetic(256) + "</auth>";
+    String inXML2 = Base64.encodeBase64String(credential.getBytes(StandardCharsets.UTF_8)) + "</auth>";
+    state.handle(context, inXML1);
+    expectXmppException(state, inXML2, SASLError.MALFORMED_REQUEST);
+  }
+  
+  @Test
+  public void testCredentialHasMoreThanTwoUnicodeNullSeperator() {
+    state = new SASLState();
+    String credential = new StringBuilder(RandomStringUtils.randomAlphabetic(256)).append('\u0000')
+        .append(RandomStringUtils.randomAlphabetic(256)).append('\u0000')
+        .append(RandomStringUtils.randomAlphabetic(256)).append('\u0000').toString();
+    String inXML1 = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>";
+    String inXML2 = Base64.encodeBase64String(credential.getBytes(StandardCharsets.UTF_8)) + "</auth>";
     state.handle(context, inXML1);
     expectXmppException(state, inXML2, SASLError.MALFORMED_REQUEST);
   }
