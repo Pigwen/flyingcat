@@ -73,8 +73,9 @@ public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<St
   public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
     if (cause instanceof XmppException) {
       XmppException xmppException = (XmppException) cause;
-      ctx.write(xmppException.getXmppError().toXML()).addListener(ChannelFutureListener.CLOSE);
-      logger.warn("Close the XMPP Stream due to error", cause);
+      StringBuilder xml = new StringBuilder(xmppException.getXmppError().toXML()).append("</stream:stream>");
+      ctx.write(xml.toString()).addListener(ChannelFutureListener.CLOSE);
+      logger.error("Close the XMPP Stream due to error", cause);
     }
     super.exceptionCaught(ctx, cause);
   }
