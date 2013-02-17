@@ -78,7 +78,7 @@ public class OpeningStreamState extends AbstractState {
     }
     xmlsw.writeStartElement("stream", "stream", XmppNamespace.STREAM);
     xmlsw.writeNamespace("stream", XmppNamespace.STREAM);
-    xmlsw.writeDefaultNamespace(XmppNamespace.CONTENT);
+    xmlsw.writeDefaultNamespace(XmppNamespace.CLIENT_CONTENT);
     
     xmlsw.writeAttribute("id", RandomStringUtils.randomAlphabetic(32));
     xmlsw.writeAttribute("version", "1.0");

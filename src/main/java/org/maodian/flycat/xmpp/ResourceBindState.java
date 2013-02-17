@@ -37,7 +37,7 @@ public class ResourceBindState extends AbstractState {
     // skip the stream tag
     xmlsr.nextTag();
     xmlsr.nextTag();
-    QName iq = new QName(XmppNamespace.CONTENT, "iq");
+    QName iq = new QName(XmppNamespace.CLIENT_CONTENT, "iq");
     if (!iq.equals(xmlsr.getName())) {
       throw new XmppException(StreamError.INVALID_NAMESPACE).set("QName", iq);
     }

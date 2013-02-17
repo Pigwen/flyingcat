@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
  * @author Cole Wen
  * 
  */
-public class StreamElementExtractHandler extends ChannelInboundMessageHandlerAdapter<String> {
-  private static final Logger logger = LoggerFactory.getLogger(StreamElementExtractHandler.class);
+public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<String> {
+  private static final Logger logger = LoggerFactory.getLogger(XmppXMLStreamHandler.class);
   private static final String XML_DECLARATION_MARK = "<?xml ";
 
   private boolean recvXmlDeclFlag = false;
