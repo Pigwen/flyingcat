@@ -18,6 +18,8 @@ package org.maodian.flycat.xmpp;
 import org.maodian.flycat.xmpp.OpeningStreamState.FeatureType;
 
 /**
+ * Utility class which contains factory methods for creating {@link State} instance.
+ * 
  * @author Cole Wen
  *
  */

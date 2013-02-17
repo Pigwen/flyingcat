@@ -24,8 +24,11 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * @author Cole Wen
+ * Handle <em>Resource Binding</em> phase.
  * 
+ * @author Cole Wen
+ * @see State
+ * @see AbstractState
  */
 public class ResourceBindState extends AbstractState {
   

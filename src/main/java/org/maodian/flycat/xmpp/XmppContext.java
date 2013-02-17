@@ -21,8 +21,16 @@ import org.maodian.flycat.xmpp.OpeningStreamState.FeatureType;
 
 
 /**
- * @author Cole Wen
+ * The <code>XmppContext</code> class aggregates information for a client connection.
  * 
+ * Each client connection owns an <code>XmppContext</code> instance, which keeps per connection
+ * information such as the current {@link State}, bareJID/resource of the initial entity.
+ * <p>
+ * The <code>XmppContext</code> class, <code>State</code> interface (and its implemented classes)
+ * employ the <a href='http://en.wikipedia.org/wiki/State_pattern'>State Pattern</a>.
+ * 
+ * @author Cole Wen
+ * @see State
  */
 public class XmppContext {
   private final ChannelHandlerContext ctx;

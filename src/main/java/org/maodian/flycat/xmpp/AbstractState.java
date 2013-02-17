@@ -28,8 +28,11 @@ import org.maodian.flycat.holder.XMLInputFactoryHolder;
 import org.maodian.flycat.holder.XMLOutputFactoryHolder;
 
 /**
+ * The <code>AbstractState</code> class intends to be extended by {@link State) implementation
+ * other than build an {@link State} from scratch.
+ * 
  * @author Cole Wen
- *
+ * @see State
  */
 public abstract class AbstractState implements State {
   protected StringBuilder cachedXML = new StringBuilder();
@@ -63,16 +66,47 @@ public abstract class AbstractState implements State {
     return "";
   }
   
+  /**
+   * This method provide a chance for implementing class to do some extra work before start
+   * handing the xml sent by client.
+   * The default implementation is to append the passed in xml to a <code>StringBuilder</code>
+   * instance. 
+   * <p>
+   * If this method return false, it will prevent the {@link State} object handling the xml.
+   * 
+   * @param context
+   * @param xml
+   * @return 
+   */
   protected boolean preHandle(XmppContext context, String xml) {
     cachedXML.append(xml);
     return true;
   }
   
+  /**
+   * This method provide a chance for implementing class to do some cleanup work after complementing
+   * handling the xml sent by client.
+   * 
+   * @param context
+   */
   protected void postHandle(XmppContext context) {
     
   }
   
+  /**
+   * Return the next {@link State} the {@link XmppContext} will transit to.
+   * 
+   * @return
+   */
   protected abstract State nextState();
   
+  /**
+   * Subclass should override this method to do the bussiness logic of handling the xml sent by client.
+   * 
+   * @param context
+   * @param xmlsr
+   * @param xmlsw
+   * @throws XMLStreamException
+   */
   protected abstract void doHandle(XmppContext context, XMLStreamReader xmlsr, XMLStreamWriter xmlsw) throws XMLStreamException;
 }

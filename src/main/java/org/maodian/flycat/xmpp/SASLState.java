@@ -27,8 +27,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.maodian.flycat.xmpp.OpeningStreamState.FeatureType;
 
 /**
+ * Handle <em>SASL Negotation</em> phase.
+ * 
  * @author Cole Wen
- *
+ * @see State
+ * @see AbstractState
  */
 public class SASLState extends AbstractState {
   private int readCount = 0;

@@ -27,8 +27,11 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 
 /**
+ * Handle <em>Stream Negotation</em> phase.
+ * 
  * @author Cole Wen
- *
+ * @see State
+ * @see AbstractState
  */
 public class OpeningStreamState extends AbstractState {
   private static final BigDecimal SUPPORTED_VERSION = new BigDecimal("1.0");

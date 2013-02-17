@@ -16,10 +16,36 @@
 package org.maodian.flycat.xmpp;
 
 /**
+ * The <code>State</code> interface represents a State that a {@link XmppContext} can transit to.
+ * <p>
+ * The XmppContext (or client connection) can transit to different <code>State</code> upon in which 
+ * phase current XmppContext (or client connection) is.
+ * Different <code>State</code> can be used to handle different input from the client and send response
+ * to client accordingly. For instance, the {@link OpeningStreamState} is used to handle the the 
+ * <em>Stream Negotiation</em>, while {@link ResourceBindState} is used to handle the 
+ * <em>Resource Binding</em>
+ * <p>
+ * It is supposed to use the static factory methods of {@link States} class to create <code>State</code>
+ * object.
+ * <p>
+ * The <code>XmppContext</code> class, <code>State</code> interface (and its implemented classes)
+ * employ the <a href='http://en.wikipedia.org/wiki/State_pattern'>State Pattern</a>.
+ * 
  * @author Cole Wen
- *
+ * @see AbstractState
+ * @see XmppContext
+ * @see States
  */
 public interface State {
 
+  /**
+   * handle the xml sent by client. The return value of this method will be sent to client.
+   * <p>
+   * If this method return null or "" (empty string), nothing will be sent to client.
+   * 
+   * @param context XmppContext object belongs to current connection
+   * @param xml xml data sent by client
+   * @return
+   */
   String handle(XmppContext context, String xml);
 }

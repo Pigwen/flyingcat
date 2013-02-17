@@ -27,8 +27,11 @@ import javax.xml.stream.XMLStreamWriter;
 import org.maodian.flycat.xmpp.OpeningStreamState.FeatureType;
 
 /**
+ * Handle <em>StartTLS Negotation</em> phase.
+ * 
  * @author Cole Wen
- *
+ * @see State
+ * @see AbstractState
  */
 public class StartTLSState extends AbstractState {
   
