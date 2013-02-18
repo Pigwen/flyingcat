@@ -48,6 +48,10 @@ public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<St
    */
   @Override
   protected void messageReceived(ChannelHandlerContext ctx, String msg) throws Exception {
+    // discard xml declaration
+    if (StringUtils.startsWith(msg, "<?xml ")) {
+      return;
+    }
     String result = xmppContext.parseXML(msg);
     if (StringUtils.isNotBlank(result)) {
       ctx.write(result).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
