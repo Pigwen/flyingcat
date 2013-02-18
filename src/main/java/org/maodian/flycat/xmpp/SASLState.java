@@ -34,20 +34,6 @@ import org.maodian.flycat.xmpp.OpeningStreamState.FeatureType;
  * @see AbstractState
  */
 public class SASLState extends AbstractState {
-  private int readCount = 0;
-
-  /* (non-Javadoc)
-   * @see org.maodian.flycat.xmpp.AbstractState#preHandle(org.maodian.flycat.xmpp.XmppContext, java.lang.String)
-   */
-  @Override
-  protected boolean preHandle(XmppContext context, String xml) {
-    if (readCount++ < 1) {
-      cachedXML.append(xml);
-      return false;
-    }
-    cachedXML.append(xml);
-    return true;
-  }
 
   /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.AbstractState#nextState()

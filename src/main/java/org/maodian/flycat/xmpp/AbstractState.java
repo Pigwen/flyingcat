@@ -28,59 +28,49 @@ import org.maodian.flycat.holder.XMLInputFactoryHolder;
 import org.maodian.flycat.holder.XMLOutputFactoryHolder;
 
 /**
- * The <code>AbstractState</code> class intends to be extended by {@link State) implementation
+ * The <code>AbstractState</code> class intends to be extended by {@link State} implementation
  * other than build an {@link State} from scratch.
  * 
  * @author Cole Wen
  * @see State
  */
 public abstract class AbstractState implements State {
-  protected StringBuilder cachedXML = new StringBuilder();
-
   /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.State#handle(org.maodian.flycat.xmpp.XmppContext, java.lang.String)
    */
   @Override
   public String handle(XmppContext context, String xml) {
-    if (preHandle(context, xml)) {
-      try (Reader reader = new StringReader(cachedXML.toString());
-          StringWriter writer = new StringWriter();) {
-        try {
-          XMLStreamReader xmlsr = XMLInputFactoryHolder.getXMLInputFactory().createXMLStreamReader(reader);
-          XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
-          doHandle(context, xmlsr, xmlsw);
-          postHandle(context);
-          
-          context.setState(nextState());
-          // clear the content of cachedXML upon success
-          cachedXML = new StringBuilder();
-          return writer.toString();
-        } catch (XMLStreamException e) {
-          throw new XmppException(e, StreamError.BAD_FORMAT);
-        }
-      } catch (IOException ioe) {
-        // close a StringReader/StringWriter should not cause IOException, though
-        throw new XmppException(ioe, StreamError.INTERNAL_SERVER_ERROR);
+    String fragment = preHandle(context, xml);
+    try (Reader reader = new StringReader(fragment);
+        StringWriter writer = new StringWriter();) {
+      try {
+        XMLStreamReader xmlsr = XMLInputFactoryHolder.getXMLInputFactory().createXMLStreamReader(reader);
+        XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
+        doHandle(context, xmlsr, xmlsw);
+        postHandle(context, fragment);
+
+        context.setState(nextState());
+        return writer.toString();
+      } catch (XMLStreamException e) {
+        throw new XmppException(e, StreamError.BAD_FORMAT);
       }
+    } catch (IOException ioe) {
+      // close a StringReader/StringWriter should not cause IOException, though
+      throw new XmppException(ioe, StreamError.INTERNAL_SERVER_ERROR);
     }
-    return "";
   }
   
   /**
    * This method provide a chance for implementing class to do some extra work before start
    * handing the xml sent by client.
-   * The default implementation is to append the passed in xml to a <code>StringBuilder</code>
-   * instance. 
-   * <p>
-   * If this method return false, it will prevent the {@link State} object handling the xml.
+   * The return value will be used to construct the {@link XMLStreamReader}. 
    * 
    * @param context
    * @param xml
-   * @return 
+   * @return The return value will be used to construct the {@link XMLStreamReader}. 
    */
-  protected boolean preHandle(XmppContext context, String xml) {
-    cachedXML.append(xml);
-    return true;
+  protected String preHandle(XmppContext context, String xml) {
+    return xml;
   }
   
   /**
@@ -88,8 +78,9 @@ public abstract class AbstractState implements State {
    * handling the xml sent by client.
    * 
    * @param context
+   * @param xml
    */
-  protected void postHandle(XmppContext context) {
+  protected void postHandle(XmppContext context, String xml) {
     
   }
   

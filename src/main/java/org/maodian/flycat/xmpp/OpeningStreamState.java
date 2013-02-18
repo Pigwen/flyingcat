@@ -42,8 +42,8 @@ public class OpeningStreamState extends AbstractState {
   }
 
   @Override
-  protected void postHandle(XmppContext context) {
-    context.setStreamTag(cachedXML.toString());
+  protected void postHandle(XmppContext context, String xml) {
+    context.setStreamTag(xml);
   }
   
   @Override

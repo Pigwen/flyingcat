@@ -48,11 +48,8 @@ public class SASLStateTest extends StateTest {
 
   @Test
   public void testPlainMechanismSuccess() throws XMLStreamException {
-    String inXML1 = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>";
-    String inXML2 = "AGp1bGlldAByMG0zMG15cjBtMzA=</auth>";
-
-    state.handle(context, inXML1);
-    String outXML = state.handle(context, inXML2);
+    String inXML = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>AGp1bGlldAByMG0zMG15cjBtMzA=</auth>";
+    String outXML = state.handle(context, inXML);
 
     Reader reader = new StringReader(outXML);
     XMLStreamReader xmlsr = XMLInputFactoryHolder.getXMLInputFactory().createXMLStreamReader(reader);
@@ -64,26 +61,20 @@ public class SASLStateTest extends StateTest {
   
   @Test
   public void testInvalidNamespaceOfPlainAuth() {
-    String inXML1 = "<auth xmlns='invalid name space' mechanism='PLAIN'>";
-    String inXML2 = "AGp1bGlldAByMG0zMG15cjBtMzA=</auth>";
-    state.handle(context, inXML1);
-    expectXmppException(state, inXML2, StreamError.INVALID_NAMESPACE);
+    String inXML = "<auth xmlns='invalid name space' mechanism='PLAIN'>AGp1bGlldAByMG0zMG15cjBtMzA=</auth>";
+    expectXmppException(state, inXML, StreamError.INVALID_NAMESPACE);
   }
   
   @Test
   public void testInvalidMechanism() {
-    String inXML1 = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='invalid'>";
-    String inXML2 = "AGp1bGlldAByMG0zMG15cjBtMzA=</auth>";
-    state.handle(context, inXML1);
-    expectXmppException(state, inXML2, SASLError.INVALID_MECHANISM);
+    String inXML = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='invalid'>AGp1bGlldAByMG0zMG15cjBtMzA=</auth>";
+    expectXmppException(state, inXML, SASLError.INVALID_MECHANISM);
   }
   
   @Test
   public void testIncorrectEncoding() {
-    String inXML1 = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>";
-    String inXML2 = "***</auth>";
-    state.handle(context, inXML1);
-    expectXmppException(state, inXML2, SASLError.INCORRECT_ENCODING);
+    String inXML = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>***</auth>";
+    expectXmppException(state, inXML, SASLError.INCORRECT_ENCODING);
   }
   
   @Test
@@ -91,10 +82,9 @@ public class SASLStateTest extends StateTest {
     String credential = new StringBuilder(RandomStringUtils.randomAlphabetic(256)).append('\u0000')
         .append(RandomStringUtils.randomAlphabetic(256)).append('\u0000')
         .append(RandomStringUtils.randomAlphabetic(256)).toString();
-    String inXML1 = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>";
-    String inXML2 = Base64.encodeBase64String(credential.getBytes(StandardCharsets.UTF_8)) + "</auth>";
-    state.handle(context, inXML1);
-    expectXmppException(state, inXML2, SASLError.MALFORMED_REQUEST);
+    String inXML = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>"
+        + Base64.encodeBase64String(credential.getBytes(StandardCharsets.UTF_8)) + "</auth>";
+    expectXmppException(state, inXML, SASLError.MALFORMED_REQUEST);
   }
   
   @Test
@@ -102,16 +92,13 @@ public class SASLStateTest extends StateTest {
     String credential = new StringBuilder(RandomStringUtils.randomAlphabetic(256)).append('\u0000')
         .append(RandomStringUtils.randomAlphabetic(256)).append('\u0000')
         .append(RandomStringUtils.randomAlphabetic(256)).append('\u0000').toString();
-    String inXML1 = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>";
-    String inXML2 = Base64.encodeBase64String(credential.getBytes(StandardCharsets.UTF_8)) + "</auth>";
-    state.handle(context, inXML1);
-    expectXmppException(state, inXML2, SASLError.MALFORMED_REQUEST);
+    String inXML = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>"
+        + Base64.encodeBase64String(credential.getBytes(StandardCharsets.UTF_8)) + "</auth>";
+    expectXmppException(state, inXML, SASLError.MALFORMED_REQUEST);
   }
   
   @Test
   public void testInvalidXML() {
-    String inXML = "invalid xml";
-    state.handle(context, inXML);
     testInvalidXML(state);
   }
 }

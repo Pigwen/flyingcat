@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.maodian.flycat.netty.handler.LoggerEnabledStringDecoder;
 import org.maodian.flycat.netty.handler.LoggerEnabledStringEncoder;
+import org.maodian.flycat.netty.handler.XMLFragmentDecoder;
 import org.maodian.flycat.netty.handler.XmppXMLStreamHandler;
 
 /**
@@ -46,6 +47,7 @@ public class XmppServerInitializer extends ChannelInitializer<SocketChannel> imp
     String delimiter = ">";//XmppMessageInboundHandler.STREAM_NAME + ">";
     p.addLast("Frame", new DelimiterBasedFrameDecoder(8192, false, true, Unpooled.wrappedBuffer(delimiter.getBytes(StandardCharsets.UTF_8))));
     p.addLast("Logger", DECODER);
+    p.addLast("XmlFragment", new XMLFragmentDecoder());
     p.addLast("Encoder", ENCODER);
 //    p.addLast("Echo", new XmppMessageInboundHandler());
     //p.addLast("Echo", new StreamNegotiationHandler());

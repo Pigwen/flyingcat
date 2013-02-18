@@ -36,16 +36,16 @@ public class XmppServer {
     ServerBootstrap b = new ServerBootstrap();
     try {
       b.group(new NioEventLoopGroup(), new NioEventLoopGroup())
-       .channel(NioServerSocketChannel.class)
-       .localAddress(port)
-       .childHandler(new XmppServerInitializer())
-       .option(ChannelOption.TCP_NODELAY, true)
-       .option(ChannelOption.SO_KEEPALIVE, true);
+      .channel(NioServerSocketChannel.class)
+      .localAddress(port)
+      .childHandler(new XmppServerInitializer())
+      .option(ChannelOption.TCP_NODELAY, true)
+      .option(ChannelOption.SO_KEEPALIVE, true);
 
       b.bind().sync().channel().closeFuture().sync();
-  } finally {
+    } finally {
       b.shutdown();
-  }
+    }
   }
 
   /**

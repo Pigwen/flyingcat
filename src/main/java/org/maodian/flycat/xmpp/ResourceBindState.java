@@ -77,23 +77,18 @@ public class ResourceBindState extends AbstractState {
   }
   
   /* (non-Javadoc)
+   * @see org.maodian.flycat.xmpp.AbstractState#preHandle(org.maodian.flycat.xmpp.XmppContext, java.lang.String)
+   */
+  @Override
+  protected String preHandle(XmppContext context, String xml) {
+    return context.wrapStreamTag(xml);
+  }
+  
+  /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.AbstractState#nextState()
    */
   @Override
   protected State nextState() {
     return this;
-  }
-  
-  /* (non-Javadoc)
-   * @see org.maodian.flycat.xmpp.AbstractState#preHandle(org.maodian.flycat.xmpp.XmppContext, java.lang.String)
-   */
-  @Override
-  protected boolean preHandle(XmppContext context, String xml) {
-    if (!StringUtils.endsWith(xml, "</iq>")) {
-      cachedXML.append(xml);
-      return false;
-    }
-    cachedXML = new StringBuilder(context.wrapStreamTag(cachedXML.append(xml).toString()));
-    return true;
   }
 }
