@@ -20,7 +20,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 
 import org.apache.commons.lang3.StringUtils;
-import org.maodian.flycat.xmpp.StreamError;
 import org.maodian.flycat.xmpp.XmppContext;
 import org.maodian.flycat.xmpp.XmppException;
 import org.slf4j.Logger;
@@ -32,9 +31,6 @@ import org.slf4j.LoggerFactory;
  */
 public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<String> {
   private static final Logger logger = LoggerFactory.getLogger(XmppXMLStreamHandler.class);
-  private static final String XML_DECLARATION_MARK = "<?xml ";
-
-  private boolean recvXmlDeclFlag = false;
   private XmppContext xmppContext;
   
   @Override
@@ -52,16 +48,6 @@ public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<St
    */
   @Override
   protected void messageReceived(ChannelHandlerContext ctx, String msg) throws Exception {
-    // xml declaration
-    if (StringUtils.startsWith(msg, XML_DECLARATION_MARK)) {
-      if (!recvXmlDeclFlag) {
-        recvXmlDeclFlag = true;
-        return;
-      }
-      // TODO: deal with duplicated xml declaration
-      throw new XmppException(StreamError.BAD_FORMAT);
-    }
-    
     String result = xmppContext.parseXML(msg);
     if (StringUtils.isNotBlank(result)) {
       ctx.write(result).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
