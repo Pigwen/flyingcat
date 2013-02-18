@@ -90,6 +90,11 @@ public class XMLFragmentDecoder extends MessageToMessageDecoder<String> {
     } else {
       xml.append(msg);
     }
+    
+    // deal with nested empty element
+    if (StringUtils.endsWith(msg, "/>")) {
+      return null;
+    }
 
     if (StringUtils.contains(msg, "</")) {
       depth--;
