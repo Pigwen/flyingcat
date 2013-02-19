@@ -15,6 +15,7 @@
  */
 package org.maodian.flycat.netty.handler;
 
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
@@ -32,6 +33,9 @@ import org.slf4j.LoggerFactory;
 public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<String> {
   private static final Logger logger = LoggerFactory.getLogger(XmppXMLStreamHandler.class);
   private XmppContext xmppContext;
+  
+  // true if the </stream:stream> is sent first by server
+  private boolean initCloseingStream = false;
   
   @Override
   public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -52,6 +56,25 @@ public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<St
     if (StringUtils.startsWith(msg, "<?xml ")) {
       return;
     }
+    
+    // deal with </stream:stream>
+    if (StringUtils.contains(msg, ":stream") && StringUtils.contains(msg, "</")) {
+      if (initCloseingStream) {
+        logger.info("Close Stream and underhood socket due to requested by server");
+        ctx.channel().close();
+      } else {
+        ctx.write("</stream:stream>").addListener(new ChannelFutureListener() {
+          
+          @Override
+          public void operationComplete(ChannelFuture future) throws Exception {
+            logger.info("Close Stream and underhood socket due to requested by client");
+            future.channel().close();
+          }
+        });
+      }
+      return;
+    }
+    
     String result = xmppContext.parseXML(msg);
     if (StringUtils.isNotBlank(result)) {
       ctx.write(result).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
@@ -64,8 +87,10 @@ public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<St
     if (cause instanceof XmppException) {
       XmppException xmppException = (XmppException) cause;
       StringBuilder xml = new StringBuilder(xmppException.getXmppError().toXML()).append("</stream:stream>");
-      ctx.write(xml.toString()).addListener(ChannelFutureListener.CLOSE);
+      initCloseingStream = true;
+      ctx.write(xml.toString()).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
       logger.error("Close the XMPP Stream due to error", cause);
+      return;
     }
     super.exceptionCaught(ctx, cause);
   }
