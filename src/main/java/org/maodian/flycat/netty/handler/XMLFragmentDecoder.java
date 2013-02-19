@@ -67,17 +67,17 @@ public class XMLFragmentDecoder extends MessageToMessageDecoder<String> {
         acceptXMLDeclaration = false;
         return msg;
       } else {
-        throw new XmppException("XML declaration has been already received before", StreamError.BAD_FORMAT).set("xml", msg);
+        throw new XmppException("XML declaration has been already received before", StreamError.NOT_WELL_FORMED).set("xml", msg);
       }
     }
     
     // deal with stream tag
-    if (StringUtils.contains(msg, ":stream")) {
-      if (StringUtils.startsWith(msg, "<")) {
-        return msg;
-      } else if (StringUtils.startsWith(msg, "</")) {
-        //TODO: deal with close stream tag
+    if (StringUtils.contains(msg, ":stream") && 
+        (StringUtils.contains(msg, "<") || StringUtils.contains(msg, "</"))){
+      if (depth != 0) {
+        throw new XmppException("Stream Open/Close Tag can only be root element", StreamError.INVALID_XML);
       }
+      return msg;
     }
     
     // deal with empty element at first level

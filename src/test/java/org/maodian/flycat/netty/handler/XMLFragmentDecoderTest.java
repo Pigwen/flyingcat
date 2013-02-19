@@ -19,9 +19,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import io.netty.channel.ChannelHandlerContext;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,7 +77,7 @@ public class XMLFragmentDecoderTest {
   public void testFailsOnMultipleXMLDeclaration() throws Exception {
     String msg = "<?xml version='1.0'?>";
     decoder.decode(ctx, msg);
-    expectXmppException(decoder, msg, StreamError.BAD_FORMAT);
+    expectXmppException(decoder, msg, StreamError.NOT_WELL_FORMED);
   }
   
   @Test
@@ -161,6 +158,54 @@ public class XMLFragmentDecoderTest {
     assertNestedElement(msgs2);
   }
   
+  @Test
+  public void testStreamOpenTagNestesInAnotherElement() throws Exception {
+    String[] msgs = {
+        "<stream:features>",
+        "<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'>",
+        "<stream:stream >",
+        "</starttls>",
+        "</stream:features>",
+    };
+    expectXmppExceptionWhenProcessNestedElement(decoder, msgs, StreamError.INVALID_XML);
+  }
+  
+  @Test
+  public void testStreamOpenTagFollowsTextWhileNestesInAnotherElement() throws Exception {
+    String[] msgs = {
+        "<stream:features>",
+        "<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'>",
+        "foobar<stream:stream >",
+        "</starttls>",
+        "</stream:features>",
+    };
+    expectXmppExceptionWhenProcessNestedElement(decoder, msgs, StreamError.INVALID_XML);
+  }
+  
+  @Test
+  public void testStreamCloseTagNestesInAnotherElement() throws Exception {
+    String[] msgs = {
+        "<stream:features>",
+        "<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'>",
+        "</stream:stream>",
+        "</starttls>",
+        "</stream:features>",
+    };
+    expectXmppExceptionWhenProcessNestedElement(decoder, msgs, StreamError.INVALID_XML);
+  }
+  
+  @Test
+  public void testStreamCloseTagFollowsTextWhileNestesInAnotherElement() throws Exception {
+    String[] msgs = {
+        "<stream:features>",
+        "<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'>",
+        "foobar</stream:stream>",
+        "</starttls>",
+        "</stream:features>",
+    };
+    expectXmppExceptionWhenProcessNestedElement(decoder, msgs, StreamError.INVALID_XML);
+  }
+  
   private void assertNestedElement(String[] msgs) throws Exception {
     for (int i = 0; i < msgs.length; ++i) {
       String fragment = (String) decoder.decode(ctx, msgs[i]);
@@ -175,6 +220,17 @@ public class XMLFragmentDecoderTest {
   private void expectXmppException(XMLFragmentDecoder decoder, String msg, XmppError error) throws Exception {
     try {
       decoder.decode(ctx, msg);
+      fail("Should not reach here");
+    } catch (XmppException e) {
+      assertEquals(error, e.getXmppError());
+    }
+  }
+  
+  private void expectXmppExceptionWhenProcessNestedElement(XMLFragmentDecoder decoder, String[] msgs, XmppError error) throws Exception {
+    try {
+      for (int i = 0; i < msgs.length; ++i) {
+        decoder.decode(ctx, msgs[i]);
+      }
       fail("Should not reach here");
     } catch (XmppException e) {
       assertEquals(error, e.getXmppError());
