@@ -16,12 +16,11 @@
 package org.maodian.flycat.xmpp;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.commons.lang3.StringUtils;
+import org.maodian.flycat.xmpp.codec.Decoder;
 
 /**
  * Handle <em>Resource Binding</em> phase.
@@ -40,11 +39,11 @@ public class ResourceBindState extends AbstractState {
     // skip the stream tag
     xmlsr.nextTag();
     xmlsr.nextTag();
-    QName iq = new QName(XmppNamespace.CLIENT_CONTENT, "iq");
-    if (!iq.equals(xmlsr.getName())) {
-      throw new XmppException(StreamError.INVALID_NAMESPACE).set("QName", iq);
+    if (!xmlsr.getName().equals(new QName(XmppNamespace.CLIENT_CONTENT, "iq"))) {
+      throw new XmppException(StreamError.INVALID_NAMESPACE).set("QName", xmlsr.getName());
     }
-    String type = xmlsr.getAttributeValue("", "type");
+    Decoder decoder = Decoder.CONTAINER.get(xmlsr.getName());
+    /*String type = xmlsr.getAttributeValue("", "type");
     String id = xmlsr.getAttributeValue("", "id");
     if (!StringUtils.equals(type, "set") || StringUtils.isBlank("id")) {
       throw new XmppException(StreamError.BAD_FORMAT);
@@ -58,11 +57,13 @@ public class ResourceBindState extends AbstractState {
     if (!qname.equals(xmlsr.getName())) {
       throw new XmppException(StreamError.INVALID_NAMESPACE).set("QName", qname);
     }
-    String resource = xmlsr.getElementText();
+    String resource = xmlsr.getElementText();*/
+    InfoQuery iq = (InfoQuery) decoder.decode(xmlsr);
+    String resource = ((Bind)iq.getPayload()).getResource();
     context.setResource(resource);
 
     xmlsw.writeStartElement("iq");
-    xmlsw.writeAttribute("id", id);
+    xmlsw.writeAttribute("id", iq.getId());
     xmlsw.writeAttribute("type", "result");
 
     xmlsw.writeStartElement("bind");

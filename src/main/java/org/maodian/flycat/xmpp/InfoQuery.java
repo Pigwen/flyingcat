@@ -15,6 +15,8 @@
  */
 package org.maodian.flycat.xmpp;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @author Cole Wen
  *
@@ -29,6 +31,7 @@ public class InfoQuery implements Stanzas {
   private String from;
   private String to;
   private String language;
+  private Object payload;
   
   private InfoQuery(Builder builder) {
     id = builder.id;
@@ -36,6 +39,7 @@ public class InfoQuery implements Stanzas {
     from = builder.from;
     to = builder.to;
     language = builder.language;
+    payload = builder.payload;
   }
   
   /* (non-Javadoc)
@@ -78,16 +82,30 @@ public class InfoQuery implements Stanzas {
     return type;
   }
   
+  public Object getPayload() {
+    return payload;
+  }
+
   public static class Builder implements Stanzas.Builder<InfoQuery> {
     private final String id;
     private final String type;
     private String from;
     private String to;
     private String language;
+    private Object payload;
     
-    private Builder(String id, String type) {
+    public Builder(String id, String type) {
       this.id = id;
+      checkType(type);
       this.type = type;
+    }
+    
+    private void checkType(String type) {
+      if (!StringUtils.equals(type, GET) && !StringUtils.equals(type, SET)
+          && !StringUtils.equals(type, RESULT) && !StringUtils.equals(type, ERROR)) {
+        throw new XmppException("Invalid InfoQuery type", StanzaError.BAD_REQUEST)
+            .set("type", type);
+      }
     }
 
     public Builder from(String from) {
@@ -102,6 +120,11 @@ public class InfoQuery implements Stanzas {
     
     public Builder language(String language) {
       this.language = language;
+      return this;
+    }
+    
+    public Builder payload(Object payload) {
+      this.payload = payload;
       return this;
     }
 
