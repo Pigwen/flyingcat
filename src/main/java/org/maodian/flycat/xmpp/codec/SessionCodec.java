@@ -15,26 +15,32 @@
  */
 package org.maodian.flycat.xmpp.codec;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.maodian.flycat.xmpp.Session;
+import org.maodian.flycat.xmpp.StreamError;
+import org.maodian.flycat.xmpp.XmppException;
 import org.maodian.flycat.xmpp.XmppNamespace;
 
 /**
  * @author Cole Wen
  *
  */
-public interface Decoder {
-  public static final Map<QName, Decoder> CONTAINER = new HashMap<QName, Decoder>() {
-    {
-      put(new QName(XmppNamespace.CLIENT_CONTENT, "iq"), new InfoQueryCodec());
-      put(new QName(XmppNamespace.BIND, "bind"), new BindCodec());
-      put(new QName(XmppNamespace.SESSION, "session"), new SessionCodec());
-    }
-  };
+public class SessionCodec implements Decoder {
 
-  public Object decode(XMLStreamReader xmlsr);
+  /* (non-Javadoc)
+   * @see org.maodian.flycat.xmpp.codec.Decoder#decode(javax.xml.stream.XMLStreamReader)
+   */
+  @Override
+  public Object decode(XMLStreamReader xmlsr) {
+    try {
+      xmlsr.require(XMLStreamConstants.START_ELEMENT, XmppNamespace.SESSION, "session");
+      return new Session();
+    } catch (XMLStreamException e) {
+      throw new XmppException(e, StreamError.INVALID_XML);
+    }
+  }
+
 }

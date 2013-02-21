@@ -20,6 +20,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.maodian.flycat.xmpp.codec.Decoder;
 
 /**
@@ -30,6 +31,7 @@ import org.maodian.flycat.xmpp.codec.Decoder;
  * @see AbstractState
  */
 public class ResourceBindState extends AbstractState {
+  private boolean bindCompleted = false;
   
   /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.AbstractState#doHandle(org.maodian.flycat.xmpp.XmppContext, javax.xml.stream.XMLStreamReader, javax.xml.stream.XMLStreamWriter)
@@ -43,38 +45,41 @@ public class ResourceBindState extends AbstractState {
       throw new XmppException(StreamError.INVALID_NAMESPACE).set("QName", xmlsr.getName());
     }
     Decoder decoder = Decoder.CONTAINER.get(xmlsr.getName());
-    /*String type = xmlsr.getAttributeValue("", "type");
-    String id = xmlsr.getAttributeValue("", "id");
-    if (!StringUtils.equals(type, "set") || StringUtils.isBlank("id")) {
-      throw new XmppException(StreamError.BAD_FORMAT);
-    }
-
-    xmlsr.nextTag();
-    xmlsr.require(XMLStreamConstants.START_ELEMENT, XmppNamespace.BIND, "bind");
-
-    xmlsr.nextTag();
-    QName qname = new QName(XmppNamespace.BIND, "resource");
-    if (!qname.equals(xmlsr.getName())) {
-      throw new XmppException(StreamError.INVALID_NAMESPACE).set("QName", qname);
-    }
-    String resource = xmlsr.getElementText();*/
     InfoQuery iq = (InfoQuery) decoder.decode(xmlsr);
-    String resource = ((Bind)iq.getPayload()).getResource();
-    context.setResource(resource);
+    
+    try {
+      if (!bindCompleted) {
+        String resource = ((Bind)iq.getPayload()).getResource();
+        context.setResource(resource);
 
-    xmlsw.writeStartElement("iq");
-    xmlsw.writeAttribute("id", iq.getId());
-    xmlsw.writeAttribute("type", "result");
+        xmlsw.writeStartElement("iq");
+        xmlsw.writeAttribute("id", iq.getId());
+        xmlsw.writeAttribute("type", "result");
 
-    xmlsw.writeStartElement("bind");
-    xmlsw.writeDefaultNamespace(XmppNamespace.BIND);
+        xmlsw.writeStartElement("bind");
+        xmlsw.writeDefaultNamespace(XmppNamespace.BIND);
 
-    xmlsw.writeStartElement("jid");
-    xmlsw.writeCharacters(context.getBareJID() + "/" + resource);
+        xmlsw.writeStartElement("jid");
+        xmlsw.writeCharacters(context.getBareJID() + "/" + resource);
 
-    xmlsw.writeEndElement();
-    xmlsw.writeEndElement();
-    xmlsw.writeEndElement();
+        xmlsw.writeEndElement();
+        xmlsw.writeEndElement();
+        xmlsw.writeEndElement();
+        bindCompleted = true;
+      } else {
+        if (iq.getPayload() instanceof Session) {
+          xmlsw.writeEmptyElement("iq");
+          xmlsw.writeAttribute("id", iq.getId());
+          xmlsw.writeAttribute("type", "result");
+          if (StringUtils.isNotBlank(iq.getFrom())) {
+            xmlsw.writeAttribute("to", iq.getFrom());
+          }
+          xmlsw.writeEndDocument();
+        }
+      }
+    } catch (ClassCastException e) {
+      throw new XmppException(e, StreamError.BAD_FORMAT);
+    }
   }
   
   /* (non-Javadoc)

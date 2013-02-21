@@ -13,28 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flycat.xmpp.codec;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamReader;
-
-import org.maodian.flycat.xmpp.XmppNamespace;
+package org.maodian.flycat.xmpp;
 
 /**
  * @author Cole Wen
  *
  */
-public interface Decoder {
-  public static final Map<QName, Decoder> CONTAINER = new HashMap<QName, Decoder>() {
-    {
-      put(new QName(XmppNamespace.CLIENT_CONTENT, "iq"), new InfoQueryCodec());
-      put(new QName(XmppNamespace.BIND, "bind"), new BindCodec());
-      put(new QName(XmppNamespace.SESSION, "session"), new SessionCodec());
-    }
-  };
+public class Session {
 
-  public Object decode(XMLStreamReader xmlsr);
 }
