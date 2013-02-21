@@ -114,6 +114,10 @@ public class OpeningStreamState extends AbstractState {
       xmlsw.writeDefaultNamespace(XmppNamespace.BIND);
       xmlsw.writeEmptyElement("required");
       xmlsw.writeEndElement();
+      
+      // see http://xmpp.org/rfcs/rfc6121.html#intro-summary
+      xmlsw.writeEmptyElement("session");
+      xmlsw.writeDefaultNamespace(XmppNamespace.SESSION);
       break;
     default:
       throw new XmppException("The code should not reach here", StreamError.INTERNAL_SERVER_ERROR);
