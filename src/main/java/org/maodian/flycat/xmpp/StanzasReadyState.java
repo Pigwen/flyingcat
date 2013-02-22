@@ -15,9 +15,13 @@
  */
 package org.maodian.flycat.xmpp;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+
+import org.apache.commons.lang3.StringUtils;
+import org.maodian.flycat.xmpp.codec.Decoder;
 
 /**
  * @author Cole Wen
@@ -49,6 +53,21 @@ public class StanzasReadyState extends AbstractState {
     // skip stream tag
     xmlsr.nextTag();
     xmlsr.nextTag();
+    if (!xmlsr.getName().equals(new QName(XmppNamespace.CLIENT_CONTENT, "iq"))) {
+      throw new XmppException(StreamError.INVALID_NAMESPACE).set("QName", xmlsr.getName());
+    }
+    Decoder decoder = Decoder.CONTAINER.get(xmlsr.getName());
+    InfoQuery iq = (InfoQuery) decoder.decode(xmlsr);
+
+    if (iq.getPayload() instanceof Session) {
+      xmlsw.writeEmptyElement("iq");
+      xmlsw.writeAttribute("id", iq.getId());
+      xmlsw.writeAttribute("type", "result");
+      if (StringUtils.isNotBlank(iq.getFrom())) {
+        xmlsw.writeAttribute("to", iq.getFrom());
+      }
+      xmlsw.writeEndDocument();
+    }
   }
 
 }

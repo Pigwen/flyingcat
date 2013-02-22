@@ -44,4 +44,8 @@ public class States {
   public static State newResourceBindState() {
     return new ResourceBindState();
   }
+  
+  public static State newStanzasReadyState() {
+    return new StanzasReadyState();
+  }
 }

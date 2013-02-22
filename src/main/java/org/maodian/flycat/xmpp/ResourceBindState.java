@@ -95,6 +95,6 @@ public class ResourceBindState extends AbstractState {
    */
   @Override
   protected State nextState() {
-    return this;
+    return States.newStanzasReadyState();
   }
 }
