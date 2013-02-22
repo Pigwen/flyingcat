@@ -22,6 +22,9 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
 
 import org.maodian.flycat.xmpp.XmppNamespace;
+import org.maodian.flycat.xmpp.extensions.xep0030.QueryInfoCodec;
+import org.maodian.flycat.xmpp.extensions.xep0030.QueryItemCodec;
+import org.maodian.flycat.xmpp.extensions.xep0030.ServiceDiscovery;
 
 /**
  * @author Cole Wen
@@ -33,6 +36,8 @@ public interface Decoder {
       put(new QName(XmppNamespace.CLIENT_CONTENT, "iq"), new InfoQueryCodec());
       put(new QName(XmppNamespace.BIND, "bind"), new BindCodec());
       put(new QName(XmppNamespace.SESSION, "session"), new SessionCodec());
+      put(new QName(ServiceDiscovery.INFORMATION, "query"), new QueryInfoCodec());
+      put(new QName(ServiceDiscovery.ITEM, "query"), new QueryItemCodec());
     }
   };
 

@@ -22,6 +22,9 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.maodian.flycat.xmpp.codec.Decoder;
+import org.maodian.flycat.xmpp.extensions.xep0030.QueryInfo;
+import org.maodian.flycat.xmpp.extensions.xep0030.QueryItem;
+import org.maodian.flycat.xmpp.extensions.xep0030.ServiceDiscovery;
 
 /**
  * @author Cole Wen
@@ -58,14 +61,49 @@ public class StanzasReadyState extends AbstractState {
     }
     Decoder decoder = Decoder.CONTAINER.get(xmlsr.getName());
     InfoQuery iq = (InfoQuery) decoder.decode(xmlsr);
-
-    if (iq.getPayload() instanceof Session) {
+    Object payload = iq.getPayload();
+    if (payload instanceof Session) {
       xmlsw.writeEmptyElement("iq");
       xmlsw.writeAttribute("id", iq.getId());
       xmlsw.writeAttribute("type", "result");
       if (StringUtils.isNotBlank(iq.getFrom())) {
         xmlsw.writeAttribute("to", iq.getFrom());
       }
+      xmlsw.writeEndDocument();
+    } else if (payload instanceof QueryInfo) {
+      xmlsw.writeEmptyElement("iq");
+      xmlsw.writeAttribute("id", iq.getId());
+      xmlsw.writeAttribute("type", "result");
+      xmlsw.writeAttribute("from", "localhost");
+      if (StringUtils.isNotBlank(iq.getFrom())) {
+        xmlsw.writeAttribute("to", iq.getFrom());
+      }
+      
+      xmlsw.writeStartElement("", "query", ServiceDiscovery.INFORMATION);
+      xmlsw.writeDefaultNamespace(ServiceDiscovery.INFORMATION);
+      
+      xmlsw.writeStartElement("", "identity", ServiceDiscovery.INFORMATION);
+      xmlsw.writeAttribute("category", "auth");
+      xmlsw.writeAttribute("type", "generic");
+      
+      xmlsw.writeStartElement("", "identity", ServiceDiscovery.INFORMATION);
+      xmlsw.writeAttribute("category", "directory");
+      xmlsw.writeAttribute("type", "user");
+      
+      xmlsw.writeStartElement("", "identity", ServiceDiscovery.INFORMATION);
+      xmlsw.writeAttribute("category", "server");
+      xmlsw.writeAttribute("type", "im");
+      
+      xmlsw.writeEmptyElement(ServiceDiscovery.INFORMATION, "feature");
+      xmlsw.writeAttribute("var", ServiceDiscovery.INFORMATION);
+      
+      xmlsw.writeEmptyElement(ServiceDiscovery.INFORMATION, "feature");
+      xmlsw.writeAttribute("var", ServiceDiscovery.ITEM);
+      
+      xmlsw.writeEndDocument();
+    } else if (payload instanceof QueryItem) {
+      xmlsw.writeStartElement("", "query", ServiceDiscovery.ITEM);
+      xmlsw.writeDefaultNamespace(ServiceDiscovery.ITEM);
       xmlsw.writeEndDocument();
     }
   }
