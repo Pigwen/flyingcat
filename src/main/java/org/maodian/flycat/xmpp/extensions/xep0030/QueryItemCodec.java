@@ -19,15 +19,15 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.maodian.flycat.xmpp.AbstractDecoder;
 import org.maodian.flycat.xmpp.StreamError;
 import org.maodian.flycat.xmpp.XmppException;
-import org.maodian.flycat.xmpp.codec.Decoder;
 
 /**
  * @author Cole Wen
  *
  */
-public class QueryItemCodec implements Decoder {
+public class QueryItemCodec extends AbstractDecoder {
 
   /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.codec.Decoder#decode(javax.xml.stream.XMLStreamReader)

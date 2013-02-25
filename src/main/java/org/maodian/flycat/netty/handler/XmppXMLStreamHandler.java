@@ -21,7 +21,9 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 
 import org.apache.commons.lang3.StringUtils;
+import org.maodian.flycat.xmpp.StanzaError;
 import org.maodian.flycat.xmpp.XmppContext;
+import org.maodian.flycat.xmpp.XmppError;
 import org.maodian.flycat.xmpp.XmppException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,10 +88,15 @@ public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<St
   public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
     if (cause instanceof XmppException) {
       XmppException xmppException = (XmppException) cause;
-      StringBuilder xml = new StringBuilder(xmppException.getXmppError().toXML()).append("</stream:stream>");
-      initCloseingStream = true;
-      ctx.write(xml.toString()).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
-      logger.error("Close the XMPP Stream due to error", cause);
+      XmppError error = xmppException.getXmppError();
+      if (error instanceof StanzaError) {
+        ctx.write(error.toXML()).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
+      } else {
+        StringBuilder xml = new StringBuilder(xmppException.getXmppError().toXML()).append("</stream:stream>");
+        initCloseingStream = true;
+        ctx.write(xml.toString()).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
+        logger.error("Close the XMPP Stream due to error", cause);
+      }
       return;
     }
     super.exceptionCaught(ctx, cause);

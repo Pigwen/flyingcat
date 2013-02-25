@@ -18,6 +18,8 @@ package org.maodian.flycat.xmpp;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @author Cole Wen
  *
@@ -33,7 +35,7 @@ public class StanzaError implements Stanzas, XmppError {
   private final Type errorType;
   private final String xml;
   
-  private StanzaError(Stanzas stanzas, StanzaErrorCondition condition, Type errorType) {
+  public StanzaError(Stanzas stanzas, StanzaErrorCondition condition, Type errorType) {
     this(stanzas, condition, errorType, stanzas.getFrom());
   }
   
@@ -43,7 +45,7 @@ public class StanzaError implements Stanzas, XmppError {
    * @param errorType
    * @param generator
    */
-  private StanzaError(Stanzas stanzas, StanzaErrorCondition condition, Type errorType, String generator) {
+  public StanzaError(Stanzas stanzas, StanzaErrorCondition condition, Type errorType, String generator) {
     this.stanzas = stanzas;
     this.condition = condition;
     this.errorType = errorType;
@@ -52,9 +54,17 @@ public class StanzaError implements Stanzas, XmppError {
   
   private String computeXML(StanzaErrorCondition condition) {
     String tag = TAG_LIST.get(stanzas.getClass());
-    StringBuilder builder = new StringBuilder("<").append(tag).append(" from=\"").append(getFrom())
-        .append("\" to=\"").append(getTo()).append("\" type=\"").append(getType()).append("\"><error type=\"")
-        .append(errorType).append("\">").append(condition.toXML()).append("</error></").append(tag).append(">");
+    StringBuilder builder = new StringBuilder("<").append(tag);
+    builder.append(" id=\"").append(stanzas.getId()).append("\"");
+    if (StringUtils.isNotBlank(getFrom())) {
+      builder.append(" from=\"").append(getFrom()).append("\"");
+    }
+    if (StringUtils.isNotBlank(getTo())) {
+      builder.append(" to=\"").append(getTo()).append("\"");
+    }
+    builder.append(" type=\"").append(getType()).append("\"><error type=\"").append(errorType)
+      .append("\">").append(condition.toXML()).append("</error></").append(tag).append(">");
+        
     return builder.toString();
   }
 

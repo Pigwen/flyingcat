@@ -15,47 +15,50 @@
  */
 package org.maodian.flycat.xmpp;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.maodian.flycat.xmpp.StanzaError.Type;
+
 
 /**
  * @author Cole Wen
  *
  */
 public enum StanzaErrorCondition implements XmppError {
-  BAD_REQUEST(1, "bad-request"),
-  CONFLICT(2, "conflict"),
-  FEATURE_NOT_IMPLEMENTED(3, "feature-not-implemented"),
-  FORBIDDEN(4, "forbidden"),
-  GONE(5, "gone"),
-  INTERNAL_SERVER_ERROR(6, "internal-server-error"),
-  ITEM_NOT_FOUND(7, "item-not-found"),
-  JID_MAILFORMED(8, "jid-malformed"),
-  NOT_ACCEPTABLE(9, "not-acceptable"),
-  NOT_ALLOWED(10, "not-allowed"),
-  NOT_AUTHORIZED(11, "not-authorized"),
-  POLICY_VIOLATION(12, "policy-violation"),
-  RECIPIENT_UNAVAILABLE(13, "recipient-unavailable"),
-  REDIRECT(14, "redirect"),
-  REGISTRATION_REQUIRED(15, "registration-required"),
-  REMOTE_SERVER_NOT_FOUND(16, "remote-server-not-found"),
-  REMOTE_SERVER_TIMEOUT(17, "remote-server-timeout"),
-  RESOURCE_CONSTRAINT(18, "resource-constraint"),
-  SERVICE_UNAVAILABLE(19, "service-unavailable"),
-  SUBSCRIPTION_REQUIRED(20, "subscription-required"),
+  BAD_REQUEST(1, "bad-request", Type.MODIFY),
+  CONFLICT(2, "conflict", Type.CANCEL),
+  FEATURE_NOT_IMPLEMENTED(3, "feature-not-implemented", Type.CANCEL, Type.MODIFY),
+  FORBIDDEN(4, "forbidden", Type.AUTH),
+  GONE(5, "gone", Type.CANCEL),
+  INTERNAL_SERVER_ERROR(6, "internal-server-error", Type.CANCEL),
+  ITEM_NOT_FOUND(7, "item-not-found", Type.CANCEL),
+  JID_MAILFORMED(8, "jid-malformed", Type.MODIFY),
+  NOT_ACCEPTABLE(9, "not-acceptable", Type.MODIFY),
+  NOT_ALLOWED(10, "not-allowed", Type.CANCEL),
+  NOT_AUTHORIZED(11, "not-authorized", Type.AUTH),
+  POLICY_VIOLATION(12, "policy-violation", Type.MODIFY, Type.WAIT),
+  RECIPIENT_UNAVAILABLE(13, "recipient-unavailable", Type.WAIT),
+  REDIRECT(14, "redirect", Type.MODIFY),
+  REGISTRATION_REQUIRED(15, "registration-required", Type.AUTH),
+  REMOTE_SERVER_NOT_FOUND(16, "remote-server-not-found", Type.CANCEL),
+  REMOTE_SERVER_TIMEOUT(17, "remote-server-timeout", Type.WAIT),
+  RESOURCE_CONSTRAINT(18, "resource-constraint", Type.WAIT),
+  SERVICE_UNAVAILABLE(19, "service-unavailable", Type.CANCEL),
+  SUBSCRIPTION_REQUIRED(20, "subscription-required", Type.AUTH),
   UNDEFINED_CONDITION(21, "undefined-condition"),
-  UNEXPECTED_REQUEST(22, "unexpected-request");
+  UNEXPECTED_REQUEST(22, "unexpected-request", Type.WAIT, Type.MODIFY);
 
   private static final int FACTOR = 30000;
   private final int number;
   private final String xml;
+  private final List<Type> supportType;
   
-  private StanzaErrorCondition(int number, String condition) {
-    this(number, condition, null, null);
-  }
-  
-  private StanzaErrorCondition(int number, String condition, String description, String appElement) {
+  private StanzaErrorCondition(int number, String condition, Type... types) {
     this.number = FACTOR + number;
     xml = new StringBuilder("<").append(condition).append(" xmlns=\"").append(XmppNamespace.STANZAS)
         .append("\"/>").toString();
+    supportType = Arrays.asList(types);
   }
   
   /* (non-Javadoc)
@@ -73,5 +76,9 @@ public enum StanzaErrorCondition implements XmppError {
   @Override
   public String toXML() {
     return xml;
+  }
+  
+  public boolean accept(Type type) {
+    return this == UNDEFINED_CONDITION ? true : supportType.contains(type);
   }
 }
