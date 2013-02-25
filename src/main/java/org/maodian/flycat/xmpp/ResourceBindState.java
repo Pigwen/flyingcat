@@ -21,6 +21,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang3.StringUtils;
+import org.maodian.flycat.ApplicationContext;
 import org.maodian.flycat.xmpp.codec.Decoder;
 
 /**
@@ -44,7 +45,7 @@ public class ResourceBindState extends AbstractState {
     if (!xmlsr.getName().equals(new QName(XmppNamespace.CLIENT_CONTENT, "iq"))) {
       throw new XmppException(StreamError.INVALID_NAMESPACE).set("QName", xmlsr.getName());
     }
-    Decoder decoder = Decoder.CONTAINER.get(xmlsr.getName());
+    Decoder decoder = ApplicationContext.getInstance().getDecoder(xmlsr.getName());
     InfoQuery iq = (InfoQuery) decoder.decode(xmlsr);
     
     try {

@@ -39,7 +39,7 @@ public class XmppContext {
   private String resource;
   private String streamTag;
   
-  public XmppContext(ChannelHandlerContext ctx) {
+  private XmppContext(ChannelHandlerContext ctx) {
     this.ctx = ctx;
     this.state = States.newOpeningStreamState(FeatureType.STARTTLS);
   }
@@ -79,5 +79,9 @@ public class XmppContext {
   public String parseXML(final String xml) {
     String result = state.handle(this, xml);
     return result;
+  }
+  
+  public static XmppContext newInstance(ChannelHandlerContext ctx) {
+    return new XmppContext(ctx);
   }
 }

@@ -39,7 +39,7 @@ public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<St
   
   @Override
   public void channelActive(ChannelHandlerContext ctx) throws Exception {
-    xmppContext = new XmppContext(ctx);
+    xmppContext = XmppContext.newInstance(ctx);
     super.channelActive(ctx);
   }
 

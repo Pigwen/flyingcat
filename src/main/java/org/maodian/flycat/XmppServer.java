@@ -15,6 +15,8 @@
  */
 package org.maodian.flycat;
 
+import java.util.ServiceLoader;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -58,7 +60,15 @@ public class XmppServer {
     } else {
         port = 5222;
     }
+    preRun();
     new XmppServer(port).run();
   }
 
+  private static void preRun() {
+    ApplicationContext ctx = ApplicationContext.getInstance();
+    ServiceLoader<Extension> extLoader = ServiceLoader.load(Extension.class);
+    for (Extension ext : extLoader) {
+      ext.register(ctx);
+    }
+  }
 }
