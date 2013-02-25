@@ -103,7 +103,7 @@ public class InfoQuery implements Stanzas {
     private void checkType(String type) {
       if (!StringUtils.equals(type, GET) && !StringUtils.equals(type, SET)
           && !StringUtils.equals(type, RESULT) && !StringUtils.equals(type, ERROR)) {
-        throw new XmppException("Invalid InfoQuery type", StanzaError.BAD_REQUEST)
+        throw new XmppException("Invalid InfoQuery type", StanzaErrorCondition.BAD_REQUEST)
             .set("type", type);
       }
     }

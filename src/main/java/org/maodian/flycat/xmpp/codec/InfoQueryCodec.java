@@ -24,7 +24,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.maodian.flycat.ApplicationContext;
 import org.maodian.flycat.xmpp.InfoQuery;
 import org.maodian.flycat.xmpp.InfoQuery.Builder;
-import org.maodian.flycat.xmpp.StanzaError;
+import org.maodian.flycat.xmpp.StanzaErrorCondition;
 import org.maodian.flycat.xmpp.XmppException;
 
 /**
@@ -52,7 +52,7 @@ public class InfoQueryCodec implements Decoder {
       case InfoQuery.GET:
       case InfoQuery.SET:
         if (xmlsr.nextTag() != XMLStreamConstants.START_ELEMENT) {
-          throw new XmppException(StanzaError.BAD_REQUEST);
+          throw new XmppException(StanzaErrorCondition.BAD_REQUEST);
         }
         QName key = xmlsr.getName();
         builder.payload(ApplicationContext.getInstance().getDecoder(key).decode(xmlsr));

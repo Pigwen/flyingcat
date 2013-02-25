@@ -23,4 +23,5 @@ public final class XmppNamespace {
   public static final String SASL = "urn:ietf:params:xml:ns:xmpp-sasl";
   public static final String BIND = "urn:ietf:params:xml:ns:xmpp-bind";
   public static final String SESSION = "urn:ietf:params:xml:ns:xmpp-session";
+  public static final String STANZAS = "urn:ietf:params:xml:ns:xmpp-stanzas";
 }

@@ -15,61 +15,55 @@
  */
 package org.maodian.flycat.xmpp;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Cole Wen
  *
  */
-public enum StanzaError implements XmppError {
-  BAD_REQUEST(1, "bad-request"),
-  CONFLICT(2, "conflict"),
-  FEATURE_NOT_IMPLEMENTED(3, "feature-not-implemented"),
-  FORBIDDEN(4, "forbidden"),
-  GONE(5, "gone"),
-  INTERNAL_SERVER_ERROR(6, "internal-server-error"),
-  ITEM_NOT_FOUND(7, "item-not-found"),
-  JID_MAILFORMED(8, "jid-malformed"),
-  NOT_ACCEPTABLE(9, "not-acceptable"),
-  NOT_ALLOWED(10, "not-allowed"),
-  NOT_AUTHORIZED(11, "not-authorized"),
-  POLICY_VIOLATION(12, "policy-violation"),
-  RECIPIENT_UNAVAILABLE(13, "recipient-unavailable"),
-  REDIRECT(14, "redirect"),
-  REGISTRATION_REQUIRED(15, "registration-required"),
-  REMOTE_SERVER_NOT_FOUND(16, "remote-server-not-found"),
-  REMOTE_SERVER_TIMEOUT(17, "remote-server-timeout"),
-  RESOURCE_CONSTRAINT(18, "resource-constraint"),
-  SERVICE_UNAVAILABLE(19, "service-unavailable"),
-  SUBSCRIPTION_REQUIRED(20, "subscription-required"),
-  UNDEFINED_CONDITION(21, "undefined-condition"),
-  UNEXPECTED_REQUEST(22, "unexpected-request");
-
-  private static final int FACTOR = 30000;
-  private final int number;
+public class StanzaError implements Stanzas, XmppError {
+  private static final Map<Class<? extends Stanzas>, String> TAG_LIST = new HashMap<>();
+  {
+    TAG_LIST.put(InfoQuery.class, "iq");
+  }
+  
+  private final Stanzas stanzas;
+  private final StanzaErrorCondition condition;
+  private final Type errorType;
   private final String xml;
   
-  private StanzaError(int number, String condition) {
-    this(number, condition, null, null);
+  private StanzaError(Stanzas stanzas, StanzaErrorCondition condition, Type errorType) {
+    this(stanzas, condition, errorType, stanzas.getFrom());
   }
   
-  private StanzaError(int number, String condition, String description, String appElement) {
-    this.number = FACTOR + number;
-    xml = computeXML(condition, description, appElement);
+  /**
+   * @param stanzas
+   * @param condition
+   * @param errorType
+   * @param generator
+   */
+  private StanzaError(Stanzas stanzas, StanzaErrorCondition condition, Type errorType, String generator) {
+    this.stanzas = stanzas;
+    this.condition = condition;
+    this.errorType = errorType;
+    xml = computeXML(condition);
   }
   
-  private String computeXML(String condition, String description, String appElement) {
-    //TODO: construct stanza error xml
-    return "";
+  private String computeXML(StanzaErrorCondition condition) {
+    String tag = TAG_LIST.get(stanzas.getClass());
+    StringBuilder builder = new StringBuilder("<").append(tag).append(" from=\"").append(getFrom())
+        .append("\" to=\"").append(getTo()).append("\" type=\"").append(getType()).append("\"><error type=\"")
+        .append(errorType).append("\">").append(condition.toXML()).append("</error></").append(tag).append(">");
+    return builder.toString();
   }
-  
+
   /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.XmppError#getNumber()
    */
   @Override
   public int getNumber() {
-    // TODO Auto-generated method stub
-    return number;
+    return condition.getNumber();
   }
 
   /* (non-Javadoc)
@@ -77,8 +71,54 @@ public enum StanzaError implements XmppError {
    */
   @Override
   public String toXML() {
-    // TODO Auto-generated method stub
     return xml;
   }
 
+  /* (non-Javadoc)
+   * @see org.maodian.flycat.xmpp.Stanzas#getTo()
+   */
+  @Override
+  public String getTo() {
+    return stanzas.getFrom();
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flycat.xmpp.Stanzas#getId()
+   */
+  @Override
+  public String getId() {
+    return stanzas.getId();
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flycat.xmpp.Stanzas#getLanguage()
+   */
+  @Override
+  public String getLanguage() {
+    return stanzas.getLanguage();
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flycat.xmpp.Stanzas#getFrom()
+   */
+  @Override
+  public String getFrom() {
+    return stanzas.getTo();
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flycat.xmpp.Stanzas#getType()
+   */
+  @Override
+  public String getType() {
+    return ERROR;
+  }
+
+  public static enum Type {
+    AUTH,
+    CANCEL,
+    CONTINUE,
+    MODIFY,
+    WAIT
+  }
 }
