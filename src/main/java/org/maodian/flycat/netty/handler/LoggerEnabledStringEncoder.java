@@ -20,6 +20,7 @@ import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.string.StringEncoder;
 
+import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
 
 import org.slf4j.Logger;
@@ -31,11 +32,10 @@ import org.slf4j.LoggerFactory;
  */
 @Sharable
 public class LoggerEnabledStringEncoder extends StringEncoder {
-  private final Logger logger;
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());;
 
   public LoggerEnabledStringEncoder() {
     super(BufType.BYTE, StandardCharsets.UTF_8);
-    this.logger = LoggerFactory.getLogger(getClass());
   }
   
   /* (non-Javadoc)

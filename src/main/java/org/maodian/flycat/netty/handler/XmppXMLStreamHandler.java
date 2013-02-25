@@ -20,6 +20,8 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 
+import java.lang.invoke.MethodHandles;
+
 import org.apache.commons.lang3.StringUtils;
 import org.maodian.flycat.xmpp.StanzaError;
 import org.maodian.flycat.xmpp.XmppContext;
@@ -33,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<String> {
-  private static final Logger logger = LoggerFactory.getLogger(XmppXMLStreamHandler.class);
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private XmppContext xmppContext;
   
   // true if the </stream:stream> is sent first by server

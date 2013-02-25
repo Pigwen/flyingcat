@@ -19,6 +19,8 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 
+import java.lang.invoke.MethodHandles;
+
 import org.apache.commons.lang3.StringUtils;
 import org.maodian.flycat.xmpp.StreamError;
 import org.maodian.flycat.xmpp.XmppException;
@@ -30,7 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class XMLFragmentDecoder extends MessageToMessageDecoder<String> {
-  private static final Logger logger = LoggerFactory.getLogger(XMLFragmentDecoder.class);
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final String[] INVALID_ELEMENT_HEADS = {
     "<!", //DOCTYPE and ENTITY reference
     };
