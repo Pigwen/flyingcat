@@ -50,8 +50,7 @@ public class SessionCodec extends AbstractCodec {
    */
   @Override
   public void encode(Object object, XMLStreamWriter xmlsw) throws XMLStreamException {
-    // TODO Auto-generated method stub
-    
+    throw new UnsupportedOperationException("Session doesnot need to be encode");
   }
 
 }

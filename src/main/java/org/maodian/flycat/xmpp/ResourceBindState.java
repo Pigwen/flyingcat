@@ -20,7 +20,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.commons.lang3.StringUtils;
 import org.maodian.flycat.ApplicationContext;
 import org.maodian.flycat.xmpp.codec.Decoder;
 import org.maodian.flycat.xmpp.codec.Encoder;
@@ -33,7 +32,6 @@ import org.maodian.flycat.xmpp.codec.Encoder;
  * @see AbstractState
  */
 public class ResourceBindState extends AbstractState {
-  private boolean bindCompleted = false;
   
   /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.AbstractState#doHandle(org.maodian.flycat.xmpp.XmppContext, javax.xml.stream.XMLStreamReader, javax.xml.stream.XMLStreamWriter)
@@ -51,29 +49,12 @@ public class ResourceBindState extends AbstractState {
     InfoQuery reqIQ = (InfoQuery) decoder.decode(xmlsr);
     InfoQuery.Builder iqBuilder = new InfoQuery.Builder(reqIQ.getId(), "result").from("localhost").to(reqIQ.getFrom())
         .language("en");
-    try {
-      if (!bindCompleted) {
-        String resource = ((Bind)reqIQ.getPayload()).getResource();
-        context.setResource(resource);
-        Bind bind = new Bind();
-        bind.setJabberId(context.getBareJID() + "/" + resource);
-        iqBuilder.payload(bind);
-        encoder.encode(iqBuilder.build(), xmlsw);
-        bindCompleted = true;
-      } else {
-        if (reqIQ.getPayload() instanceof Session) {
-          xmlsw.writeEmptyElement("iq");
-          xmlsw.writeAttribute("id", reqIQ.getId());
-          xmlsw.writeAttribute("type", "result");
-          if (StringUtils.isNotBlank(reqIQ.getFrom())) {
-            xmlsw.writeAttribute("to", reqIQ.getFrom());
-          }
-          xmlsw.writeEndDocument();
-        }
-      }
-    } catch (ClassCastException e) {
-      throw new XmppException(e, StreamError.BAD_FORMAT);
-    }
+    String resource = ((Bind)reqIQ.getPayload()).getResource();
+    context.setResource(resource);
+    Bind bind = new Bind();
+    bind.setJabberId(context.getBareJID() + "/" + resource);
+    iqBuilder.payload(bind);
+    encoder.encode(iqBuilder.build(), xmlsw);
   }
   
   /* (non-Javadoc)
