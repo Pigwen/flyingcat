@@ -30,7 +30,7 @@ import org.maodian.flycat.xmpp.XmppNamespace;
  * @author Cole Wen
  *
  */
-public class SessionCodec extends AbstractCodec {
+public class SessionCodec extends AbstractCodec implements Processor {
 
   /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.codec.Decoder#decode(javax.xml.stream.XMLStreamReader)
@@ -51,6 +51,15 @@ public class SessionCodec extends AbstractCodec {
   @Override
   public void encode(Object object, XMLStreamWriter xmlsw) throws XMLStreamException {
     throw new UnsupportedOperationException("Session doesnot need to be encode");
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flycat.xmpp.codec.Processor#process(java.lang.Object)
+   */
+  @Override
+  public Object process(Object payload) {
+    // TODO: use NullObject pattern
+    return null;
   }
 
 }

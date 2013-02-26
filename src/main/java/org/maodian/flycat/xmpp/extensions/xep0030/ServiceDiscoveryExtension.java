@@ -31,11 +31,17 @@ public class ServiceDiscoveryExtension implements Extension {
    */
   @Override
   public void register(ApplicationContext ctx) {
-    ctx.registerDecoder(new QName(ServiceDiscovery.INFORMATION, "query"), new QueryInfoCodec());
-    ctx.registerDecoder(new QName(ServiceDiscovery.ITEM, "query"), new QueryItemCodec());
+    QueryInfoCodec queryInfoCodec = new QueryInfoCodec();
+    QueryItemCodec queryItemCodec = new QueryItemCodec();
     
-    ctx.registerEncoder(QueryInfo.class, new QueryInfoCodec());
-    ctx.registerEncoder(QueryItem.class, new QueryItemCodec());
+    ctx.registerDecoder(new QName(ServiceDiscovery.INFORMATION, "query"), queryInfoCodec);
+    ctx.registerDecoder(new QName(ServiceDiscovery.ITEM, "query"), queryItemCodec);
+    
+    ctx.registerEncoder(QueryInfo.class, queryInfoCodec);
+    ctx.registerEncoder(QueryItem.class, queryItemCodec);
+    
+    ctx.registerProcessor(QueryInfo.class, queryInfoCodec);
+    ctx.registerProcessor(QueryItem.class, queryItemCodec);
   }
 
 }

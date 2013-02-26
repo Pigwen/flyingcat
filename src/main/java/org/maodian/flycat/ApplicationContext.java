@@ -28,6 +28,7 @@ import org.maodian.flycat.xmpp.codec.BindCodec;
 import org.maodian.flycat.xmpp.codec.Decoder;
 import org.maodian.flycat.xmpp.codec.Encoder;
 import org.maodian.flycat.xmpp.codec.InfoQueryCodec;
+import org.maodian.flycat.xmpp.codec.Processor;
 import org.maodian.flycat.xmpp.codec.SessionCodec;
 
 /**
@@ -38,19 +39,26 @@ public class ApplicationContext {
   private static final ApplicationContext INSTANCE = new ApplicationContext();
   private Map<QName, Decoder> decoderMap = new ConcurrentHashMap<>();
   private Map<Class<?>, Encoder> encoderMap = new ConcurrentHashMap<>();
+  private Map<Class<?>, Processor> processorMap = new ConcurrentHashMap<>();
   
   public static ApplicationContext getInstance() {
     return INSTANCE;
   }
   
   private ApplicationContext() {
-    decoderMap.put(new QName(XmppNamespace.CLIENT_CONTENT, "iq"), new InfoQueryCodec());
-    decoderMap.put(new QName(XmppNamespace.BIND, "bind"), new BindCodec());
-    decoderMap.put(new QName(XmppNamespace.SESSION, "session"), new SessionCodec());
+    InfoQueryCodec infoQueryCodec = new InfoQueryCodec();
+    BindCodec bindCodec = new BindCodec();
+    SessionCodec sessionCodec = new SessionCodec();
     
-    encoderMap.put(InfoQuery.class, new InfoQueryCodec());
-    encoderMap.put(Bind.class, new BindCodec());
-    encoderMap.put(Session.class, new SessionCodec());
+    decoderMap.put(new QName(XmppNamespace.CLIENT_CONTENT, "iq"), infoQueryCodec);
+    decoderMap.put(new QName(XmppNamespace.BIND, "bind"), bindCodec);
+    decoderMap.put(new QName(XmppNamespace.SESSION, "session"), sessionCodec);
+    
+    encoderMap.put(InfoQuery.class, infoQueryCodec);
+    encoderMap.put(Bind.class, bindCodec);
+    encoderMap.put(Session.class, sessionCodec);
+    
+    processorMap.put(Session.class, sessionCodec);
   }
   
   public void registerDecoder(QName qname, Decoder decoder) {
@@ -61,11 +69,19 @@ public class ApplicationContext {
     encoderMap.put(clazz, encoder);
   }
   
+  public void registerProcessor(Class<?> clazz, Processor processor) {
+    processorMap.put(clazz, processor);
+  }
+  
   public Decoder getDecoder(QName qname) {
     return decoderMap.get(qname);
   }
   
   public Encoder getEncoder(Class<?> clazz) {
     return encoderMap.get(clazz);
+  }
+  
+  public Processor getProcessor(Class<?> clazz) {
+    return processorMap.get(clazz);
   }
 }

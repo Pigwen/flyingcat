@@ -23,11 +23,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.maodian.flycat.ApplicationContext;
 import org.maodian.flycat.xmpp.codec.Decoder;
 import org.maodian.flycat.xmpp.codec.Encoder;
-import org.maodian.flycat.xmpp.extensions.xep0030.Feature;
-import org.maodian.flycat.xmpp.extensions.xep0030.Identity;
-import org.maodian.flycat.xmpp.extensions.xep0030.QueryInfo;
-import org.maodian.flycat.xmpp.extensions.xep0030.QueryItem;
-import org.maodian.flycat.xmpp.extensions.xep0030.ServiceDiscovery;
+import org.maodian.flycat.xmpp.codec.Processor;
 
 /**
  * @author Cole Wen
@@ -65,24 +61,13 @@ public class StanzasReadyState extends AbstractState {
     Decoder decoder = ApplicationContext.getInstance().getDecoder(xmlsr.getName());
     Encoder encoder = ApplicationContext.getInstance().getEncoder(InfoQuery.class);
     InfoQuery iq = (InfoQuery) decoder.decode(xmlsr);
-    Object payload = iq.getPayload();
+    Processor processor = ApplicationContext.getInstance().getProcessor(iq.getPayload().getClass());
     
     InfoQuery.Builder iqBuilder = new InfoQuery.Builder(iq.getId(), "result").from("localhost").to(iq.getFrom())
         .language("en");
-    if (payload instanceof Session) {
-      encoder.encode(iqBuilder.build(), xmlsw);
-    } else if (payload instanceof QueryInfo) {
-      QueryInfo qi = new QueryInfo();
-      qi.addIdentity(new Identity("auth", "generic")).addIdentity(new Identity("directory", "user"))
-          .addIdentity(new Identity("server", "im")).addFeature(new Feature(ServiceDiscovery.INFORMATION))
-          .addFeature(new Feature(ServiceDiscovery.ITEM));
-      iqBuilder.payload(qi);
-      encoder.encode(iqBuilder.build(), xmlsw);
-    } else if (payload instanceof QueryItem) {
-      QueryItem queryItem = new QueryItem();
-      iqBuilder.payload(queryItem);
-      encoder.encode(iqBuilder.build(), xmlsw);
-    }
+    Object payload = processor.process(iq.getPayload());
+    iqBuilder.payload(payload);
+    encoder.encode(iqBuilder.build(), xmlsw);
   }
 
 }
