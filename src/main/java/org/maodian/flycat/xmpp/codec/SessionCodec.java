@@ -18,8 +18,9 @@ package org.maodian.flycat.xmpp.codec;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
-import org.maodian.flycat.xmpp.AbstractDecoder;
+import org.maodian.flycat.xmpp.AbstractCodec;
 import org.maodian.flycat.xmpp.Session;
 import org.maodian.flycat.xmpp.StreamError;
 import org.maodian.flycat.xmpp.XmppException;
@@ -29,7 +30,7 @@ import org.maodian.flycat.xmpp.XmppNamespace;
  * @author Cole Wen
  *
  */
-public class SessionCodec extends AbstractDecoder {
+public class SessionCodec extends AbstractCodec {
 
   /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.codec.Decoder#decode(javax.xml.stream.XMLStreamReader)
@@ -42,6 +43,15 @@ public class SessionCodec extends AbstractDecoder {
     } catch (XMLStreamException e) {
       throw new XmppException(e, StreamError.INVALID_XML);
     }
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flycat.xmpp.codec.Encoder#encode(java.lang.Object, javax.xml.stream.XMLStreamWriter)
+   */
+  @Override
+  public void encode(Object object, XMLStreamWriter xmlsw) throws XMLStreamException {
+    // TODO Auto-generated method stub
+    
   }
 
 }

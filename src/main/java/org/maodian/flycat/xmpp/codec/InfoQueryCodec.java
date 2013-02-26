@@ -20,9 +20,9 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
-import org.maodian.flycat.ApplicationContext;
-import org.maodian.flycat.xmpp.AbstractDecoder;
+import org.maodian.flycat.xmpp.AbstractCodec;
 import org.maodian.flycat.xmpp.InfoQuery;
 import org.maodian.flycat.xmpp.InfoQuery.Builder;
 import org.maodian.flycat.xmpp.StanzaErrorCondition;
@@ -32,7 +32,7 @@ import org.maodian.flycat.xmpp.XmppException;
  * @author Cole Wen
  *
  */
-public class InfoQueryCodec extends AbstractDecoder {
+public class InfoQueryCodec extends AbstractCodec {
 
   /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.codec.Decoder#decode(java.lang.String)
@@ -68,6 +68,29 @@ public class InfoQueryCodec extends AbstractDecoder {
     } catch (XMLStreamException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flycat.xmpp.codec.Encoder#encode(java.lang.Object)
+   */
+  @Override
+  public void encode(Object object, XMLStreamWriter xmlsw) throws XMLStreamException {
+    InfoQuery iq = (InfoQuery) object;
+    xmlsw.writeStartElement("iq");
+    writeRequiredAttribute(xmlsw, "id", iq.getId());
+    writeRequiredAttribute(xmlsw, "type", iq.getType());
+    
+    writeAttributeIfNotBlank(xmlsw, "from", iq.getFrom());
+    writeAttributeIfNotBlank(xmlsw, "to", iq.getTo());
+    writeAttributeIfNotBlank(xmlsw, XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI, "lang", iq.getLanguage());
+    
+    Object payload = iq.getPayload();
+    if (payload != null) {
+      Encoder encoder = findEncoder(payload.getClass());
+      encoder.encode(payload, xmlsw);
+    }
+    
+    xmlsw.writeEndDocument();
   }
 
 }

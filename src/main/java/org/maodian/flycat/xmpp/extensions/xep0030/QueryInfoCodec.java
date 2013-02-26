@@ -15,11 +15,14 @@
  */
 package org.maodian.flycat.xmpp.extensions.xep0030;
 
+import java.util.List;
+
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
-import org.maodian.flycat.xmpp.AbstractDecoder;
+import org.maodian.flycat.xmpp.AbstractCodec;
 import org.maodian.flycat.xmpp.StreamError;
 import org.maodian.flycat.xmpp.XmppException;
 
@@ -27,7 +30,7 @@ import org.maodian.flycat.xmpp.XmppException;
  * @author Cole Wen
  *
  */
-public class QueryInfoCodec extends AbstractDecoder {
+public class QueryInfoCodec extends AbstractCodec {
 
   /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.codec.Decoder#decode(javax.xml.stream.XMLStreamReader)
@@ -39,6 +42,29 @@ public class QueryInfoCodec extends AbstractDecoder {
       return new QueryInfo();
     } catch (XMLStreamException e) {
       throw new XmppException(e, StreamError.INVALID_XML);
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flycat.xmpp.codec.Encoder#encode(java.lang.Object, javax.xml.stream.XMLStreamWriter)
+   */
+  @Override
+  public void encode(Object object, XMLStreamWriter xmlsw) throws XMLStreamException {
+    xmlsw.writeStartElement("", "query", ServiceDiscovery.INFORMATION);
+    xmlsw.writeDefaultNamespace(ServiceDiscovery.INFORMATION);
+
+    QueryInfo qi = (QueryInfo) object;
+    List<Identity> identityList = qi.getIdentityList();
+    for (Identity identity : identityList) {
+      xmlsw.writeEmptyElement("", "identity", ServiceDiscovery.INFORMATION);
+      xmlsw.writeAttribute("category", identity.getCategory());
+      xmlsw.writeAttribute("type", identity.getType());
+    }
+    
+    List<Feature> featureList = qi.getFeatureList();
+    for (Feature feature : featureList) {
+      xmlsw.writeEmptyElement(ServiceDiscovery.INFORMATION, "feature");
+      xmlsw.writeAttribute("var", feature.getVar());
     }
   }
 

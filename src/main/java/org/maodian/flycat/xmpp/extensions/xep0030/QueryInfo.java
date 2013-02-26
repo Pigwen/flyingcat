@@ -16,6 +16,7 @@
 package org.maodian.flycat.xmpp.extensions.xep0030;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,12 +28,22 @@ public class QueryInfo {
   private final List<Feature> featureList = new ArrayList<>();
   private String node;
 
+  public QueryInfo addIdentity(Identity identity) {
+    identityList.add(identity);
+    return this;
+  }
+  
+  public QueryInfo addFeature(Feature feature) {
+    featureList.add(feature);
+    return this;
+  }
+  
   public List<Identity> getIdentityList() {
-    return identityList;
+    return Collections.unmodifiableList(identityList);
   }
 
   public List<Feature> getFeatureList() {
-    return featureList;
+    return Collections.unmodifiableList(featureList);
   }
 
   public String getNode() {

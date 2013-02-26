@@ -18,8 +18,9 @@ package org.maodian.flycat.xmpp.extensions.xep0030;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
-import org.maodian.flycat.xmpp.AbstractDecoder;
+import org.maodian.flycat.xmpp.AbstractCodec;
 import org.maodian.flycat.xmpp.StreamError;
 import org.maodian.flycat.xmpp.XmppException;
 
@@ -27,7 +28,7 @@ import org.maodian.flycat.xmpp.XmppException;
  * @author Cole Wen
  *
  */
-public class QueryItemCodec extends AbstractDecoder {
+public class QueryItemCodec extends AbstractCodec {
 
   /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.codec.Decoder#decode(javax.xml.stream.XMLStreamReader)
@@ -40,6 +41,15 @@ public class QueryItemCodec extends AbstractDecoder {
     } catch (XMLStreamException e) {
       throw new XmppException(e, StreamError.INVALID_XML);
     }
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flycat.xmpp.codec.Encoder#encode(java.lang.Object, javax.xml.stream.XMLStreamWriter)
+   */
+  @Override
+  public void encode(Object object, XMLStreamWriter xmlsw) throws XMLStreamException {
+    xmlsw.writeStartElement("", "query", ServiceDiscovery.ITEM);
+    xmlsw.writeDefaultNamespace(ServiceDiscovery.ITEM);
   }
 
 }

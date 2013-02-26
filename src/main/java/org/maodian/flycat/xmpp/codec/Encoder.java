@@ -15,11 +15,14 @@
  */
 package org.maodian.flycat.xmpp.codec;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 /**
  * @author Cole Wen
  *
  */
-public interface Encoder<T> {
+public interface Encoder {
 
-  String encode(T object);
+  void encode(Object object, XMLStreamWriter xmlsw) throws XMLStreamException;
 }

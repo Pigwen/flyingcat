@@ -20,9 +20,11 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.commons.lang3.StringUtils;
 import org.maodian.flycat.ApplicationContext;
 import org.maodian.flycat.xmpp.codec.Decoder;
+import org.maodian.flycat.xmpp.codec.Encoder;
+import org.maodian.flycat.xmpp.extensions.xep0030.Feature;
+import org.maodian.flycat.xmpp.extensions.xep0030.Identity;
 import org.maodian.flycat.xmpp.extensions.xep0030.QueryInfo;
 import org.maodian.flycat.xmpp.extensions.xep0030.QueryItem;
 import org.maodian.flycat.xmpp.extensions.xep0030.ServiceDiscovery;
@@ -61,51 +63,25 @@ public class StanzasReadyState extends AbstractState {
       throw new XmppException(StreamError.INVALID_NAMESPACE).set("QName", xmlsr.getName());
     }
     Decoder decoder = ApplicationContext.getInstance().getDecoder(xmlsr.getName());
+    Encoder encoder = ApplicationContext.getInstance().getEncoder(InfoQuery.class);
     InfoQuery iq = (InfoQuery) decoder.decode(xmlsr);
     Object payload = iq.getPayload();
+    
+    InfoQuery.Builder iqBuilder = new InfoQuery.Builder(iq.getId(), "result").from("localhost").to(iq.getFrom())
+        .language("en");
     if (payload instanceof Session) {
-      xmlsw.writeEmptyElement("iq");
-      xmlsw.writeAttribute("id", iq.getId());
-      xmlsw.writeAttribute("type", "result");
-      if (StringUtils.isNotBlank(iq.getFrom())) {
-        xmlsw.writeAttribute("to", iq.getFrom());
-      }
-      xmlsw.writeEndDocument();
+      encoder.encode(iqBuilder.build(), xmlsw);
     } else if (payload instanceof QueryInfo) {
-      xmlsw.writeEmptyElement("iq");
-      xmlsw.writeAttribute("id", iq.getId());
-      xmlsw.writeAttribute("type", "result");
-      xmlsw.writeAttribute("from", "localhost");
-      if (StringUtils.isNotBlank(iq.getFrom())) {
-        xmlsw.writeAttribute("to", iq.getFrom());
-      }
-      
-      xmlsw.writeStartElement("", "query", ServiceDiscovery.INFORMATION);
-      xmlsw.writeDefaultNamespace(ServiceDiscovery.INFORMATION);
-      
-      xmlsw.writeEmptyElement("", "identity", ServiceDiscovery.INFORMATION);
-      xmlsw.writeAttribute("category", "auth");
-      xmlsw.writeAttribute("type", "generic");
-      
-      xmlsw.writeEmptyElement("", "identity", ServiceDiscovery.INFORMATION);
-      xmlsw.writeAttribute("category", "directory");
-      xmlsw.writeAttribute("type", "user");
-      
-      xmlsw.writeEmptyElement("", "identity", ServiceDiscovery.INFORMATION);
-      xmlsw.writeAttribute("category", "server");
-      xmlsw.writeAttribute("type", "im");
-      
-      xmlsw.writeEmptyElement(ServiceDiscovery.INFORMATION, "feature");
-      xmlsw.writeAttribute("var", ServiceDiscovery.INFORMATION);
-      
-      xmlsw.writeEmptyElement(ServiceDiscovery.INFORMATION, "feature");
-      xmlsw.writeAttribute("var", ServiceDiscovery.ITEM);
-      
-      xmlsw.writeEndDocument();
+      QueryInfo qi = new QueryInfo();
+      qi.addIdentity(new Identity("auth", "generic")).addIdentity(new Identity("directory", "user"))
+          .addIdentity(new Identity("server", "im")).addFeature(new Feature(ServiceDiscovery.INFORMATION))
+          .addFeature(new Feature(ServiceDiscovery.ITEM));
+      iqBuilder.payload(qi);
+      encoder.encode(iqBuilder.build(), xmlsw);
     } else if (payload instanceof QueryItem) {
-      xmlsw.writeStartElement("", "query", ServiceDiscovery.ITEM);
-      xmlsw.writeDefaultNamespace(ServiceDiscovery.ITEM);
-      xmlsw.writeEndDocument();
+      QueryItem queryItem = new QueryItem();
+      iqBuilder.payload(queryItem);
+      encoder.encode(iqBuilder.build(), xmlsw);
     }
   }
 

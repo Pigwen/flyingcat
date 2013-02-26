@@ -23,6 +23,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.maodian.flycat.ApplicationContext;
 import org.maodian.flycat.xmpp.codec.Decoder;
+import org.maodian.flycat.xmpp.codec.Encoder;
 
 /**
  * Handle <em>Resource Binding</em> phase.
@@ -46,34 +47,26 @@ public class ResourceBindState extends AbstractState {
       throw new XmppException(StreamError.INVALID_NAMESPACE).set("QName", xmlsr.getName());
     }
     Decoder decoder = ApplicationContext.getInstance().getDecoder(xmlsr.getName());
-    InfoQuery iq = (InfoQuery) decoder.decode(xmlsr);
-    
+    Encoder encoder = ApplicationContext.getInstance().getEncoder(InfoQuery.class);
+    InfoQuery reqIQ = (InfoQuery) decoder.decode(xmlsr);
+    InfoQuery.Builder iqBuilder = new InfoQuery.Builder(reqIQ.getId(), "result").from("localhost").to(reqIQ.getFrom())
+        .language("en");
     try {
       if (!bindCompleted) {
-        String resource = ((Bind)iq.getPayload()).getResource();
+        String resource = ((Bind)reqIQ.getPayload()).getResource();
         context.setResource(resource);
-
-        xmlsw.writeStartElement("iq");
-        xmlsw.writeAttribute("id", iq.getId());
-        xmlsw.writeAttribute("type", "result");
-
-        xmlsw.writeStartElement("bind");
-        xmlsw.writeDefaultNamespace(XmppNamespace.BIND);
-
-        xmlsw.writeStartElement("jid");
-        xmlsw.writeCharacters(context.getBareJID() + "/" + resource);
-
-        xmlsw.writeEndElement();
-        xmlsw.writeEndElement();
-        xmlsw.writeEndElement();
+        Bind bind = new Bind();
+        bind.setJabberId(context.getBareJID() + "/" + resource);
+        iqBuilder.payload(bind);
+        encoder.encode(iqBuilder.build(), xmlsw);
         bindCompleted = true;
       } else {
-        if (iq.getPayload() instanceof Session) {
+        if (reqIQ.getPayload() instanceof Session) {
           xmlsw.writeEmptyElement("iq");
-          xmlsw.writeAttribute("id", iq.getId());
+          xmlsw.writeAttribute("id", reqIQ.getId());
           xmlsw.writeAttribute("type", "result");
-          if (StringUtils.isNotBlank(iq.getFrom())) {
-            xmlsw.writeAttribute("to", iq.getFrom());
+          if (StringUtils.isNotBlank(reqIQ.getFrom())) {
+            xmlsw.writeAttribute("to", reqIQ.getFrom());
           }
           xmlsw.writeEndDocument();
         }

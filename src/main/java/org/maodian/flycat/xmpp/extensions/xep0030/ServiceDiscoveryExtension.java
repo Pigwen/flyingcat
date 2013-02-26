@@ -33,6 +33,9 @@ public class ServiceDiscoveryExtension implements Extension {
   public void register(ApplicationContext ctx) {
     ctx.registerDecoder(new QName(ServiceDiscovery.INFORMATION, "query"), new QueryInfoCodec());
     ctx.registerDecoder(new QName(ServiceDiscovery.ITEM, "query"), new QueryItemCodec());
+    
+    ctx.registerEncoder(QueryInfo.class, new QueryInfoCodec());
+    ctx.registerEncoder(QueryItem.class, new QueryItemCodec());
   }
 
 }
