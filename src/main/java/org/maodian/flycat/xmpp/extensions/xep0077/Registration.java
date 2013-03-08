@@ -17,11 +17,40 @@ package org.maodian.flycat.xmpp.extensions.xep0077;
 
 /**
  * @author Cole Wen
- *
+ * 
  */
-public class InBandRegistration {
-  private InBandRegistration() {}
+public class Registration {
+  private final String username;
+  private final String password;
+  private String instruction;
   
-  public static final String STREAM_FEATURE = "http://jabber.org/features/iq-register";
-  public static final String REGISTER = "jabber:iq:register";
+  public Registration() {
+    this(null, null);
+  }
+
+  /**
+   * @param username
+   * @param password
+   */
+  public Registration(String username, String password) {
+    this.username = username;
+    this.password = password;
+  }
+
+  public String getInstruction() {
+    return instruction;
+  }
+
+  public void setInstruction(String instruction) {
+    this.instruction = instruction;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
 }

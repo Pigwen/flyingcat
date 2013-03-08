@@ -65,8 +65,8 @@ public class StanzasReadyState extends AbstractState {
     
     InfoQuery.Builder iqBuilder = new InfoQuery.Builder(iq.getId(), "result").from("localhost").to(iq.getFrom())
         .language("en");
-    Object payload = processor.process(null, iq.getPayload());
-    iqBuilder.payload(payload);
+    //Object payload = processor.processIQ(null, iq.getPayload());
+    //iqBuilder.payload(payload);
     encoder.encode(iqBuilder.build(), xmlsw);
   }
 

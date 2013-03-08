@@ -15,13 +15,27 @@
  */
 package org.maodian.flycat.xmpp.extensions.xep0077;
 
+import javax.xml.namespace.QName;
+
+import org.maodian.flycat.ApplicationContext;
+import org.maodian.flycat.Extension;
+
 /**
  * @author Cole Wen
  *
  */
-public class InBandRegistration {
-  private InBandRegistration() {}
-  
-  public static final String STREAM_FEATURE = "http://jabber.org/features/iq-register";
-  public static final String REGISTER = "jabber:iq:register";
+public class InBandRegistrationExtension implements Extension {
+
+  /* (non-Javadoc)
+   * @see org.maodian.flycat.Extension#register(org.maodian.flycat.ApplicationContext)
+   */
+  @Override
+  public void register(ApplicationContext ctx) {
+    RegistrationCodec codec = new RegistrationCodec();
+    
+    ctx.registerDecoder(new QName(InBandRegistration.REGISTER, "query"), codec);
+    ctx.registerEncoder(Registration.class, codec);
+    ctx.registerProcessor(Registration.class, codec);
+  }
+
 }

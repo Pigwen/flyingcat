@@ -50,7 +50,7 @@ public class InfoQueryCommand extends ContextAwareCommand {
         .language("en");
     Object reqPayload = reqIQ.getPayload();
     Processor processor = ApplicationContext.getInstance().getProcessor(reqPayload.getClass());
-    Object rspPayload = processor.process(getXmppContext(), reqPayload);
+    Object rspPayload = processor.processIQ(getXmppContext(), reqIQ);
     iqBuilder.payload(rspPayload);
     encoder.encode(iqBuilder.build(), xmlsw);
     return new SelectState();

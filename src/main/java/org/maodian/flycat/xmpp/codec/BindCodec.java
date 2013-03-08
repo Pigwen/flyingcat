@@ -22,6 +22,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.maodian.flycat.xmpp.AbstractCodec;
 import org.maodian.flycat.xmpp.Bind;
+import org.maodian.flycat.xmpp.InfoQuery;
 import org.maodian.flycat.xmpp.StreamError;
 import org.maodian.flycat.xmpp.XmppException;
 import org.maodian.flycat.xmpp.XmppNamespace;
@@ -69,8 +70,8 @@ public class BindCodec extends AbstractCodec implements Processor {
    * @see org.maodian.flycat.xmpp.codec.Processor#process(java.lang.Object)
    */
   @Override
-  public Object process(XmppContext context, Object payload) {
-    String resource = ((Bind)payload).getResource();
+  public Object processIQ(XmppContext context, InfoQuery iq) {
+    String resource = ((Bind)iq.getPayload()).getResource();
     context.setResource(resource);
     Bind bind = new Bind();
     bind.setJabberId(context.getBareJID() + "/" + resource);

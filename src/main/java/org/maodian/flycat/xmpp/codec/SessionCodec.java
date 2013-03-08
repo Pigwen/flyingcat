@@ -21,6 +21,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.maodian.flycat.xmpp.AbstractCodec;
+import org.maodian.flycat.xmpp.InfoQuery;
 import org.maodian.flycat.xmpp.Session;
 import org.maodian.flycat.xmpp.StreamError;
 import org.maodian.flycat.xmpp.XmppException;
@@ -58,7 +59,7 @@ public class SessionCodec extends AbstractCodec implements Processor {
    * @see org.maodian.flycat.xmpp.codec.Processor#process(java.lang.Object)
    */
   @Override
-  public Object process(XmppContext context, Object payload) {
+  public Object processIQ(XmppContext context, InfoQuery iq) {
     // TODO: use NullObject pattern
     return null;
   }

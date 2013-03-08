@@ -1,1 +1,2 @@
 org.maodian.flycat.xmpp.extensions.xep0030.ServiceDiscoveryExtension
+org.maodian.flycat.xmpp.extensions.xep0077.InBandRegistrationExtension

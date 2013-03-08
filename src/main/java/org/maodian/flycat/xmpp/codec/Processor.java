@@ -15,6 +15,7 @@
  */
 package org.maodian.flycat.xmpp.codec;
 
+import org.maodian.flycat.xmpp.InfoQuery;
 import org.maodian.flycat.xmpp.state.XmppContext;
 
 /**
@@ -23,5 +24,5 @@ import org.maodian.flycat.xmpp.state.XmppContext;
  */
 public interface Processor {
 
-  Object process(XmppContext context, Object payload);
+  Object processIQ(XmppContext context, InfoQuery iq);
 }
