@@ -13,15 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flycat.xmpp.codec;
+package org.maodian.flycat.xmpp.state;
 
-import org.maodian.flycat.xmpp.state.XmppContext;
+import javax.xml.namespace.QName;
 
 /**
  * @author Cole Wen
- *
+ * 
  */
-public interface Processor {
+public class Transition {
+  private final QName symbol;
+  private final State state;
 
-  Object process(XmppContext context, Object payload);
+  /**
+   * @param symbol
+   * @param state
+   */
+  public Transition(QName symbol, State state) {
+    this.symbol = symbol;
+    this.state = state;
+  }
+
+  public QName getSymbol() {
+    return symbol;
+  }
+
+  public State getState() {
+    return state;
+  }
+
 }

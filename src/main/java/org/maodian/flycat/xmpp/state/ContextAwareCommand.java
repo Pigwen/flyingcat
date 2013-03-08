@@ -13,15 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flycat.xmpp.codec;
-
-import org.maodian.flycat.xmpp.state.XmppContext;
+package org.maodian.flycat.xmpp.state;
 
 /**
  * @author Cole Wen
  *
  */
-public interface Processor {
-
-  Object process(XmppContext context, Object payload);
+public abstract class ContextAwareCommand implements Command {
+  private XmppContext context;
+  
+  void setXmppContext(XmppContext context) {
+    this.context = context;
+  }
+  
+  protected XmppContext getXmppContext() {
+    return context;
+  }
 }

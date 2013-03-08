@@ -26,6 +26,7 @@ import org.maodian.flycat.xmpp.AbstractCodec;
 import org.maodian.flycat.xmpp.StreamError;
 import org.maodian.flycat.xmpp.XmppException;
 import org.maodian.flycat.xmpp.codec.Processor;
+import org.maodian.flycat.xmpp.state.XmppContext;
 
 /**
  * @author Cole Wen
@@ -73,7 +74,7 @@ public class QueryInfoCodec extends AbstractCodec implements Processor {
    * @see org.maodian.flycat.xmpp.payload.Processor#process(java.lang.Object)
    */
   @Override
-  public Object process(Object payload) {
+  public Object process(XmppContext context, Object payload) {
     QueryInfo qi = new QueryInfo();
     qi.addIdentity(new Identity("auth", "generic")).addIdentity(new Identity("directory", "user"))
         .addIdentity(new Identity("server", "im")).addFeature(new Feature(ServiceDiscovery.INFORMATION))

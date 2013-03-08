@@ -25,12 +25,13 @@ import org.maodian.flycat.xmpp.Bind;
 import org.maodian.flycat.xmpp.StreamError;
 import org.maodian.flycat.xmpp.XmppException;
 import org.maodian.flycat.xmpp.XmppNamespace;
+import org.maodian.flycat.xmpp.state.XmppContext;
 
 /**
  * @author Cole Wen
  *
  */
-public class BindCodec extends AbstractCodec {
+public class BindCodec extends AbstractCodec implements Processor {
 
   /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.codec.Decoder#decode(java.lang.String)
@@ -62,6 +63,18 @@ public class BindCodec extends AbstractCodec {
 
     xmlsw.writeEndElement();
     xmlsw.writeEndElement();
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flycat.xmpp.codec.Processor#process(java.lang.Object)
+   */
+  @Override
+  public Object process(XmppContext context, Object payload) {
+    String resource = ((Bind)payload).getResource();
+    context.setResource(resource);
+    Bind bind = new Bind();
+    bind.setJabberId(context.getBareJID() + "/" + resource);
+    return bind;
   }
 
 }

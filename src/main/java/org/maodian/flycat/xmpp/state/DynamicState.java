@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flycat.xmpp.codec;
+package org.maodian.flycat.xmpp.state;
 
-import org.maodian.flycat.xmpp.state.XmppContext;
+import javax.xml.namespace.QName;
+
 
 /**
  * @author Cole Wen
  *
  */
-public interface Processor {
-
-  Object process(XmppContext context, Object payload);
+public interface DynamicState extends State {
+  boolean canStep(QName qName);
+  void addTransition(Transition transition);
 }

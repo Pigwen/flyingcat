@@ -30,6 +30,10 @@ import org.maodian.flycat.xmpp.codec.Encoder;
 import org.maodian.flycat.xmpp.codec.InfoQueryCodec;
 import org.maodian.flycat.xmpp.codec.Processor;
 import org.maodian.flycat.xmpp.codec.SessionCodec;
+import org.maodian.flycat.xmpp.state.ContextAwareCommand;
+import org.maodian.flycat.xmpp.state.InfoQueryCommand;
+import org.maodian.flycat.xmpp.state.SASLCommand;
+import org.maodian.flycat.xmpp.state.TLSCommand;
 
 /**
  * @author Cole Wen
@@ -40,6 +44,7 @@ public class ApplicationContext {
   private Map<QName, Decoder> decoderMap = new ConcurrentHashMap<>();
   private Map<Class<?>, Encoder> encoderMap = new ConcurrentHashMap<>();
   private Map<Class<?>, Processor> processorMap = new ConcurrentHashMap<>();
+  private Map<QName, Class<? extends ContextAwareCommand>> cmdMap = new ConcurrentHashMap<>(); 
   
   public static ApplicationContext getInstance() {
     return INSTANCE;
@@ -59,6 +64,11 @@ public class ApplicationContext {
     encoderMap.put(Session.class, sessionCodec);
     
     processorMap.put(Session.class, sessionCodec);
+    processorMap.put(Bind.class, bindCodec);
+    
+    cmdMap.put(new QName(XmppNamespace.TLS, "starttls"), TLSCommand.class);
+    cmdMap.put(new QName(XmppNamespace.SASL, "auth"), SASLCommand.class);
+    cmdMap.put(new QName(XmppNamespace.CLIENT_CONTENT, "iq"), InfoQueryCommand.class);
   }
   
   public void registerDecoder(QName qname, Decoder decoder) {
@@ -83,5 +93,9 @@ public class ApplicationContext {
   
   public Processor getProcessor(Class<?> clazz) {
     return processorMap.get(clazz);
+  }
+
+  public Class<? extends ContextAwareCommand> getCommand(QName qName) {
+    return cmdMap.get(qName);
   }
 }

@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flycat.xmpp.codec;
-
-import org.maodian.flycat.xmpp.state.XmppContext;
+package org.maodian.flycat.xmpp.extensions.xep0077;
 
 /**
  * @author Cole Wen
  *
  */
-public interface Processor {
-
-  Object process(XmppContext context, Object payload);
+public class InBandRegistration {
+  private InBandRegistration() {}
+  
+  public static final String STREAM_FEATURE = "http://jabber.org/features/iq-register";
+  public static final String SD_INFO = "jabber:iq:register";
 }

@@ -24,9 +24,9 @@ import java.lang.invoke.MethodHandles;
 
 import org.apache.commons.lang3.StringUtils;
 import org.maodian.flycat.xmpp.StanzaError;
-import org.maodian.flycat.xmpp.XmppContext;
 import org.maodian.flycat.xmpp.XmppError;
 import org.maodian.flycat.xmpp.XmppException;
+import org.maodian.flycat.xmpp.state.XmppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

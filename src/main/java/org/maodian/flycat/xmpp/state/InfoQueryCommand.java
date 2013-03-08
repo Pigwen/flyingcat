@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flycat.xmpp;
+package org.maodian.flycat.xmpp.state;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -21,6 +21,10 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.maodian.flycat.ApplicationContext;
+import org.maodian.flycat.xmpp.InfoQuery;
+import org.maodian.flycat.xmpp.StreamError;
+import org.maodian.flycat.xmpp.XmppException;
+import org.maodian.flycat.xmpp.XmppNamespace;
 import org.maodian.flycat.xmpp.codec.Decoder;
 import org.maodian.flycat.xmpp.codec.Encoder;
 import org.maodian.flycat.xmpp.codec.Processor;
@@ -29,45 +33,27 @@ import org.maodian.flycat.xmpp.codec.Processor;
  * @author Cole Wen
  *
  */
-public class StanzasReadyState extends AbstractState {
+public class InfoQueryCommand extends ContextAwareCommand {
 
   /* (non-Javadoc)
-   * @see org.maodian.flycat.xmpp.AbstractState#nextState()
+   * @see org.maodian.flycat.xmpp.state.Command#execute(javax.xml.stream.XMLStreamReader, javax.xml.stream.XMLStreamWriter)
    */
   @Override
-  protected State nextState() {
-    return this;
-  }
-  
-  /* (non-Javadoc)
-   * @see org.maodian.flycat.xmpp.AbstractState#preHandle(org.maodian.flycat.xmpp.XmppContext, java.lang.String)
-   */
-  @Override
-  protected String preHandle(XmppContext context, String xml) {
-    return context.wrapStreamTag(xml);
-  }
-
-  /* (non-Javadoc)
-   * @see org.maodian.flycat.xmpp.AbstractState#doHandle(org.maodian.flycat.xmpp.XmppContext, javax.xml.stream.XMLStreamReader, javax.xml.stream.XMLStreamWriter)
-   */
-  @Override
-  protected void doHandle(XmppContext context, XMLStreamReader xmlsr, XMLStreamWriter xmlsw) throws XMLStreamException {
-    // skip stream tag
-    xmlsr.nextTag();
-    xmlsr.nextTag();
+  public State execute(XMLStreamReader xmlsr, XMLStreamWriter xmlsw) throws XMLStreamException {
     if (!xmlsr.getName().equals(new QName(XmppNamespace.CLIENT_CONTENT, "iq"))) {
       throw new XmppException(StreamError.INVALID_NAMESPACE).set("QName", xmlsr.getName());
     }
     Decoder decoder = ApplicationContext.getInstance().getDecoder(xmlsr.getName());
     Encoder encoder = ApplicationContext.getInstance().getEncoder(InfoQuery.class);
-    InfoQuery iq = (InfoQuery) decoder.decode(xmlsr);
-    Processor processor = ApplicationContext.getInstance().getProcessor(iq.getPayload().getClass());
-    
-    InfoQuery.Builder iqBuilder = new InfoQuery.Builder(iq.getId(), "result").from("localhost").to(iq.getFrom())
+    InfoQuery reqIQ = (InfoQuery) decoder.decode(xmlsr);
+    InfoQuery.Builder iqBuilder = new InfoQuery.Builder(reqIQ.getId(), "result").from("localhost").to(reqIQ.getFrom())
         .language("en");
-    Object payload = processor.process(null, iq.getPayload());
-    iqBuilder.payload(payload);
+    Object reqPayload = reqIQ.getPayload();
+    Processor processor = ApplicationContext.getInstance().getProcessor(reqPayload.getClass());
+    Object rspPayload = processor.process(getXmppContext(), reqPayload);
+    iqBuilder.payload(rspPayload);
     encoder.encode(iqBuilder.build(), xmlsw);
+    return new SelectState();
   }
 
 }

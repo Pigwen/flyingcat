@@ -25,6 +25,7 @@ import org.maodian.flycat.xmpp.Session;
 import org.maodian.flycat.xmpp.StreamError;
 import org.maodian.flycat.xmpp.XmppException;
 import org.maodian.flycat.xmpp.XmppNamespace;
+import org.maodian.flycat.xmpp.state.XmppContext;
 
 /**
  * @author Cole Wen
@@ -57,7 +58,7 @@ public class SessionCodec extends AbstractCodec implements Processor {
    * @see org.maodian.flycat.xmpp.codec.Processor#process(java.lang.Object)
    */
   @Override
-  public Object process(Object payload) {
+  public Object process(XmppContext context, Object payload) {
     // TODO: use NullObject pattern
     return null;
   }

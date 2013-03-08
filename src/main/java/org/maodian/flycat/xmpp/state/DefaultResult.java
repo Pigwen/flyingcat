@@ -13,15 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flycat.xmpp.codec;
-
-import org.maodian.flycat.xmpp.state.XmppContext;
+package org.maodian.flycat.xmpp.state;
 
 /**
  * @author Cole Wen
  *
  */
-public interface Processor {
+final class DefaultResult implements Result {
+  private final State nextState;
+  private final String data;
+  
+  /**
+   * @param nextState
+   * @param data
+   */
+  public DefaultResult(State nextState, String data) {
+    this.nextState = nextState;
+    this.data = data;
+  }
 
-  Object process(XmppContext context, Object payload);
+  /* (non-Javadoc)
+   * @see org.maodian.flycat.xmpp.state.Result#getNextState()
+   */
+  @Override
+  public State getNextState() {
+    return nextState;
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flycat.xmpp.state.Result#getData()
+   */
+  @Override
+  public String getData() {
+    return data;
+  }
+
 }
