@@ -15,20 +15,28 @@
  */
 package org.maodian.flyingcat.im;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 import org.maodian.flyingcat.im.entity.User;
 
 /**
  * @author Cole Wen
  *
  */
-public class DefaultSession implements Session {
+public class InMemorySession implements Session {
+  private static final ConcurrentMap<String, User> users = new ConcurrentHashMap<>();
+  
 
   /* (non-Javadoc)
    * @see org.maodian.flyingcat.im.Session#register(org.maodian.flyingcat.im.entity.User)
    */
   @Override
   public void register(User user) throws IMException {
-    
+    boolean success = users.putIfAbsent(user.getUsername(), user) == null;
+    if (!success) {
+      throw new IMException(UserError.DUPLICATED_USERNAME);
+    }
   }
 
 }

@@ -19,7 +19,7 @@ import io.netty.channel.ChannelHandlerContext;
 
 import javax.xml.namespace.QName;
 
-import org.maodian.flyingcat.im.DefaultSession;
+import org.maodian.flyingcat.im.InMemorySession;
 import org.maodian.flyingcat.im.Session;
 import org.maodian.flyingcat.xmpp.ApplicationContext;
 
@@ -105,7 +105,7 @@ public class XmppContext {
   }
   
   public Session createIMSession() {
-    return new DefaultSession();
+    return new InMemorySession();
   }
   
   public static XmppContext newInstance(ChannelHandlerContext ctx) {
