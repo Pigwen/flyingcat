@@ -106,7 +106,7 @@ public class RegistrationCodec extends AbstractCodec implements InfoQueryProcess
     } catch (IMException e) {
       ErrorCode errorCode = e.getErrorCode();
       if (errorCode == UserError.DUPLICATED_USERNAME) {
-        throw new XmppException(new StanzaError(iq, StanzaErrorCondition.CONFLICT, Type.CANCEL));
+        throw new XmppException(e, new StanzaError(iq, StanzaErrorCondition.CONFLICT, Type.CANCEL));
       }
     }
     return null;
