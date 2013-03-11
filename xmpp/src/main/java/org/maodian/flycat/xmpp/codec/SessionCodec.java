@@ -60,7 +60,7 @@ public class SessionCodec extends AbstractCodec implements InfoQueryProcessor {
    */
   @Override
   public Object processGet(XmppContext context, InfoQuery iq) {
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   /* (non-Javadoc)
@@ -68,7 +68,7 @@ public class SessionCodec extends AbstractCodec implements InfoQueryProcessor {
    */
   @Override
   public Object processSet(XmppContext context, InfoQuery iq) {
-    throw new UnsupportedOperationException();
+    return null;
   }
 
 }

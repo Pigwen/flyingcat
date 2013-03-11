@@ -71,11 +71,7 @@ public class BindCodec extends AbstractCodec implements InfoQueryProcessor {
    */
   @Override
   public Object processGet(XmppContext context, InfoQuery iq) {
-    String resource = ((Bind)iq.getPayload()).getResource();
-    context.setResource(resource);
-    Bind bind = new Bind();
-    bind.setJabberId(context.getBareJID() + "/" + resource);
-    return bind;
+    throw new UnsupportedOperationException();
   }
 
   /* (non-Javadoc)
@@ -83,7 +79,11 @@ public class BindCodec extends AbstractCodec implements InfoQueryProcessor {
    */
   @Override
   public Object processSet(XmppContext context, InfoQuery iq) {
-    throw new UnsupportedOperationException();
+    String resource = ((Bind)iq.getPayload()).getResource();
+    context.setResource(resource);
+    Bind bind = new Bind();
+    bind.setJabberId(context.getBareJID() + "/" + resource);
+    return bind;
   }
 
 }
