@@ -32,7 +32,7 @@ import org.maodian.flycat.xmpp.state.XmppContext;
  * @author Cole Wen
  *
  */
-public class SessionCodec extends AbstractCodec implements Processor {
+public class SessionCodec extends AbstractCodec implements InfoQueryProcessor {
 
   /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.codec.Decoder#decode(javax.xml.stream.XMLStreamReader)
@@ -59,9 +59,16 @@ public class SessionCodec extends AbstractCodec implements Processor {
    * @see org.maodian.flycat.xmpp.codec.Processor#process(java.lang.Object)
    */
   @Override
-  public Object processIQ(XmppContext context, InfoQuery iq) {
-    // TODO: use NullObject pattern
+  public Object processGet(XmppContext context, InfoQuery iq) {
     return null;
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flycat.xmpp.codec.InfoQueryProcessor#processSet(org.maodian.flycat.xmpp.state.XmppContext, org.maodian.flycat.xmpp.InfoQuery)
+   */
+  @Override
+  public Object processSet(XmppContext context, InfoQuery iq) {
+    throw new UnsupportedOperationException();
   }
 
 }

@@ -22,7 +22,9 @@ import org.maodian.flycat.xmpp.state.XmppContext;
  * @author Cole Wen
  *
  */
-public interface Processor {
+public interface InfoQueryProcessor {
 
-  Object processIQ(XmppContext context, InfoQuery iq);
+  Object processGet(XmppContext context, InfoQuery iq);
+  
+  Object processSet(XmppContext context, InfoQuery iq);
 }

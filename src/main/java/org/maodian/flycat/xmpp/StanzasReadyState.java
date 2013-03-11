@@ -23,7 +23,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.maodian.flycat.ApplicationContext;
 import org.maodian.flycat.xmpp.codec.Decoder;
 import org.maodian.flycat.xmpp.codec.Encoder;
-import org.maodian.flycat.xmpp.codec.Processor;
+import org.maodian.flycat.xmpp.codec.InfoQueryProcessor;
 
 /**
  * @author Cole Wen
@@ -61,7 +61,7 @@ public class StanzasReadyState extends AbstractState {
     Decoder decoder = ApplicationContext.getInstance().getDecoder(xmlsr.getName());
     Encoder encoder = ApplicationContext.getInstance().getEncoder(InfoQuery.class);
     InfoQuery iq = (InfoQuery) decoder.decode(xmlsr);
-    Processor processor = ApplicationContext.getInstance().getProcessor(iq.getPayload().getClass());
+    InfoQueryProcessor processor = ApplicationContext.getInstance().getProcessor(iq.getPayload().getClass());
     
     InfoQuery.Builder iqBuilder = new InfoQuery.Builder(iq.getId(), "result").from("localhost").to(iq.getFrom())
         .language("en");

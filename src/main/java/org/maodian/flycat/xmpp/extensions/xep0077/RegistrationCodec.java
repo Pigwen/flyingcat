@@ -21,21 +21,22 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.maodian.flycat.xmpp.AbstractCodec;
 import org.maodian.flycat.xmpp.InfoQuery;
-import org.maodian.flycat.xmpp.StanzaError.Type;
 import org.maodian.flycat.xmpp.StanzaError;
+import org.maodian.flycat.xmpp.StanzaError.Type;
 import org.maodian.flycat.xmpp.StanzaErrorCondition;
 import org.maodian.flycat.xmpp.StreamError;
 import org.maodian.flycat.xmpp.XmppException;
-import org.maodian.flycat.xmpp.codec.Processor;
+import org.maodian.flycat.xmpp.codec.InfoQueryProcessor;
 import org.maodian.flycat.xmpp.state.XmppContext;
 
 /**
  * @author Cole Wen
  *
  */
-public class RegistrationCodec extends AbstractCodec implements Processor {
+public class RegistrationCodec extends AbstractCodec implements InfoQueryProcessor {
 
   /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.codec.Decoder#decode(javax.xml.stream.XMLStreamReader)
@@ -78,15 +79,20 @@ public class RegistrationCodec extends AbstractCodec implements Processor {
    * @see org.maodian.flycat.xmpp.codec.Processor#process(org.maodian.flycat.xmpp.state.XmppContext, java.lang.Object)
    */
   @Override
-  public Object processIQ(XmppContext context, InfoQuery iq) {
-    if (iq.getType().equals(InfoQuery.GET)) {
-      // TODO: cant return null otherwise the result iq will include nothing
-      return new Registration();
-    } else if (iq.getType().equals(InfoQuery.SET)) {
-      return null;
-    } else {
-      throw new XmppException("The ", new StanzaError(iq, StanzaErrorCondition.SERVICE_UNAVAILABLE, Type.CANCEL));
+  public Object processGet(XmppContext context, InfoQuery iq) {
+    return new Registration();
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flycat.xmpp.codec.InfoQueryProcessor#processSet(org.maodian.flycat.xmpp.state.XmppContext, org.maodian.flycat.xmpp.InfoQuery)
+   */
+  @Override
+  public Object processSet(XmppContext context, InfoQuery iq) {
+    Registration registration = (Registration) iq.getPayload();
+    if (StringUtils.isEmpty(registration.getUsername()) || StringUtils.isEmpty(registration.getPassword())) {
+      throw new XmppException(new StanzaError(iq, StanzaErrorCondition.NOT_ACCEPTABLE, Type.MODIFY));
     }
+    return null;
   }
 
 }

@@ -24,14 +24,14 @@ import org.maodian.flycat.xmpp.AbstractCodec;
 import org.maodian.flycat.xmpp.InfoQuery;
 import org.maodian.flycat.xmpp.StreamError;
 import org.maodian.flycat.xmpp.XmppException;
-import org.maodian.flycat.xmpp.codec.Processor;
+import org.maodian.flycat.xmpp.codec.InfoQueryProcessor;
 import org.maodian.flycat.xmpp.state.XmppContext;
 
 /**
  * @author Cole Wen
  *
  */
-public class QueryItemCodec extends AbstractCodec implements Processor {
+public class QueryItemCodec extends AbstractCodec implements InfoQueryProcessor {
 
   /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.codec.Decoder#decode(javax.xml.stream.XMLStreamReader)
@@ -59,8 +59,16 @@ public class QueryItemCodec extends AbstractCodec implements Processor {
    * @see org.maodian.flycat.xmpp.payload.Processor#process(java.lang.Object)
    */
   @Override
-  public Object processIQ(XmppContext context, InfoQuery iq) {
+  public Object processGet(XmppContext context, InfoQuery iq) {
     return new QueryItem();
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flycat.xmpp.codec.InfoQueryProcessor#processSet(org.maodian.flycat.xmpp.state.XmppContext, org.maodian.flycat.xmpp.InfoQuery)
+   */
+  @Override
+  public Object processSet(XmppContext context, InfoQuery iq) {
+    throw new UnsupportedOperationException();
   }
 
 }

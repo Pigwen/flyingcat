@@ -27,7 +27,7 @@ import org.maodian.flycat.xmpp.XmppException;
 import org.maodian.flycat.xmpp.XmppNamespace;
 import org.maodian.flycat.xmpp.codec.Decoder;
 import org.maodian.flycat.xmpp.codec.Encoder;
-import org.maodian.flycat.xmpp.codec.Processor;
+import org.maodian.flycat.xmpp.codec.InfoQueryProcessor;
 
 /**
  * @author Cole Wen
@@ -49,8 +49,21 @@ public class InfoQueryCommand extends ContextAwareCommand {
     InfoQuery.Builder iqBuilder = new InfoQuery.Builder(reqIQ.getId(), "result").from("localhost").to(reqIQ.getFrom())
         .language("en");
     Object reqPayload = reqIQ.getPayload();
-    Processor processor = ApplicationContext.getInstance().getProcessor(reqPayload.getClass());
-    Object rspPayload = processor.processIQ(getXmppContext(), reqIQ);
+    InfoQueryProcessor processor = ApplicationContext.getInstance().getProcessor(reqPayload.getClass());
+    Object rspPayload = null;
+    switch (reqIQ.getType()) {
+    case InfoQuery.GET:
+      rspPayload = processor.processGet(getXmppContext(), reqIQ);
+      break;
+    case InfoQuery.SET:
+      rspPayload = processor.processSet(getXmppContext(), reqIQ);
+      break;
+    case InfoQuery.RESULT:
+      throw new IllegalStateException("The server does not support <iq /> type as RESULT");
+    default:
+      throw new IllegalStateException("Unrecognized state: " + reqIQ.getType());
+    }
+    
     iqBuilder.payload(rspPayload);
     encoder.encode(iqBuilder.build(), xmlsw);
     return new SelectState();

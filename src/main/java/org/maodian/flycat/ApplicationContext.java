@@ -28,7 +28,7 @@ import org.maodian.flycat.xmpp.codec.BindCodec;
 import org.maodian.flycat.xmpp.codec.Decoder;
 import org.maodian.flycat.xmpp.codec.Encoder;
 import org.maodian.flycat.xmpp.codec.InfoQueryCodec;
-import org.maodian.flycat.xmpp.codec.Processor;
+import org.maodian.flycat.xmpp.codec.InfoQueryProcessor;
 import org.maodian.flycat.xmpp.codec.SessionCodec;
 import org.maodian.flycat.xmpp.state.ContextAwareCommand;
 import org.maodian.flycat.xmpp.state.InfoQueryCommand;
@@ -43,7 +43,7 @@ public class ApplicationContext {
   private static final ApplicationContext INSTANCE = new ApplicationContext();
   private Map<QName, Decoder> decoderMap = new ConcurrentHashMap<>();
   private Map<Class<?>, Encoder> encoderMap = new ConcurrentHashMap<>();
-  private Map<Class<?>, Processor> processorMap = new ConcurrentHashMap<>();
+  private Map<Class<?>, InfoQueryProcessor> processorMap = new ConcurrentHashMap<>();
   private Map<QName, Class<? extends ContextAwareCommand>> cmdMap = new ConcurrentHashMap<>(); 
   
   public static ApplicationContext getInstance() {
@@ -79,7 +79,7 @@ public class ApplicationContext {
     encoderMap.put(clazz, encoder);
   }
   
-  public void registerProcessor(Class<?> clazz, Processor processor) {
+  public void registerProcessor(Class<?> clazz, InfoQueryProcessor processor) {
     processorMap.put(clazz, processor);
   }
   
@@ -91,7 +91,7 @@ public class ApplicationContext {
     return encoderMap.get(clazz);
   }
   
-  public Processor getProcessor(Class<?> clazz) {
+  public InfoQueryProcessor getProcessor(Class<?> clazz) {
     return processorMap.get(clazz);
   }
 
