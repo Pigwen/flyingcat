@@ -22,13 +22,18 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang3.StringUtils;
+import org.maodian.flyingcat.im.ErrorCode;
+import org.maodian.flyingcat.im.IMException;
+import org.maodian.flyingcat.im.Session;
+import org.maodian.flyingcat.im.UserError;
+import org.maodian.flyingcat.im.entity.User;
 import org.maodian.flyingcat.xmpp.AbstractCodec;
 import org.maodian.flyingcat.xmpp.InfoQuery;
 import org.maodian.flyingcat.xmpp.StanzaError;
+import org.maodian.flyingcat.xmpp.StanzaError.Type;
 import org.maodian.flyingcat.xmpp.StanzaErrorCondition;
 import org.maodian.flyingcat.xmpp.StreamError;
 import org.maodian.flyingcat.xmpp.XmppException;
-import org.maodian.flyingcat.xmpp.StanzaError.Type;
 import org.maodian.flyingcat.xmpp.codec.InfoQueryProcessor;
 import org.maodian.flyingcat.xmpp.state.XmppContext;
 
@@ -89,8 +94,20 @@ public class RegistrationCodec extends AbstractCodec implements InfoQueryProcess
   @Override
   public Object processSet(XmppContext context, InfoQuery iq) {
     Registration registration = (Registration) iq.getPayload();
-    if (StringUtils.isEmpty(registration.getUsername()) || StringUtils.isEmpty(registration.getPassword())) {
+    String username = registration.getUsername();
+    String password = registration.getPassword();
+    if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
       throw new XmppException(new StanzaError(iq, StanzaErrorCondition.NOT_ACCEPTABLE, Type.MODIFY));
+    }
+    
+    Session session = context.createIMSession();
+    try {
+      session.register(new User(username, password));
+    } catch (IMException e) {
+      ErrorCode errorCode = e.getErrorCode();
+      if (errorCode == UserError.DUPLICATED_USERNAME) {
+        throw new XmppException(new StanzaError(iq, StanzaErrorCondition.CONFLICT, Type.CANCEL));
+      }
     }
     return null;
   }

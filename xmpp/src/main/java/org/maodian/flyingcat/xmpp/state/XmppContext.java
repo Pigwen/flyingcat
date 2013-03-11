@@ -15,11 +15,13 @@
  */
 package org.maodian.flyingcat.xmpp.state;
 
+import io.netty.channel.ChannelHandlerContext;
+
 import javax.xml.namespace.QName;
 
+import org.maodian.flyingcat.im.DefaultSession;
+import org.maodian.flyingcat.im.Session;
 import org.maodian.flyingcat.xmpp.ApplicationContext;
-
-import io.netty.channel.ChannelHandlerContext;
 
 
 
@@ -100,6 +102,10 @@ public class XmppContext {
     Result result = state.step(this, xml);
     state = result.getNextState();
     return result.getData();
+  }
+  
+  public Session createIMSession() {
+    return new DefaultSession();
   }
   
   public static XmppContext newInstance(ChannelHandlerContext ctx) {
