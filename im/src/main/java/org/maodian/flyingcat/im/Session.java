@@ -15,6 +15,8 @@
  */
 package org.maodian.flyingcat.im;
 
+import java.util.List;
+
 import org.maodian.flyingcat.im.entity.User;
 
 /**
@@ -24,4 +26,6 @@ import org.maodian.flyingcat.im.entity.User;
 public interface Session {
 
   void register(User user) throws IMException;
+  
+  List<User> getContactList();
 }

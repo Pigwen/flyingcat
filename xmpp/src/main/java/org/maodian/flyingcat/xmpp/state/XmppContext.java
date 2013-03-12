@@ -105,7 +105,7 @@ public class XmppContext {
   }
   
   public Session createIMSession() {
-    return new InMemorySession();
+    return new InMemorySession(bareJID);
   }
   
   public static XmppContext newInstance(ChannelHandlerContext ctx) {

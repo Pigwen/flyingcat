@@ -17,6 +17,8 @@ package org.maodian.flyingcat.xmpp;
 
 public final class XmppNamespace {
 
+  private XmppNamespace() {}
+  
   public static final String STREAM = "http://etherx.jabber.org/streams";
   public static final String CLIENT_CONTENT = "jabber:client";
   public static final String TLS = "urn:ietf:params:xml:ns:xmpp-tls";
@@ -24,4 +26,5 @@ public final class XmppNamespace {
   public static final String BIND = "urn:ietf:params:xml:ns:xmpp-bind";
   public static final String SESSION = "urn:ietf:params:xml:ns:xmpp-session";
   public static final String STANZAS = "urn:ietf:params:xml:ns:xmpp-stanzas";
+  public static final String ROSTER = "jabber:iq:roster";
 }
