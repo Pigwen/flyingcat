@@ -26,7 +26,7 @@ import org.maodian.flyingcat.im.entity.User;
  * @author Cole Wen
  * 
  */
-public class InMemorySession implements Session {
+public class InMemorySession implements IMSession {
   private static final ConcurrentMap<String, User> users = new ConcurrentHashMap<>();
   private static final ConcurrentHashMap<User, List<User>> roster = new ConcurrentHashMap<>();
   private final String username;

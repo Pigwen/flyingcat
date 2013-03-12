@@ -23,7 +23,7 @@ import org.maodian.flyingcat.im.entity.User;
  * @author Cole Wen
  *
  */
-public interface Session {
+public interface IMSession {
 
   void register(User user) throws IMException;
   

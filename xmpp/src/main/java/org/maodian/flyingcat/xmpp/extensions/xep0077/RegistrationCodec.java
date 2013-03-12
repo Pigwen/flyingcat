@@ -24,7 +24,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.maodian.flyingcat.im.ErrorCode;
 import org.maodian.flyingcat.im.IMException;
-import org.maodian.flyingcat.im.Session;
+import org.maodian.flyingcat.im.IMSession;
 import org.maodian.flyingcat.im.UserError;
 import org.maodian.flyingcat.im.entity.User;
 import org.maodian.flyingcat.xmpp.AbstractCodec;
@@ -100,7 +100,7 @@ public class RegistrationCodec extends AbstractCodec implements InfoQueryProcess
       throw new XmppException(new StanzaError(iq, StanzaErrorCondition.NOT_ACCEPTABLE, Type.MODIFY));
     }
     
-    Session session = context.createIMSession();
+    IMSession session = context.createIMSession();
     try {
       session.register(new User(username, password));
     } catch (IMException e) {

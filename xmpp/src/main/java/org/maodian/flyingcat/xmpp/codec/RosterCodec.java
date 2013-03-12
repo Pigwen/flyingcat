@@ -22,7 +22,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.maodian.flyingcat.im.Session;
+import org.maodian.flyingcat.im.IMSession;
 import org.maodian.flyingcat.im.entity.User;
 import org.maodian.flyingcat.xmpp.AbstractCodec;
 import org.maodian.flyingcat.xmpp.Contact;
@@ -75,7 +75,7 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
    */
   @Override
   public Object processGet(XmppContext context, InfoQuery iq) {
-    Session session = context.createIMSession();
+    IMSession session = context.createIMSession();
     List<User> contacts = session.getContactList();
     return new Roster(contacts.hashCode() + "", contacts.toArray(new Contact[0]));
   }
