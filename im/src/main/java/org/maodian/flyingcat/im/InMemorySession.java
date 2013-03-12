@@ -32,7 +32,11 @@ import org.maodian.flyingcat.im.entity.User;
  * 
  */
 public class InMemorySession implements IMSession {
-  public static final ConcurrentMap<String, User> users = new ConcurrentHashMap<>();
+  public static final ConcurrentMap<String, User> users = new ConcurrentHashMap<String, User>() {
+    {
+      put("cole", new User("cole", "11")); 
+    }
+  };
   public static final ConcurrentHashMap<User, List<User>> roster = new ConcurrentHashMap<>();
   
   private static final SecurityManager securityManager = new IniSecurityManagerFactory("classpath:shiro.ini").getInstance();
