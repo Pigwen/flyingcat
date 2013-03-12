@@ -100,7 +100,7 @@ public class RegistrationCodec extends AbstractCodec implements InfoQueryProcess
       throw new XmppException(new StanzaError(iq, StanzaErrorCondition.NOT_ACCEPTABLE, Type.MODIFY));
     }
     
-    IMSession session = context.createIMSession();
+    IMSession session = context.getIMSession();
     try {
       session.register(new User(username, password));
     } catch (IMException e) {

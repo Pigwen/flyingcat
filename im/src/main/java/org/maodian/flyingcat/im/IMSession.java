@@ -28,4 +28,6 @@ public interface IMSession {
   void register(User user) throws IMException;
   
   List<User> getContactList();
+  
+  void login(String username, String password);
 }

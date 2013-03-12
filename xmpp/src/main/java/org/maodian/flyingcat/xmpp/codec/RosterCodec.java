@@ -75,7 +75,7 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
    */
   @Override
   public Object processGet(XmppContext context, InfoQuery iq) {
-    IMSession session = context.createIMSession();
+    IMSession session = context.getIMSession();
     List<User> contacts = session.getContactList();
     return new Roster(contacts.hashCode() + "", contacts.toArray(new Contact[0]));
   }

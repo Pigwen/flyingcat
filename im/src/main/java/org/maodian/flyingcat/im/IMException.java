@@ -22,7 +22,7 @@ import java.util.Map;
  * @author Cole Wen
  *
  */
-public class IMException extends Exception {
+public class IMException extends RuntimeException {
   private static final long serialVersionUID = 6622896641321176634L;
   private final ErrorCode errorCode;
   private final Map<String, Object> properties = new HashMap<>();

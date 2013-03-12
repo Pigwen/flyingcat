@@ -19,7 +19,12 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.config.IniSecurityManagerFactory;
+import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.subject.Subject;
 import org.maodian.flyingcat.im.entity.User;
 
 /**
@@ -27,15 +32,16 @@ import org.maodian.flyingcat.im.entity.User;
  * 
  */
 public class InMemorySession implements IMSession {
-  private static final ConcurrentMap<String, User> users = new ConcurrentHashMap<>();
-  private static final ConcurrentHashMap<User, List<User>> roster = new ConcurrentHashMap<>();
-  private final String username;
-
-  /**
-   * @param username
-   */
-  public InMemorySession(String username) {
-    this.username = username;
+  public static final ConcurrentMap<String, User> users = new ConcurrentHashMap<>();
+  public static final ConcurrentHashMap<User, List<User>> roster = new ConcurrentHashMap<>();
+  
+  private static final SecurityManager securityManager = new IniSecurityManagerFactory("classpath:shiro.ini").getInstance();
+  static {
+    SecurityUtils.setSecurityManager(securityManager);
+  }
+  
+  public InMemorySession() {
+    
   }
 
   /*
@@ -47,13 +53,9 @@ public class InMemorySession implements IMSession {
    */
   @Override
   public void register(User user) throws IMException {
-    if (StringUtils.equals(username, user.getUsername())) {
-      boolean success = users.putIfAbsent(user.getUsername(), user) == null;
-      if (!success) {
-        throw new IMException(UserError.DUPLICATED_USERNAME);
-      }
-    } else {
-      throw new IllegalArgumentException("The username doesnot match");
+    boolean success = users.putIfAbsent(user.getUsername(), user) == null;
+    if (!success) {
+      throw new IMException(UserError.DUPLICATED_USERNAME);
     }
   }
 
@@ -62,8 +64,25 @@ public class InMemorySession implements IMSession {
    */
   @Override
   public List<User> getContactList() {
-    User user = users.get(username);
+    User user = users.get("");
     return roster.get(user);
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.im.IMSession#login(java.lang.String, java.lang.String)
+   */
+  @Override
+  public void login(String username, String password) {
+    Subject user = SecurityUtils.getSubject();
+    if (user.isAuthenticated()) {
+      throw new IllegalStateException("The user has already been authenticated");
+    }
+    UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+    try {
+      user.login(token);
+    } catch (AuthenticationException e) {
+      throw new IMException("", e, UserError.AUTHENTICATED_FAILS);
+    }
   }
 
 }

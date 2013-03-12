@@ -39,6 +39,7 @@ import org.maodian.flyingcat.xmpp.ApplicationContext;
  */
 public class XmppContext {
   private final ChannelHandlerContext ctx;
+  private IMSession session;
   private State state;
   private String bareJID;
   private String resource;
@@ -83,6 +84,11 @@ public class XmppContext {
   String wrapStreamTag(String xml) {
     return streamTag + xml;
   }
+  
+  public void login(String username, String password) {
+    session = getIMSession();
+    session.login(username, password);
+  }
 
   public Command lookup(QName qName) {
     Class<? extends ContextAwareCommand> cmd = ApplicationContext.getInstance().getCommand(qName);
@@ -104,8 +110,11 @@ public class XmppContext {
     return result.getData();
   }
   
-  public IMSession createIMSession() {
-    return new InMemorySession(bareJID);
+  public IMSession getIMSession() {
+    if (session == null) {
+      session = new InMemorySession();
+    }
+    return session;
   }
   
   public static XmppContext newInstance(ChannelHandlerContext ctx) {
