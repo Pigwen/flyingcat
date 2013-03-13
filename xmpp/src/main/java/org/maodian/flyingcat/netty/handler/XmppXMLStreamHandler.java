@@ -94,6 +94,7 @@ public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<St
       if (error instanceof StanzaError) {
         ctx.write(error.toXML()).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
       } else {
+        xmppContext.destroy();
         StringBuilder xml = new StringBuilder(xmppException.getXmppError().toXML()).append("</stream:stream>");
         initCloseingStream = true;
         ctx.write(xml.toString()).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);

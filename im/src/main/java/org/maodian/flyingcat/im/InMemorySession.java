@@ -35,6 +35,7 @@ public class InMemorySession implements IMSession {
   public static final ConcurrentMap<String, User> users = new ConcurrentHashMap<String, User>() {
     {
       put("cole", new User("cole", "11")); 
+      put("cole2", new User("cole2", "22"));
     }
   };
   public static final ConcurrentHashMap<User, List<User>> roster = new ConcurrentHashMap<>();
@@ -43,6 +44,8 @@ public class InMemorySession implements IMSession {
   static {
     SecurityUtils.setSecurityManager(securityManager);
   }
+  
+  private Subject subject;
   
   public InMemorySession() {
     
@@ -78,15 +81,27 @@ public class InMemorySession implements IMSession {
   @Override
   public void login(String username, String password) {
     Subject user = SecurityUtils.getSubject();
-    if (user.isAuthenticated()) {
+    if ((subject != null && subject.isAuthenticated()) || user.isAuthenticated()) {
       throw new IllegalStateException("The user has already been authenticated");
     }
     UsernamePasswordToken token = new UsernamePasswordToken(username, password);
     try {
       user.login(token);
+      subject = user;
     } catch (AuthenticationException e) {
       throw new IMException("", e, UserError.AUTHENTICATED_FAILS);
     }
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.im.IMSession#logout()
+   */
+  @Override
+  public void destroy() {
+    if (subject == null) {
+      throw new IllegalStateException("No subject found");
+    }
+    subject.logout();
   }
 
 }

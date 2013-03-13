@@ -89,6 +89,10 @@ public class XmppContext {
     session = getIMSession();
     session.login(username, password);
   }
+  
+  public void destroy() {
+    session.destroy();
+  }
 
   public Command lookup(QName qName) {
     Class<? extends ContextAwareCommand> cmd = ApplicationContext.getInstance().getCommand(qName);

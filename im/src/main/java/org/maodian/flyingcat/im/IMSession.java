@@ -30,4 +30,6 @@ public interface IMSession {
   List<User> getContactList();
   
   void login(String username, String password);
+  
+  void destroy();
 }
