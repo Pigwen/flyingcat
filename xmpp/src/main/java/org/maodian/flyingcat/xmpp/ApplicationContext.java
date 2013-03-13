@@ -29,6 +29,7 @@ import org.maodian.flyingcat.xmpp.codec.RosterCodec;
 import org.maodian.flyingcat.xmpp.codec.SessionCodec;
 import org.maodian.flyingcat.xmpp.state.ContextAwareCommand;
 import org.maodian.flyingcat.xmpp.state.InfoQueryCommand;
+import org.maodian.flyingcat.xmpp.state.PresenceCommand;
 import org.maodian.flyingcat.xmpp.state.SASLCommand;
 import org.maodian.flyingcat.xmpp.state.TLSCommand;
 
@@ -70,6 +71,7 @@ public class ApplicationContext {
     cmdMap.put(new QName(XmppNamespace.TLS, "starttls"), TLSCommand.class);
     cmdMap.put(new QName(XmppNamespace.SASL, "auth"), SASLCommand.class);
     cmdMap.put(new QName(XmppNamespace.CLIENT_CONTENT, "iq"), InfoQueryCommand.class);
+    cmdMap.put(new QName(XmppNamespace.CLIENT_CONTENT, "presence"), PresenceCommand.class);
   }
   
   public void registerDecoder(QName qname, Decoder decoder) {
