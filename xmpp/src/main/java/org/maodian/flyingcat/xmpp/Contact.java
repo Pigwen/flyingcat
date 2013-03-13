@@ -35,7 +35,7 @@ public class Contact {
   /**
    * @param jabberId
    */
-  private Contact(String jabberId) {
+  public Contact(String jabberId) {
     this(jabberId, SUB_NONE, null, false, null);
   }
 
@@ -45,7 +45,7 @@ public class Contact {
    * @param approved
    * @param ask
    */
-  private Contact(String jabberId, String subscription, String name, boolean approved, String ask) {
+  public Contact(String jabberId, String subscription, String name, boolean approved, String ask) {
     this.jabberId = jabberId;
     this.subscription = subscription;
     this.name = name;

@@ -15,6 +15,7 @@
  */
 package org.maodian.flyingcat.xmpp.codec;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamConstants;
@@ -46,7 +47,8 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
   public Object decode(XMLStreamReader xmlsr) {
     try {
       xmlsr.nextTag();
-      xmlsr.require(XMLStreamConstants.START_ELEMENT, XmppNamespace.ROSTER, "query");
+      // check end element for empty tag
+      xmlsr.require(XMLStreamConstants.END_ELEMENT, XmppNamespace.ROSTER, "query");
       return new Roster();
     } catch (XMLStreamException e) {
       throw new XmppException(e, StreamError.INVALID_XML);
@@ -61,11 +63,11 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
     Roster roster = (Roster) object;
     xmlsw.writeStartElement("", "query", XmppNamespace.ROSTER);
     xmlsw.writeDefaultNamespace(XmppNamespace.ROSTER);
-    xmlsw.writeAttribute("ver", roster.getVersion());
+    writeRequiredAttribute(xmlsw, "ver", roster.getVersion());
     for (Contact c : roster) {
       xmlsw.writeEmptyElement("", "item", XmppNamespace.ROSTER);
-      xmlsw.writeAttribute("jid", c.getJabberId());
-      xmlsw.writeAttribute("name", c.getName());
+      writeRequiredAttribute(xmlsw, "jid", c.getJabberId());
+      writeAttributeIfNotBlank(xmlsw, "name", c.getName());
     }
     xmlsw.writeEndElement();
   }
@@ -76,7 +78,13 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
   @Override
   public Object processGet(XmppContext context, InfoQuery iq) {
     IMSession session = context.getIMSession();
-    List<User> contacts = session.getContactList();
+    List<User> users = session.getContactList();
+    List<Contact> contacts = new ArrayList<>(users.size());
+    for (User u: users) {
+      Contact c = new Contact(u.getUsername());
+      contacts.add(c);
+    }
+    
     return new Roster(contacts.hashCode() + "", contacts.toArray(new Contact[0]));
   }
 

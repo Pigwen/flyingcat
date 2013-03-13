@@ -67,7 +67,7 @@ public class Roster implements Iterable<Contact> {
   }
 
   private class RosterIter implements Iterator<Contact> {
-    private int cursor = 0;
+    private Iterator<Contact> iter = contacts.iterator();
 
     /*
      * (non-Javadoc)
@@ -76,7 +76,7 @@ public class Roster implements Iterable<Contact> {
      */
     @Override
     public boolean hasNext() {
-      return cursor < contacts.size();
+      return iter.hasNext();
     }
 
     /*
@@ -86,7 +86,7 @@ public class Roster implements Iterable<Contact> {
      */
     @Override
     public Contact next() {
-      return contacts.iterator().next();
+      return iter.next();
     }
 
     /*
@@ -96,7 +96,7 @@ public class Roster implements Iterable<Contact> {
      */
     @Override
     public void remove() {
-      contacts.iterator().remove();
+      iter.remove();
     }
 
   }

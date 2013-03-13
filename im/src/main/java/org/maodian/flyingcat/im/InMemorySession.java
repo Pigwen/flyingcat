@@ -15,6 +15,7 @@
  */
 package org.maodian.flyingcat.im;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -32,13 +33,22 @@ import org.maodian.flyingcat.im.entity.User;
  * 
  */
 public class InMemorySession implements IMSession {
+  private static final User cole = new User("cole", "11");
+  private static final User cole2 = new User("cole2", "22");
+  private static final User cole3 = new User("cole3", "33");
+  
   public static final ConcurrentMap<String, User> users = new ConcurrentHashMap<String, User>() {
     {
-      put("cole", new User("cole", "11")); 
-      put("cole2", new User("cole2", "22"));
+      put(cole.getUsername(), cole); 
+      put(cole2.getUsername(), cole2);
+      put(cole3.getUsername(), cole3);
     }
   };
-  public static final ConcurrentHashMap<User, List<User>> roster = new ConcurrentHashMap<>();
+  public static final ConcurrentHashMap<User, List<User>> roster = new ConcurrentHashMap<User, List<User>>() {
+    {
+      put(cole, Arrays.asList(cole2, cole3));
+    }
+  };
   
   private static final SecurityManager securityManager = new IniSecurityManagerFactory("classpath:shiro.ini").getInstance();
   static {
@@ -71,10 +81,10 @@ public class InMemorySession implements IMSession {
    */
   @Override
   public List<User> getContactList() {
-    User user = users.get("");
+    User user = users.get((String) subject.getPrincipal());
     return roster.get(user);
   }
-
+ 
   /* (non-Javadoc)
    * @see org.maodian.flyingcat.im.IMSession#login(java.lang.String, java.lang.String)
    */
