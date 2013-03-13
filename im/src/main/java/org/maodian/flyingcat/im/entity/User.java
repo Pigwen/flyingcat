@@ -21,19 +21,25 @@ package org.maodian.flyingcat.im.entity;
  */
 public class User {
   private final String username;
+  private final String nickname;
   private String password;
 
   /**
    * @param username
    * @param password
    */
-  public User(String username, String password) {
+  public User(String username, String nickname, String password) {
     this.username = username;
+    this.nickname = nickname;
     this.password = password;
   }
   
+  public User(String username, String nickname) {
+    this(username, nickname, null);
+  }
+  
   public User(String username) {
-    this(username, null);
+    this(username, username);
   }
 
   public String getPassword() {
