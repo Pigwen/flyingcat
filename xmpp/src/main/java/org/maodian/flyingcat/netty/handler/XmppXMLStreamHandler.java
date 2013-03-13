@@ -102,6 +102,11 @@ public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<St
       }
       return;
     }
+    xmppContext.destroy();
+    String xml = "</stream:stream>";
+    initCloseingStream = true;
+    ctx.write(xml).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
+    logger.error("Close the XMPP Stream due to error", cause);
     super.exceptionCaught(ctx, cause);
   }
 }
