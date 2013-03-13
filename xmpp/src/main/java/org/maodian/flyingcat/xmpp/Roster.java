@@ -55,6 +55,10 @@ public class Roster implements Iterable<Contact> {
   public void addContact(Contact contact) {
     contacts.add(contact);
   }
+  
+  public int size() {
+    return contacts.size();
+  }
 
   /*
    * (non-Javadoc)

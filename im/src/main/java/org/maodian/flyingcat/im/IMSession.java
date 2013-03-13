@@ -29,6 +29,10 @@ public interface IMSession {
   
   List<User> getContactList();
   
+  void removeContact(User user);
+  
+  void saveContact(User user);
+  
   void login(String username, String password);
   
   void destroy();

@@ -23,15 +23,19 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.maodian.flyingcat.im.IMSession;
 import org.maodian.flyingcat.im.entity.User;
 import org.maodian.flyingcat.xmpp.AbstractCodec;
 import org.maodian.flyingcat.xmpp.Contact;
 import org.maodian.flyingcat.xmpp.InfoQuery;
 import org.maodian.flyingcat.xmpp.Roster;
+import org.maodian.flyingcat.xmpp.StanzaError;
+import org.maodian.flyingcat.xmpp.StanzaErrorCondition;
 import org.maodian.flyingcat.xmpp.StreamError;
 import org.maodian.flyingcat.xmpp.XmppException;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
+import org.maodian.flyingcat.xmpp.StanzaError.Type;
 import org.maodian.flyingcat.xmpp.state.XmppContext;
 
 /**
@@ -93,6 +97,19 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
    */
   @Override
   public Object processSet(XmppContext context, InfoQuery iq) {
+    Roster roster = (Roster) iq.getPayload();
+    if (roster.size() != 1) {
+      throw new XmppException("Can only modify one contact each time", new StanzaError(iq, StanzaErrorCondition.BAD_REQUEST, Type.MODIFY));
+    }
+    Contact c = roster.iterator().next();
+    IMSession session = context.getIMSession();
+    if (StringUtils.equals(c.getSubscription(), Contact.SUB_REMOVE)) {
+      session.removeContact(new User(c.getName()));
+    } else {
+      session.saveContact(new User(c.getName()));
+    }
+    
+    // TODO: implement roster push
     return null;
   }
 

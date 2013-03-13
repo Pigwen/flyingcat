@@ -15,8 +15,10 @@
  */
 package org.maodian.flyingcat.im;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -44,9 +46,14 @@ public class InMemorySession implements IMSession {
       put(cole3.getUsername(), cole3);
     }
   };
-  public static final ConcurrentHashMap<User, List<User>> roster = new ConcurrentHashMap<User, List<User>>() {
+  public static final ConcurrentHashMap<User, Map<String, User>> roster = new ConcurrentHashMap<User, Map<String, User>>() {
     {
-      put(cole, Arrays.asList(cole2, cole3));
+      put(cole, new ConcurrentHashMap<String, User>() {
+        {
+          put(cole2.getUsername(), cole2);
+          put(cole3.getUsername(), cole3);
+        }
+      });
     }
   };
   
@@ -82,7 +89,7 @@ public class InMemorySession implements IMSession {
   @Override
   public List<User> getContactList() {
     User user = users.get((String) subject.getPrincipal());
-    return roster.get(user);
+    return new ArrayList<>(roster.get(user).values());
   }
  
   /* (non-Javadoc)
@@ -112,6 +119,24 @@ public class InMemorySession implements IMSession {
       throw new IllegalStateException("No subject found");
     }
     subject.logout();
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.im.IMSession#removeContact()
+   */
+  @Override
+  public void removeContact(User user) {
+    User owner = users.get((String) subject.getPrincipal());
+    roster.get(owner).remove(user.getUsername());
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.im.IMSession#saveContact(org.maodian.flyingcat.im.entity.User)
+   */
+  @Override
+  public void saveContact(User user) {
+    User owner = users.get((String) subject.getPrincipal());
+    roster.get(owner).put(user.getUsername(), user);
   }
 
 }
