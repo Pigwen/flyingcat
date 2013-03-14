@@ -13,96 +13,97 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flyingcat.xmpp;
+package org.maodian.flyingcat.xmpp.state;
 
 import static org.junit.Assert.*;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.maodian.flyingcat.holder.XMLInputFactoryHolder;
-import org.maodian.flyingcat.xmpp.SASLError;
-import org.maodian.flyingcat.xmpp.SASLState;
-import org.maodian.flyingcat.xmpp.StreamError;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
+import org.maodian.flyingcat.xmpp.state.StreamState.AuthenticatedStreamState;
 
 /**
  * @author Cole Wen
- * 
+ *
  */
-public class SASLStateTest extends StateTest {
+public class SASLCommandTest extends CommandTest {
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.maodian.flycat.xmpp.StateTest#doSetup()
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.xmpp.state.CommandTest#doSetup()
    */
   @Override
   public void doSetup() {
-    state = new SASLState();
+    cmd = new SASLCommand();
+    cmd.setXmppContext(context);
   }
 
   @Test
-  public void testPlainMechanismSuccess() throws XMLStreamException {
+  public void testPlainMechanismSuccess() throws Exception {
     String inXML = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>AGp1bGlldAByMG0zMG15cjBtMzA=</auth>";
-    String outXML = state.handle(context, inXML);
-
-    Reader reader = new StringReader(outXML);
+    
+    Writer writer = new StringWriter();
+    XMLStreamReader xmlsr1 = newXMLStreamReader(new StringReader(inXML));
+    XMLStreamWriter xmlsw = newXMLStreamWriter(writer);
+    // skipt start document
+    xmlsr1.nextTag();
+    State state = cmd.execute(xmlsr1, xmlsw);
+    
+    Reader reader = new StringReader(writer.toString());
     XMLStreamReader xmlsr = XMLInputFactoryHolder.getXMLInputFactory().createXMLStreamReader(reader);
 
     xmlsr.next();
     QName qname = new QName(XmppNamespace.SASL, "success");
     assertEquals(qname, xmlsr.getName());
+    assertTrue(state instanceof AuthenticatedStreamState);
   }
   
   @Test
-  public void testInvalidNamespaceOfPlainAuth() {
+  public void testInvalidNamespaceOfPlainAuth() throws Exception {
     String inXML = "<auth xmlns='invalid name space' mechanism='PLAIN'>AGp1bGlldAByMG0zMG15cjBtMzA=</auth>";
-    expectXmppException(state, inXML, StreamError.INVALID_NAMESPACE);
+    expectXmppException(cmd, inXML, StreamError.INVALID_NAMESPACE);
   }
   
   @Test
-  public void testInvalidMechanism() {
+  public void testInvalidMechanism() throws Exception {
     String inXML = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='invalid'>AGp1bGlldAByMG0zMG15cjBtMzA=</auth>";
-    expectXmppException(state, inXML, SASLError.INVALID_MECHANISM);
+    expectXmppException(cmd, inXML, SASLError.INVALID_MECHANISM);
   }
   
   @Test
-  public void testIncorrectEncoding() {
+  public void testIncorrectEncoding() throws Exception {
     String inXML = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>***</auth>";
-    expectXmppException(state, inXML, SASLError.INCORRECT_ENCODING);
+    expectXmppException(cmd, inXML, SASLError.INCORRECT_ENCODING);
   }
   
   @Test
-  public void testCredentialIsLongerThan255() {
+  public void testCredentialIsLongerThan255() throws Exception {
     String credential = new StringBuilder(RandomStringUtils.randomAlphabetic(256)).append('\u0000')
         .append(RandomStringUtils.randomAlphabetic(256)).append('\u0000')
         .append(RandomStringUtils.randomAlphabetic(256)).toString();
     String inXML = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>"
         + Base64.encodeBase64String(credential.getBytes(StandardCharsets.UTF_8)) + "</auth>";
-    expectXmppException(state, inXML, SASLError.MALFORMED_REQUEST);
+    expectXmppException(cmd, inXML, SASLError.MALFORMED_REQUEST);
   }
   
   @Test
-  public void testCredentialHasMoreThanTwoUnicodeNullSeperator() {
+  public void testCredentialHasMoreThanTwoUnicodeNullSeperator() throws Exception {
     String credential = new StringBuilder(RandomStringUtils.randomAlphabetic(256)).append('\u0000')
         .append(RandomStringUtils.randomAlphabetic(256)).append('\u0000')
         .append(RandomStringUtils.randomAlphabetic(256)).append('\u0000').toString();
     String inXML = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>"
         + Base64.encodeBase64String(credential.getBytes(StandardCharsets.UTF_8)) + "</auth>";
-    expectXmppException(state, inXML, SASLError.MALFORMED_REQUEST);
-  }
-  
-  @Test
-  public void testInvalidXML() {
-    testInvalidXML(state);
+    expectXmppException(cmd, inXML, SASLError.MALFORMED_REQUEST);
   }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flyingcat.xmpp;
+package org.maodian.flyingcat.xmpp.state;
 
 import java.util.HashMap;
 import java.util.Map;

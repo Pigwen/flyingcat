@@ -27,15 +27,15 @@ import org.maodian.flyingcat.im.IMException;
 import org.maodian.flyingcat.im.IMSession;
 import org.maodian.flyingcat.im.UserError;
 import org.maodian.flyingcat.im.entity.User;
-import org.maodian.flyingcat.xmpp.AbstractCodec;
-import org.maodian.flyingcat.xmpp.InfoQuery;
-import org.maodian.flyingcat.xmpp.StanzaError;
-import org.maodian.flyingcat.xmpp.StanzaError.Type;
-import org.maodian.flyingcat.xmpp.StanzaErrorCondition;
-import org.maodian.flyingcat.xmpp.StreamError;
-import org.maodian.flyingcat.xmpp.XmppException;
+import org.maodian.flyingcat.xmpp.codec.AbstractCodec;
 import org.maodian.flyingcat.xmpp.codec.InfoQueryProcessor;
+import org.maodian.flyingcat.xmpp.entity.InfoQuery;
+import org.maodian.flyingcat.xmpp.state.StanzaError;
+import org.maodian.flyingcat.xmpp.state.StanzaErrorCondition;
+import org.maodian.flyingcat.xmpp.state.StreamError;
 import org.maodian.flyingcat.xmpp.state.XmppContext;
+import org.maodian.flyingcat.xmpp.state.XmppException;
+import org.maodian.flyingcat.xmpp.state.StanzaError.Type;
 
 /**
  * @author Cole Wen

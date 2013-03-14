@@ -24,9 +24,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.maodian.flyingcat.xmpp.SASLError;
-import org.maodian.flyingcat.xmpp.StreamError;
-import org.maodian.flyingcat.xmpp.XmppException;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
 import org.maodian.flyingcat.xmpp.state.StreamState.AuthenticatedStreamState;
 

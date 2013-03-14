@@ -15,7 +15,7 @@
  */
 package org.maodian.flyingcat.xmpp.codec;
 
-import org.maodian.flyingcat.xmpp.InfoQuery;
+import org.maodian.flyingcat.xmpp.entity.InfoQuery;
 import org.maodian.flyingcat.xmpp.state.XmppContext;
 
 /**

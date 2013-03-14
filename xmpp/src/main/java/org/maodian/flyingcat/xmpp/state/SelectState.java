@@ -27,8 +27,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.maodian.flyingcat.holder.XMLInputFactoryHolder;
 import org.maodian.flyingcat.holder.XMLOutputFactoryHolder;
-import org.maodian.flyingcat.xmpp.StreamError;
-import org.maodian.flyingcat.xmpp.XmppException;
 
 /**
  * @author Cole Wen

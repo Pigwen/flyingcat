@@ -13,23 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flyingcat.xmpp;
+package org.maodian.flyingcat.xmpp.entity;
 
 /**
  * @author Cole Wen
  *
  */
-public interface Stanzas {
+public class Session {
 
-  String getTo();
-  String getId();
-  String getLanguage();
-  String getFrom();
-  String getType();
-  
-  static final String ERROR = "error";
-  
-  static interface Builder<T extends Stanzas> {
-    T build();
-  }
 }

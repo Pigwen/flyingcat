@@ -35,9 +35,9 @@ import org.maodian.flyingcat.im.entity.User;
  * 
  */
 public class InMemorySession implements IMSession {
-  private static final User cole = new User("cole", "11");
-  private static final User cole2 = new User("cole2", "22");
-  private static final User cole3 = new User("cole3", "33");
+  private static final User cole = new User("cole", "", "11");
+  private static final User cole2 = new User("cole2", "", "22");
+  private static final User cole3 = new User("cole3", "", "33");
   
   public static final ConcurrentMap<String, User> users = new ConcurrentHashMap<String, User>() {
     {

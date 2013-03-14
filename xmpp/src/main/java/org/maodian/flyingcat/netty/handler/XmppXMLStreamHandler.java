@@ -23,10 +23,10 @@ import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 import java.lang.invoke.MethodHandles;
 
 import org.apache.commons.lang3.StringUtils;
-import org.maodian.flyingcat.xmpp.StanzaError;
-import org.maodian.flyingcat.xmpp.XmppError;
-import org.maodian.flyingcat.xmpp.XmppException;
+import org.maodian.flyingcat.xmpp.state.StanzaError;
 import org.maodian.flyingcat.xmpp.state.XmppContext;
+import org.maodian.flyingcat.xmpp.state.XmppError;
+import org.maodian.flyingcat.xmpp.state.XmppException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flyingcat.xmpp;
+package org.maodian.flyingcat.xmpp.state;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.maodian.flyingcat.xmpp.StanzaError.Type;
+import org.maodian.flyingcat.xmpp.XmppNamespace;
+import org.maodian.flyingcat.xmpp.state.StanzaError.Type;
 
 
 /**

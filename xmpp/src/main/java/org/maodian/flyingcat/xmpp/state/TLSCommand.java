@@ -24,10 +24,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.maodian.flyingcat.xmpp.SecureSslContextFactory;
-import org.maodian.flyingcat.xmpp.StreamError;
-import org.maodian.flyingcat.xmpp.XmppException;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
+import org.maodian.flyingcat.xmpp.codec.SecureSslContextFactory;
 import org.maodian.flyingcat.xmpp.state.StreamState.TLSStreamState;
 
 /**

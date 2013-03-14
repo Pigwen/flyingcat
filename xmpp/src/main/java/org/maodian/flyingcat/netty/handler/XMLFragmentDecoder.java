@@ -22,8 +22,8 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 import java.lang.invoke.MethodHandles;
 
 import org.apache.commons.lang3.StringUtils;
-import org.maodian.flyingcat.xmpp.StreamError;
-import org.maodian.flyingcat.xmpp.XmppException;
+import org.maodian.flyingcat.xmpp.state.StreamError;
+import org.maodian.flyingcat.xmpp.state.XmppException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

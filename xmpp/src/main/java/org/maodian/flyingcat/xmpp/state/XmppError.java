@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flyingcat.xmpp;
+package org.maodian.flyingcat.xmpp.state;
 
 /**
  * @author Cole Wen
  *
  */
-public class BroadcastPresence {
+public interface XmppError {
 
+  int getNumber();
+  
+  String toXML();
 }

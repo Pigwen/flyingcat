@@ -13,25 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flyingcat.xmpp;
+package org.maodian.flyingcat.xmpp.state;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+
 import org.junit.Before;
-import org.maodian.flyingcat.xmpp.State;
-import org.maodian.flyingcat.xmpp.StreamError;
-import org.maodian.flyingcat.xmpp.XmppContext;
-import org.maodian.flyingcat.xmpp.XmppError;
-import org.maodian.flyingcat.xmpp.XmppException;
 
 /**
  * @author Cole Wen
  *
  */
-public abstract class StateTest {
+public abstract class CommandTest {
   protected XmppContext context;
-  protected State state;
+  protected ContextAwareCommand cmd;
   
   @Before
   public void setup() {
@@ -41,24 +46,33 @@ public abstract class StateTest {
   
   public abstract void doSetup();
   
+  protected XMLStreamReader newXMLStreamReader(Reader reader) throws Exception {
+    return XMLInputFactory.newInstance().createXMLStreamReader(reader);
+  }
+  
+  protected XMLStreamWriter newXMLStreamWriter(Writer writer) throws Exception {
+    return XMLOutputFactory.newInstance().createXMLStreamWriter(writer);
+  }
+  
   /**
    * expect an XmppException with the desired XmppError would be thrown while the 
    * State parameter handles the xml string 
-   * @param state
+   * @param cmd
    * @param xml
    * @param error
+   * @throws Exception 
    */
-  protected void expectXmppException(State state, String xml, XmppError error) {
+  protected void expectXmppException(Command cmd, String xml, XmppError error) throws Exception  {
     try {
-      state.handle(context, xml);
+      Writer writer = new StringWriter();
+      XMLStreamReader xmlsr = newXMLStreamReader(new StringReader(xml));
+      XMLStreamWriter xmlsw = newXMLStreamWriter(writer);
+      // skip the start_document
+      xmlsr.nextTag();
+      cmd.execute(xmlsr, xmlsw);
       fail("Should throw an XmppException");
     } catch (XmppException e) {
       assertSame(error, e.getXmppError());
     }
-  }
-  
-  public void testInvalidXML(State state) {
-    String inXML = "invalid xml";
-    expectXmppException(state, inXML, StreamError.BAD_FORMAT);
   }
 }

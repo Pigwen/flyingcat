@@ -22,11 +22,10 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.maodian.flyingcat.xmpp.AbstractCodec;
-import org.maodian.flyingcat.xmpp.InfoQuery;
-import org.maodian.flyingcat.xmpp.StanzaErrorCondition;
-import org.maodian.flyingcat.xmpp.XmppException;
-import org.maodian.flyingcat.xmpp.InfoQuery.Builder;
+import org.maodian.flyingcat.xmpp.entity.InfoQuery;
+import org.maodian.flyingcat.xmpp.entity.InfoQuery.Builder;
+import org.maodian.flyingcat.xmpp.state.StanzaErrorCondition;
+import org.maodian.flyingcat.xmpp.state.XmppException;
 
 /**
  * @author Cole Wen

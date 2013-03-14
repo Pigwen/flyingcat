@@ -30,9 +30,6 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.maodian.flyingcat.holder.XMLInputFactoryHolder;
 import org.maodian.flyingcat.holder.XMLOutputFactoryHolder;
-import org.maodian.flyingcat.xmpp.AbstractState;
-import org.maodian.flyingcat.xmpp.StreamError;
-import org.maodian.flyingcat.xmpp.XmppException;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
 
 

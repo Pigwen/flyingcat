@@ -13,16 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flyingcat.xmpp;
+package org.maodian.flyingcat.xmpp.codec;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang3.StringUtils;
-import org.maodian.flyingcat.xmpp.StanzaError.Type;
-import org.maodian.flyingcat.xmpp.codec.Decoder;
-import org.maodian.flyingcat.xmpp.codec.Encoder;
+import org.maodian.flyingcat.xmpp.ApplicationContext;
+import org.maodian.flyingcat.xmpp.entity.Stanzas;
+import org.maodian.flyingcat.xmpp.state.StanzaError;
+import org.maodian.flyingcat.xmpp.state.StanzaErrorCondition;
+import org.maodian.flyingcat.xmpp.state.StreamError;
+import org.maodian.flyingcat.xmpp.state.XmppException;
+import org.maodian.flyingcat.xmpp.state.StanzaError.Type;
 
 /**
  * @author Cole Wen

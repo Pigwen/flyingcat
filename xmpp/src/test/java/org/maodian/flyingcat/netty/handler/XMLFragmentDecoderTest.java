@@ -23,9 +23,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.maodian.flyingcat.netty.handler.XMLFragmentDecoder;
-import org.maodian.flyingcat.xmpp.StreamError;
-import org.maodian.flyingcat.xmpp.XmppError;
-import org.maodian.flyingcat.xmpp.XmppException;
+import org.maodian.flyingcat.xmpp.state.StreamError;
+import org.maodian.flyingcat.xmpp.state.XmppError;
+import org.maodian.flyingcat.xmpp.state.XmppException;
 
 /**
  * @author Cole Wen

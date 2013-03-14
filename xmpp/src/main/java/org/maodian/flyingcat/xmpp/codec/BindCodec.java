@@ -20,13 +20,12 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.maodian.flyingcat.xmpp.AbstractCodec;
-import org.maodian.flyingcat.xmpp.Bind;
-import org.maodian.flyingcat.xmpp.InfoQuery;
-import org.maodian.flyingcat.xmpp.StreamError;
-import org.maodian.flyingcat.xmpp.XmppException;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
+import org.maodian.flyingcat.xmpp.entity.Bind;
+import org.maodian.flyingcat.xmpp.entity.InfoQuery;
+import org.maodian.flyingcat.xmpp.state.StreamError;
 import org.maodian.flyingcat.xmpp.state.XmppContext;
+import org.maodian.flyingcat.xmpp.state.XmppException;
 
 /**
  * @author Cole Wen

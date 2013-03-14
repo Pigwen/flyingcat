@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flyingcat.xmpp;
+package org.maodian.flyingcat.xmpp.state;
 
 import static org.junit.Assert.*;
 
@@ -29,16 +29,16 @@ import javax.xml.stream.XMLStreamReader;
 import org.junit.Before;
 import org.junit.Test;
 import org.maodian.flyingcat.holder.XMLInputFactoryHolder;
-import org.maodian.flyingcat.xmpp.OpeningStreamState;
-import org.maodian.flyingcat.xmpp.StreamError;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
-import org.maodian.flyingcat.xmpp.OpeningStreamState.FeatureType;
+import org.maodian.flyingcat.xmpp.state.StreamState.AuthenticatedStreamState;
+import org.maodian.flyingcat.xmpp.state.StreamState.OpeningStreamState;
+import org.maodian.flyingcat.xmpp.state.StreamState.TLSStreamState;
 
 /**
  * @author Cole Wen
  * 
  */
-public class OpeningStreamStateTest extends StateTest {
+public class StreamStateTest extends StateTest {
   
   @Before
   public void doSetup() {
@@ -47,9 +47,9 @@ public class OpeningStreamStateTest extends StateTest {
 
   @Test
   public void testSuccessWithStartTTLsFeatureType() throws XMLStreamException {
-    state = new OpeningStreamState(FeatureType.STARTTLS);
+    state = new OpeningStreamState();
     String inXML = "<stream:stream from='cole@localhost' to='localhost' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>";
-    String outXML = state.handle(context, inXML);
+    String outXML = state.step(context, inXML).getData();
     
     Reader reader = new StringReader(outXML);
     XMLStreamReader xmlsr = XMLInputFactoryHolder.getXMLInputFactory().createXMLStreamReader(reader);
@@ -63,9 +63,9 @@ public class OpeningStreamStateTest extends StateTest {
   
   @Test
   public void testSuccessWithSASLFeatureType() throws XMLStreamException {
-    state = new OpeningStreamState(FeatureType.SASL);
+    state = new TLSStreamState();
     String inXML = "<stream:stream from='cole@localhost' to='localhost' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>";
-    String outXML = state.handle(context, inXML);
+    String outXML = state.step(context, inXML).getData();
     
     Reader reader = new StringReader(outXML);
     XMLStreamReader xmlsr = XMLInputFactoryHolder.getXMLInputFactory().createXMLStreamReader(reader);
@@ -79,9 +79,9 @@ public class OpeningStreamStateTest extends StateTest {
   
   @Test
   public void testSuccessWithResourceBind() throws XMLStreamException {
-    state = new OpeningStreamState(FeatureType.RESOURCE_BIND);
+    state = new AuthenticatedStreamState();
     String inXML = "<stream:stream from='cole@localhost' to='localhost' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>";
-    String outXML = state.handle(context, inXML);
+    String outXML = state.step(context, inXML).getData();
     
     Reader reader = new StringReader(outXML);
     XMLStreamReader xmlsr = XMLInputFactoryHolder.getXMLInputFactory().createXMLStreamReader(reader);
@@ -95,9 +95,9 @@ public class OpeningStreamStateTest extends StateTest {
   
   @Test
   public void testIncommingStreamWithoutFromAttribute() throws XMLStreamException {
-    state = new OpeningStreamState(FeatureType.STARTTLS);
+    state = new OpeningStreamState();
     String inXML = "<stream:stream to='localhost' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>";
-    String outXML = state.handle(context, inXML);
+    String outXML = state.step(context, inXML).getData();
     
     Reader reader = new StringReader(outXML);
     XMLStreamReader xmlsr = XMLInputFactoryHolder.getXMLInputFactory().createXMLStreamReader(reader);
@@ -108,21 +108,21 @@ public class OpeningStreamStateTest extends StateTest {
   
   @Test
   public void testInvalidNamespaceOfStream() {
-    state = new OpeningStreamState(FeatureType.STARTTLS);
+    state = new OpeningStreamState();
     String inXML = "<stream:stream from='cole@localhost' to='localhost' xmlns='jabber:client' xmlns:stream='invalid_namespace' version='1.0'>";
     expectXmppException(state, inXML, StreamError.INVALID_NAMESPACE);
   }
   
   @Test
   public void testUnsupportedVersion() {
-    state = new OpeningStreamState(FeatureType.STARTTLS);
+    state = new OpeningStreamState();
     String inXML = "<stream:stream from='cole@localhost' to='localhost' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.1'>";
     expectXmppException(state, inXML, StreamError.UNSUPPORTED_VERSION);
   }
   
   @Test
   public void testInvalidXML() {
-    state = new OpeningStreamState(FeatureType.STARTTLS);
+    state = new OpeningStreamState();
     testInvalidXML(state);
   }
   

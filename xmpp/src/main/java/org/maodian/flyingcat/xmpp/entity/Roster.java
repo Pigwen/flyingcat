@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flyingcat.xmpp;
+package org.maodian.flyingcat.xmpp.entity;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
 
 
 /**
