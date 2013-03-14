@@ -18,6 +18,7 @@ package org.maodian.flyingcat.xmpp.codec;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -47,6 +48,7 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
   /**
    * @param applicationContext
    */
+  @Inject
   public RosterCodec(ApplicationContext applicationContext) {
     super(applicationContext);
     // TODO Auto-generated constructor stub

@@ -29,28 +29,45 @@ import org.maodian.flyingcat.netty.handler.LoggerEnabledStringEncoder;
 import org.maodian.flyingcat.netty.handler.XMLFragmentDecoder;
 import org.maodian.flyingcat.netty.handler.XmppXMLStreamHandler;
 
+import com.google.inject.Injector;
+
 /**
  * @author Cole Wen
- *
+ * 
  */
 public class XmppServerInitializer extends ChannelInitializer<SocketChannel> implements ChannelHandler {
   private static final LoggerEnabledStringDecoder DECODER = new LoggerEnabledStringDecoder();
   private static final LoggerEnabledStringEncoder ENCODER = new LoggerEnabledStringEncoder();
-  
-  /* (non-Javadoc)
-   * @see io.netty.channel.ChannelInitializer#initChannel(io.netty.channel.Channel)
+  private final Injector injector;
+
+  /**
+   * @param injector
+   */
+  public XmppServerInitializer(Injector injector) {
+    this.injector = injector;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * io.netty.channel.ChannelInitializer#initChannel(io.netty.channel.Channel)
    */
   @Override
   public void initChannel(SocketChannel ch) throws Exception {
     ChannelPipeline p = ch.pipeline();
-    
-    String delimiter = ">";//XmppMessageInboundHandler.STREAM_NAME + ">";
-    p.addLast("Frame", new DelimiterBasedFrameDecoder(8192, false, true, Unpooled.wrappedBuffer(delimiter.getBytes(StandardCharsets.UTF_8))));
+
+    String delimiter = ">";// XmppMessageInboundHandler.STREAM_NAME + ">";
+    p.addLast(
+        "Frame",
+        new DelimiterBasedFrameDecoder(8192, false, true, Unpooled.wrappedBuffer(delimiter
+            .getBytes(StandardCharsets.UTF_8))));
     p.addLast("Logger", DECODER);
     p.addLast("XmlFragment", new XMLFragmentDecoder());
     p.addLast("Encoder", ENCODER);
-//    p.addLast("Echo", new XmppMessageInboundHandler());
-    //p.addLast("Echo", new StreamNegotiationHandler());
-    p.addLast("Echo", new XmppXMLStreamHandler());
+    // p.addLast("Echo", new XmppMessageInboundHandler());
+    // p.addLast("Echo", new StreamNegotiationHandler());
+    XmppXMLStreamHandler streamHandler = injector.getInstance(XmppXMLStreamHandler.class);
+    p.addLast("Echo", streamHandler);
   }
 }

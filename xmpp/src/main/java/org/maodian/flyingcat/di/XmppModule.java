@@ -17,33 +17,31 @@ package org.maodian.flyingcat.di;
 
 import javax.inject.Singleton;
 
-import org.maodian.flyingcat.netty.handler.XMLFragmentDecoder;
-import org.maodian.flyingcat.netty.handler.XmppXMLStreamHandler;
 import org.maodian.flyingcat.xmpp.ApplicationContext;
-import org.maodian.flyingcat.xmpp.XmppServer;
-import org.maodian.flyingcat.xmpp.XmppServerInitializer;
+import org.maodian.flyingcat.xmpp.DefaultApplicationContext;
+import org.maodian.flyingcat.xmpp.state.DefaultXmppContext;
+import org.maodian.flyingcat.xmpp.state.XmppContext;
+import org.maodian.flyingcat.xmpp.state.XmppContextFactory;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.name.Names;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 /**
  * @author Cole Wen
- *
+ * 
  */
 public class XmppModule extends AbstractModule {
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see com.google.inject.AbstractModule#configure()
    */
   @Override
   protected void configure() {
-    bindConstant().annotatedWith(Names.named("ServerPort")).to(5222);
-    bind(XmppServer.class).in(Singleton.class);
-    bind(ApplicationContext.class).in(Singleton.class);
-    bind(XmppServerInitializer.class).in(Singleton.class);
-    
-    bind(XMLFragmentDecoder.class);
-    bind(XmppXMLStreamHandler.class);
+    install(new FactoryModuleBuilder().implement(XmppContext.class, DefaultXmppContext.class).build(
+        XmppContextFactory.class));
+    bind(ApplicationContext.class).to(DefaultApplicationContext.class).in(Singleton.class);
   }
 
 }

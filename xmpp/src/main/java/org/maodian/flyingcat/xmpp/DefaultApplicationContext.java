@@ -18,6 +18,8 @@ package org.maodian.flyingcat.xmpp;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.xml.namespace.QName;
 
 import org.maodian.flyingcat.xmpp.codec.BindCodec;
@@ -41,6 +43,7 @@ import org.maodian.flyingcat.xmpp.state.TLSCommand;
  * @author Cole Wen
  *
  */
+@Singleton
 public class DefaultApplicationContext implements ApplicationContext {
   private static final ApplicationContext INSTANCE = new DefaultApplicationContext();
   private Map<QName, Decoder> decoderMap = new ConcurrentHashMap<>();
@@ -52,35 +55,38 @@ public class DefaultApplicationContext implements ApplicationContext {
   private BindCodec bindCodec;
   private SessionCodec sessionCodec;
   private RosterCodec rosterCodec;
+  private boolean init = false;
   
   public static ApplicationContext getInstance() {
     return INSTANCE;
   }
   
   DefaultApplicationContext() {
-    InfoQueryCodec infoQueryCodec = new InfoQueryCodec(this);
-    BindCodec bindCodec = new BindCodec(this);
-    SessionCodec sessionCodec = new SessionCodec(this);
-    RosterCodec rosterCodec = new RosterCodec(this);
     
-    decoderMap.put(new QName(XmppNamespace.CLIENT_CONTENT, "iq"), infoQueryCodec);
-    decoderMap.put(new QName(XmppNamespace.BIND, "bind"), bindCodec);
-    decoderMap.put(new QName(XmppNamespace.SESSION, "session"), sessionCodec);
-    decoderMap.put(new QName(XmppNamespace.ROSTER, "query"), rosterCodec);
-    
-    encoderMap.put(InfoQuery.class, infoQueryCodec);
-    encoderMap.put(Bind.class, bindCodec);
-    encoderMap.put(Session.class, sessionCodec);
-    encoderMap.put(Roster.class, rosterCodec);
-    
-    processorMap.put(Session.class, sessionCodec);
-    processorMap.put(Bind.class, bindCodec);
-    processorMap.put(Roster.class, rosterCodec);
-    
-    cmdMap.put(new QName(XmppNamespace.TLS, "starttls"), TLSCommand.class);
-    cmdMap.put(new QName(XmppNamespace.SASL, "auth"), SASLCommand.class);
-    cmdMap.put(new QName(XmppNamespace.CLIENT_CONTENT, "iq"), InfoQueryCommand.class);
-    cmdMap.put(new QName(XmppNamespace.CLIENT_CONTENT, "presence"), PresenceCommand.class);
+  }
+  
+  public void init() {
+    if (init == false) {
+      decoderMap.put(new QName(XmppNamespace.CLIENT_CONTENT, "iq"), infoQueryCodec);
+      decoderMap.put(new QName(XmppNamespace.BIND, "bind"), bindCodec);
+      decoderMap.put(new QName(XmppNamespace.SESSION, "session"), sessionCodec);
+      decoderMap.put(new QName(XmppNamespace.ROSTER, "query"), rosterCodec);
+      
+      encoderMap.put(InfoQuery.class, infoQueryCodec);
+      encoderMap.put(Bind.class, bindCodec);
+      encoderMap.put(Session.class, sessionCodec);
+      encoderMap.put(Roster.class, rosterCodec);
+      
+      processorMap.put(Session.class, sessionCodec);
+      processorMap.put(Bind.class, bindCodec);
+      processorMap.put(Roster.class, rosterCodec);
+      
+      cmdMap.put(new QName(XmppNamespace.TLS, "starttls"), TLSCommand.class);
+      cmdMap.put(new QName(XmppNamespace.SASL, "auth"), SASLCommand.class);
+      cmdMap.put(new QName(XmppNamespace.CLIENT_CONTENT, "iq"), InfoQueryCommand.class);
+      cmdMap.put(new QName(XmppNamespace.CLIENT_CONTENT, "presence"), PresenceCommand.class);
+      init = true;
+    }
   }
   
   public void registerDecoder(QName qname, Decoder decoder) {
@@ -109,5 +115,25 @@ public class DefaultApplicationContext implements ApplicationContext {
 
   public Class<? extends ContextAwareCommand> getCommand(QName qName) {
     return cmdMap.get(qName);
+  }
+
+  @Inject
+  void setInfoQueryCodec(InfoQueryCodec infoQueryCodec) {
+    this.infoQueryCodec = infoQueryCodec;
+  }
+
+  @Inject
+  void setBindCodec(BindCodec bindCodec) {
+    this.bindCodec = bindCodec;
+  }
+
+  @Inject
+  void setSessionCodec(SessionCodec sessionCodec) {
+    this.sessionCodec = sessionCodec;
+  }
+
+  @Inject
+  void setRosterCodec(RosterCodec rosterCodec) {
+    this.rosterCodec = rosterCodec;
   }
 }

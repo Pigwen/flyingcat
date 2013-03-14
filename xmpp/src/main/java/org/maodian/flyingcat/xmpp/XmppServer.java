@@ -22,6 +22,11 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import java.util.ServiceLoader;
 
+import org.maodian.flyingcat.di.XmppModule;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 /**
  * @author Cole Wen
  *
@@ -34,13 +39,13 @@ public class XmppServer {
     this.port = port;
   }
 
-  private void run() throws InterruptedException {
+  private void run(Injector injector) throws InterruptedException {
     ServerBootstrap b = new ServerBootstrap();
     try {
       b.group(new NioEventLoopGroup(), new NioEventLoopGroup())
       .channel(NioServerSocketChannel.class)
       .localAddress(port)
-      .childHandler(new XmppServerInitializer())
+      .childHandler(new XmppServerInitializer(injector)) 
       .option(ChannelOption.TCP_NODELAY, true)
       .option(ChannelOption.SO_KEEPALIVE, true);
 
@@ -60,15 +65,17 @@ public class XmppServer {
     } else {
         port = 5222;
     }
-    preRun();
-    new XmppServer(port).run();
+    Injector injector = Guice.createInjector(new XmppModule());
+    new XmppServer(port).preRun(injector).run(injector);
   }
 
-  private static void preRun() {
-    ApplicationContext ctx = DefaultApplicationContext.getInstance();
+  private XmppServer preRun(Injector injector) {
+    ApplicationContext ctx = injector.getInstance(ApplicationContext.class);
+    ctx.init();
     ServiceLoader<Extension> extLoader = ServiceLoader.load(Extension.class);
     for (Extension ext : extLoader) {
       ext.register(ctx);
     }
+    return this;
   }
 }

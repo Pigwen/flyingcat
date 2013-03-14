@@ -22,9 +22,12 @@ import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 
 import java.lang.invoke.MethodHandles;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.maodian.flyingcat.xmpp.state.StanzaError;
 import org.maodian.flyingcat.xmpp.state.XmppContext;
+import org.maodian.flyingcat.xmpp.state.XmppContextFactory;
 import org.maodian.flyingcat.xmpp.state.XmppError;
 import org.maodian.flyingcat.xmpp.state.XmppException;
 import org.slf4j.Logger;
@@ -37,13 +40,14 @@ import org.slf4j.LoggerFactory;
 public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<String> {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private XmppContext xmppContext;
+  private XmppContextFactory xmppContextFactory;
   
   // true if the </stream:stream> is sent first by server
   private boolean initCloseingStream = false;
   
   @Override
   public void channelActive(ChannelHandlerContext ctx) throws Exception {
-    xmppContext = XmppContext.newInstance(ctx);
+    xmppContext = xmppContextFactory.newXmppContext(ctx);
     super.channelActive(ctx);
   }
 
@@ -109,4 +113,10 @@ public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<St
     logger.error("Close the XMPP Stream due to error", cause);
     super.exceptionCaught(ctx, cause);
   }
+
+  @Inject
+  void setXmppContextFactory(XmppContextFactory xmppContextFactory) {
+    this.xmppContextFactory = xmppContextFactory;
+  }
+  
 }

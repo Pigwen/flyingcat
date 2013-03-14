@@ -22,11 +22,15 @@ import org.maodian.flyingcat.xmpp.codec.Encoder;
 import org.maodian.flyingcat.xmpp.codec.InfoQueryProcessor;
 import org.maodian.flyingcat.xmpp.state.ContextAwareCommand;
 
+import com.google.inject.ImplementedBy;
+
 /**
  * @author Cole Wen
  *
  */
+@ImplementedBy(DefaultApplicationContext.class)
 public interface ApplicationContext {
+  void init();
   
   void registerDecoder(QName qname, Decoder decoder);
   

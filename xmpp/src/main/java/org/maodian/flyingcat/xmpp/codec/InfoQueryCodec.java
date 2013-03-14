@@ -15,6 +15,7 @@
  */
 package org.maodian.flyingcat.xmpp.codec;
 
+import javax.inject.Inject;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
@@ -37,6 +38,7 @@ public class InfoQueryCodec extends AbstractCodec {
   /**
    * @param applicationContext
    */
+  @Inject
   public InfoQueryCodec(ApplicationContext applicationContext) {
     super(applicationContext);
     // TODO Auto-generated constructor stub

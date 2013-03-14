@@ -15,6 +15,7 @@
  */
 package org.maodian.flyingcat.xmpp.codec;
 
+import javax.inject.Inject;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -37,6 +38,7 @@ public class SessionCodec extends AbstractCodec implements InfoQueryProcessor {
   /**
    * @param applicationContext
    */
+  @Inject
   public SessionCodec(ApplicationContext applicationContext) {
     super(applicationContext);
     // TODO Auto-generated constructor stub

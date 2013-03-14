@@ -20,8 +20,7 @@ import io.netty.channel.ChannelHandlerContext;
 import javax.xml.namespace.QName;
 
 import org.maodian.flyingcat.im.IMSession;
-import org.maodian.flyingcat.im.InMemorySession;
-import org.maodian.flyingcat.xmpp.DefaultApplicationContext;
+import org.maodian.flyingcat.xmpp.ApplicationContext;
 
 
 
@@ -37,92 +36,34 @@ import org.maodian.flyingcat.xmpp.DefaultApplicationContext;
  * @author Cole Wen
  * @see State
  */
-public class XmppContext {
-  private final ChannelHandlerContext ctx;
-  private IMSession session;
-  private State state;
-  private String bareJID;
-  private String resource;
-  private String streamTag;
+public interface XmppContext {
   
-  private XmppContext(ChannelHandlerContext ctx) {
-    this.ctx = ctx;
-    this.state = States.newOpeningStreamState();
-  }
+  void setState(State state);
+  
+  void setBareJID(String bareJID);
+  
+  public void setResource(String resource);
+  
+  public void setStreamTag(String streamTag);
 
-  void setState(State state) {
-    this.state = state;
-  }
-  
-  void setBareJID(String bareJID) {
-    this.bareJID = bareJID;
-  }
-  
-  public void setResource(String resource) {
-    if (this.resource != null) {
-      throw new IllegalStateException("Resource has already been set");
-    }
-    this.resource = resource;
-  }
-  
-  public void setStreamTag(String streamTag) {
-    this.streamTag = streamTag;
-  }
+  public String getResource();
 
-  public String getResource() {
-    return resource;
-  }
+  public String getBareJID();
+  
+  ChannelHandlerContext getNettyChannelHandlerContext();
+  
+  ApplicationContext getApplicationContext();
+  
+  String wrapStreamTag(String xml);
+  
+  public void login(String username, String password);
+  
+  public void destroy();
 
-  public String getBareJID() {
-    return bareJID;
-  }
-  
-  ChannelHandlerContext getNettyChannelHandlerContext() {
-    return ctx;
-  }
-  
-  String wrapStreamTag(String xml) {
-    return streamTag + xml;
-  }
-  
-  public void login(String username, String password) {
-    session = getIMSession();
-    session.login(username, password);
-  }
-  
-  public void destroy() {
-    session.destroy();
-  }
+  public Command lookup(QName qName);
 
-  public Command lookup(QName qName) {
-    Class<? extends ContextAwareCommand> cmd = DefaultApplicationContext.getInstance().getCommand(qName);
-    if (cmd == null) {
-      throw new RuntimeException("No suitable Command for QName: " + qName.toString());
-    }
-    try {
-      ContextAwareCommand instance = cmd.newInstance();
-      instance.setXmppContext(this);
-      return instance;
-    } catch (InstantiationException | IllegalAccessException e) {
-      throw new RuntimeException("Require a public no argument constructor", e);
-    }
-  }
-
-  public String parseXML(final String xml) {
-    Result result = state.step(this, xml);
-    state = result.getNextState();
-    return result.getData();
-  }
+  public String parseXML(final String xml);
   
-  public IMSession getIMSession() {
-    if (session == null) {
-      session = new InMemorySession();
-    }
-    return session;
-  }
+  public IMSession getIMSession();
   
-  public static XmppContext newInstance(ChannelHandlerContext ctx) {
-    return new XmppContext(ctx);
-  }
-
 }
