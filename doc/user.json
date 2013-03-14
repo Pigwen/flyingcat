@@ -1,0 +1,8 @@
+{
+  uid: "username",
+  pwd: "password",
+  nick: "nick name",
+  following_id: [user1_id, user2_id, ...],
+  follower_id: [user1_id, user2_id, ...],
+  roles: [role1_id, role2_id, ...]
+}

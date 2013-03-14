@@ -26,6 +26,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.maodian.flyingcat.im.IMSession;
 import org.maodian.flyingcat.im.entity.User;
+import org.maodian.flyingcat.xmpp.ApplicationContext;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
 import org.maodian.flyingcat.xmpp.entity.Contact;
 import org.maodian.flyingcat.xmpp.entity.InfoQuery;
@@ -42,6 +43,14 @@ import org.maodian.flyingcat.xmpp.state.StanzaError.Type;
  *
  */
 public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
+
+  /**
+   * @param applicationContext
+   */
+  public RosterCodec(ApplicationContext applicationContext) {
+    super(applicationContext);
+    // TODO Auto-generated constructor stub
+  }
 
   /* (non-Javadoc)
    * @see org.maodian.flyingcat.xmpp.codec.Decoder#decode(javax.xml.stream.XMLStreamReader)

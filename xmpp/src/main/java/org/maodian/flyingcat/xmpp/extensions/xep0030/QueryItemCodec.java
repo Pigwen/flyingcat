@@ -20,6 +20,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.maodian.flyingcat.xmpp.ApplicationContext;
 import org.maodian.flyingcat.xmpp.codec.AbstractCodec;
 import org.maodian.flyingcat.xmpp.codec.InfoQueryProcessor;
 import org.maodian.flyingcat.xmpp.entity.InfoQuery;
@@ -32,6 +33,14 @@ import org.maodian.flyingcat.xmpp.state.XmppException;
  *
  */
 public class QueryItemCodec extends AbstractCodec implements InfoQueryProcessor {
+
+  /**
+   * @param applicationContext
+   */
+  public QueryItemCodec(ApplicationContext applicationContext) {
+    super(applicationContext);
+    // TODO Auto-generated constructor stub
+  }
 
   /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.codec.Decoder#decode(javax.xml.stream.XMLStreamReader)

@@ -23,19 +23,27 @@ import org.apache.commons.lang3.StringUtils;
 import org.maodian.flyingcat.xmpp.ApplicationContext;
 import org.maodian.flyingcat.xmpp.entity.Stanzas;
 import org.maodian.flyingcat.xmpp.state.StanzaError;
+import org.maodian.flyingcat.xmpp.state.StanzaError.Type;
 import org.maodian.flyingcat.xmpp.state.StanzaErrorCondition;
 import org.maodian.flyingcat.xmpp.state.StreamError;
 import org.maodian.flyingcat.xmpp.state.XmppException;
-import org.maodian.flyingcat.xmpp.state.StanzaError.Type;
 
 /**
  * @author Cole Wen
  *
  */
 public abstract class AbstractCodec implements Decoder, Encoder {
+  private ApplicationContext applicationContext;
+  
+  /**
+   * @param applicationContext
+   */
+  public AbstractCodec(ApplicationContext applicationContext) {
+    this.applicationContext = applicationContext;
+  }
 
   protected Decoder findDecoder(QName key, Stanzas stanzas) {
-    Decoder decoder = ApplicationContext.getInstance().getDecoder(key);
+    Decoder decoder = applicationContext.getDecoder(key);
     //TODO: here we should distinguish service_unavailable and feature_not_implemented
     if (decoder == null) {
       throw new XmppException("The ", new StanzaError(stanzas, StanzaErrorCondition.SERVICE_UNAVAILABLE, Type.CANCEL));
@@ -44,7 +52,7 @@ public abstract class AbstractCodec implements Decoder, Encoder {
   }
   
   protected Encoder findEncoder(Class<?> key) {
-    Encoder encoder = ApplicationContext.getInstance().getEncoder(key);
+    Encoder encoder = applicationContext.getEncoder(key);
     if (encoder == null) {
       throw new XmppException(StreamError.INTERNAL_SERVER_ERROR);
     }
@@ -75,5 +83,5 @@ public abstract class AbstractCodec implements Decoder, Encoder {
       throw new XmppException(StreamError.INTERNAL_SERVER_ERROR);
     }
     xmlsw.writeAttribute(prefix, namespaceURI, localName, value);
-  } 
+  }
 }

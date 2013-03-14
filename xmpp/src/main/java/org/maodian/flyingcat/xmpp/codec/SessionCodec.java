@@ -20,6 +20,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.maodian.flyingcat.xmpp.ApplicationContext;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
 import org.maodian.flyingcat.xmpp.entity.InfoQuery;
 import org.maodian.flyingcat.xmpp.entity.Session;
@@ -32,6 +33,14 @@ import org.maodian.flyingcat.xmpp.state.XmppException;
  *
  */
 public class SessionCodec extends AbstractCodec implements InfoQueryProcessor {
+
+  /**
+   * @param applicationContext
+   */
+  public SessionCodec(ApplicationContext applicationContext) {
+    super(applicationContext);
+    // TODO Auto-generated constructor stub
+  }
 
   /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.codec.Decoder#decode(javax.xml.stream.XMLStreamReader)

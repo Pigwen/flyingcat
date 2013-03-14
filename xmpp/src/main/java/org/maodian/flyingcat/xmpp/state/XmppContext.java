@@ -19,9 +19,9 @@ import io.netty.channel.ChannelHandlerContext;
 
 import javax.xml.namespace.QName;
 
-import org.maodian.flyingcat.im.InMemorySession;
 import org.maodian.flyingcat.im.IMSession;
-import org.maodian.flyingcat.xmpp.ApplicationContext;
+import org.maodian.flyingcat.im.InMemorySession;
+import org.maodian.flyingcat.xmpp.DefaultApplicationContext;
 
 
 
@@ -95,7 +95,7 @@ public class XmppContext {
   }
 
   public Command lookup(QName qName) {
-    Class<? extends ContextAwareCommand> cmd = ApplicationContext.getInstance().getCommand(qName);
+    Class<? extends ContextAwareCommand> cmd = DefaultApplicationContext.getInstance().getCommand(qName);
     if (cmd == null) {
       throw new RuntimeException("No suitable Command for QName: " + qName.toString());
     }

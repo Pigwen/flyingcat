@@ -1,0 +1,113 @@
+/*
+ * Copyright 2013 - 2013 Cole Wen
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.maodian.flyingcat.xmpp;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.xml.namespace.QName;
+
+import org.maodian.flyingcat.xmpp.codec.BindCodec;
+import org.maodian.flyingcat.xmpp.codec.Decoder;
+import org.maodian.flyingcat.xmpp.codec.Encoder;
+import org.maodian.flyingcat.xmpp.codec.InfoQueryCodec;
+import org.maodian.flyingcat.xmpp.codec.InfoQueryProcessor;
+import org.maodian.flyingcat.xmpp.codec.RosterCodec;
+import org.maodian.flyingcat.xmpp.codec.SessionCodec;
+import org.maodian.flyingcat.xmpp.entity.Bind;
+import org.maodian.flyingcat.xmpp.entity.InfoQuery;
+import org.maodian.flyingcat.xmpp.entity.Roster;
+import org.maodian.flyingcat.xmpp.entity.Session;
+import org.maodian.flyingcat.xmpp.state.ContextAwareCommand;
+import org.maodian.flyingcat.xmpp.state.InfoQueryCommand;
+import org.maodian.flyingcat.xmpp.state.PresenceCommand;
+import org.maodian.flyingcat.xmpp.state.SASLCommand;
+import org.maodian.flyingcat.xmpp.state.TLSCommand;
+
+/**
+ * @author Cole Wen
+ *
+ */
+public class DefaultApplicationContext implements ApplicationContext {
+  private static final ApplicationContext INSTANCE = new DefaultApplicationContext();
+  private Map<QName, Decoder> decoderMap = new ConcurrentHashMap<>();
+  private Map<Class<?>, Encoder> encoderMap = new ConcurrentHashMap<>();
+  private Map<Class<?>, InfoQueryProcessor> processorMap = new ConcurrentHashMap<>();
+  private Map<QName, Class<? extends ContextAwareCommand>> cmdMap = new ConcurrentHashMap<>(); 
+  
+  private InfoQueryCodec infoQueryCodec;
+  private BindCodec bindCodec;
+  private SessionCodec sessionCodec;
+  private RosterCodec rosterCodec;
+  
+  public static ApplicationContext getInstance() {
+    return INSTANCE;
+  }
+  
+  DefaultApplicationContext() {
+    InfoQueryCodec infoQueryCodec = new InfoQueryCodec(this);
+    BindCodec bindCodec = new BindCodec(this);
+    SessionCodec sessionCodec = new SessionCodec(this);
+    RosterCodec rosterCodec = new RosterCodec(this);
+    
+    decoderMap.put(new QName(XmppNamespace.CLIENT_CONTENT, "iq"), infoQueryCodec);
+    decoderMap.put(new QName(XmppNamespace.BIND, "bind"), bindCodec);
+    decoderMap.put(new QName(XmppNamespace.SESSION, "session"), sessionCodec);
+    decoderMap.put(new QName(XmppNamespace.ROSTER, "query"), rosterCodec);
+    
+    encoderMap.put(InfoQuery.class, infoQueryCodec);
+    encoderMap.put(Bind.class, bindCodec);
+    encoderMap.put(Session.class, sessionCodec);
+    encoderMap.put(Roster.class, rosterCodec);
+    
+    processorMap.put(Session.class, sessionCodec);
+    processorMap.put(Bind.class, bindCodec);
+    processorMap.put(Roster.class, rosterCodec);
+    
+    cmdMap.put(new QName(XmppNamespace.TLS, "starttls"), TLSCommand.class);
+    cmdMap.put(new QName(XmppNamespace.SASL, "auth"), SASLCommand.class);
+    cmdMap.put(new QName(XmppNamespace.CLIENT_CONTENT, "iq"), InfoQueryCommand.class);
+    cmdMap.put(new QName(XmppNamespace.CLIENT_CONTENT, "presence"), PresenceCommand.class);
+  }
+  
+  public void registerDecoder(QName qname, Decoder decoder) {
+    decoderMap.put(qname, decoder);
+  }
+  
+  public void registerEncoder(Class<?> clazz, Encoder encoder) {
+    encoderMap.put(clazz, encoder);
+  }
+  
+  public void registerProcessor(Class<?> clazz, InfoQueryProcessor processor) {
+    processorMap.put(clazz, processor);
+  }
+  
+  public Decoder getDecoder(QName qname) {
+    return decoderMap.get(qname);
+  }
+  
+  public Encoder getEncoder(Class<?> clazz) {
+    return encoderMap.get(clazz);
+  }
+  
+  public InfoQueryProcessor getProcessor(Class<?> clazz) {
+    return processorMap.get(clazz);
+  }
+
+  public Class<? extends ContextAwareCommand> getCommand(QName qName) {
+    return cmdMap.get(qName);
+  }
+}

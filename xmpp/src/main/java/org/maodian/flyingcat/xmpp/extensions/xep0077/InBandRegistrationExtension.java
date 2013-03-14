@@ -31,7 +31,7 @@ public class InBandRegistrationExtension implements Extension {
    */
   @Override
   public void register(ApplicationContext ctx) {
-    RegistrationCodec codec = new RegistrationCodec();
+    RegistrationCodec codec = new RegistrationCodec(ctx);
     
     ctx.registerDecoder(new QName(InBandRegistration.REGISTER, "query"), codec);
     ctx.registerEncoder(Registration.class, codec);

@@ -20,7 +20,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.maodian.flyingcat.xmpp.ApplicationContext;
+import org.maodian.flyingcat.xmpp.DefaultApplicationContext;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
 import org.maodian.flyingcat.xmpp.codec.Decoder;
 import org.maodian.flyingcat.xmpp.codec.Encoder;
@@ -41,13 +41,13 @@ public class InfoQueryCommand extends ContextAwareCommand {
     if (!xmlsr.getName().equals(new QName(XmppNamespace.CLIENT_CONTENT, "iq"))) {
       throw new XmppException(StreamError.INVALID_NAMESPACE).set("QName", xmlsr.getName());
     }
-    Decoder decoder = ApplicationContext.getInstance().getDecoder(xmlsr.getName());
-    Encoder encoder = ApplicationContext.getInstance().getEncoder(InfoQuery.class);
+    Decoder decoder = DefaultApplicationContext.getInstance().getDecoder(xmlsr.getName());
+    Encoder encoder = DefaultApplicationContext.getInstance().getEncoder(InfoQuery.class);
     InfoQuery reqIQ = (InfoQuery) decoder.decode(xmlsr);
     InfoQuery.Builder iqBuilder = new InfoQuery.Builder(reqIQ.getId(), "result").from("localhost").to(reqIQ.getFrom())
         .language("en");
     Object reqPayload = reqIQ.getPayload();
-    InfoQueryProcessor processor = ApplicationContext.getInstance().getProcessor(reqPayload.getClass());
+    InfoQueryProcessor processor = DefaultApplicationContext.getInstance().getProcessor(reqPayload.getClass());
     Object rspPayload = null;
     switch (reqIQ.getType()) {
     case InfoQuery.GET:

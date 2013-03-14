@@ -1,0 +1,4 @@
+{
+  name: "role_name",
+  permissions: ["printer:print", "message:send", ...]
+}
