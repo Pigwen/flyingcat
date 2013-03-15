@@ -32,6 +32,7 @@ public class XmppShiroModule extends ShiroModule {
    */
   @Override
   protected void configureShiro() {
+    // bind Realm
     bindRealm().to(InMemoryRealm.class);
   }
 

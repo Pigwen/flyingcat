@@ -54,11 +54,6 @@ public class InMemorySession implements IMSession {
     }
   };
   
-  /*private static final SecurityManager securityManager = new IniSecurityManagerFactory("classpath:shiro.ini").getInstance();
-  static {
-    SecurityUtils.setSecurityManager(securityManager);
-  }*/
-  
   private Subject subject;
   
   public InMemorySession() {
