@@ -23,6 +23,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import java.util.ServiceLoader;
 
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.guice.aop.ShiroAopModule;
 import org.apache.shiro.mgt.SecurityManager;
 import org.maodian.flyingcat.di.XmppModule;
 import org.maodian.flyingcat.di.XmppShiroModule;
@@ -68,7 +69,7 @@ public class XmppServer {
     } else {
         port = 5222;
     }
-    Injector injector = Guice.createInjector(new XmppModule(), new XmppShiroModule());
+    Injector injector = Guice.createInjector(new XmppModule(), new XmppShiroModule(), new ShiroAopModule());
     
     SecurityManager securityManager = injector.getInstance(SecurityManager.class);
     SecurityUtils.setSecurityManager(securityManager);
