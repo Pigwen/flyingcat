@@ -15,6 +15,7 @@
  */
 package org.maodian.flyingcat.xmpp.codec;
 
+import javax.inject.Inject;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -35,13 +36,6 @@ import org.maodian.flyingcat.xmpp.state.XmppException;
 public abstract class AbstractCodec implements Decoder, Encoder {
   private ApplicationContext applicationContext;
   
-  /**
-   * @param applicationContext
-   */
-  public AbstractCodec(ApplicationContext applicationContext) {
-    this.applicationContext = applicationContext;
-  }
-
   protected Decoder findDecoder(QName key, Stanzas stanzas) {
     Decoder decoder = applicationContext.getDecoder(key);
     //TODO: here we should distinguish service_unavailable and feature_not_implemented
@@ -83,5 +77,10 @@ public abstract class AbstractCodec implements Decoder, Encoder {
       throw new XmppException(StreamError.INTERNAL_SERVER_ERROR);
     }
     xmlsw.writeAttribute(prefix, namespaceURI, localName, value);
+  }
+
+  @Inject
+  void setApplicationContext(ApplicationContext applicationContext) {
+    this.applicationContext = applicationContext;
   }
 }

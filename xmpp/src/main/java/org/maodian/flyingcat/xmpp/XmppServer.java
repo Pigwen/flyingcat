@@ -74,6 +74,7 @@ public class XmppServer {
     ctx.init();
     ServiceLoader<Extension> extLoader = ServiceLoader.load(Extension.class);
     for (Extension ext : extLoader) {
+      ext.setInjector(injector);
       ext.register(ctx);
     }
     return this;

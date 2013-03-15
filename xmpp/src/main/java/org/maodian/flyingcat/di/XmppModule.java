@@ -17,6 +17,8 @@ package org.maodian.flyingcat.di;
 
 import javax.inject.Singleton;
 
+import org.maodian.flyingcat.im.IMSession;
+import org.maodian.flyingcat.im.InMemorySession;
 import org.maodian.flyingcat.xmpp.ApplicationContext;
 import org.maodian.flyingcat.xmpp.DefaultApplicationContext;
 import org.maodian.flyingcat.xmpp.state.DefaultXmppContext;
@@ -42,6 +44,7 @@ public class XmppModule extends AbstractModule {
     install(new FactoryModuleBuilder().implement(XmppContext.class, DefaultXmppContext.class).build(
         XmppContextFactory.class));
     bind(ApplicationContext.class).to(DefaultApplicationContext.class).in(Singleton.class);
+    bind(IMSession.class).to(InMemorySession.class);
   }
 
 }

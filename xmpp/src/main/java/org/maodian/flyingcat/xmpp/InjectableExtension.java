@@ -21,7 +21,18 @@ import com.google.inject.Injector;
  * @author Cole Wen
  *
  */
-public interface Extension {
-  void setInjector(Injector injector);
-  void register(ApplicationContext ctx);
+public abstract class InjectableExtension implements Extension {
+  private Injector injector;
+  
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.xmpp.Extension#setInjector(com.google.inject.Injector)
+   */
+  @Override
+  public void setInjector(Injector injector) {
+    this.injector = injector;
+  }
+  
+  protected Injector getInjector() {
+    return injector;
+  }
 }

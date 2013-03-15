@@ -45,7 +45,6 @@ import org.maodian.flyingcat.xmpp.state.TLSCommand;
  */
 @Singleton
 public class DefaultApplicationContext implements ApplicationContext {
-  private static final ApplicationContext INSTANCE = new DefaultApplicationContext();
   private Map<QName, Decoder> decoderMap = new ConcurrentHashMap<>();
   private Map<Class<?>, Encoder> encoderMap = new ConcurrentHashMap<>();
   private Map<Class<?>, InfoQueryProcessor> processorMap = new ConcurrentHashMap<>();
@@ -56,10 +55,6 @@ public class DefaultApplicationContext implements ApplicationContext {
   private SessionCodec sessionCodec;
   private RosterCodec rosterCodec;
   private boolean init = false;
-  
-  public static ApplicationContext getInstance() {
-    return INSTANCE;
-  }
   
   DefaultApplicationContext() {
     

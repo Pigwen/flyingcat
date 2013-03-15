@@ -15,13 +15,11 @@
  */
 package org.maodian.flyingcat.xmpp.codec;
 
-import javax.inject.Inject;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.maodian.flyingcat.xmpp.ApplicationContext;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
 import org.maodian.flyingcat.xmpp.entity.Bind;
 import org.maodian.flyingcat.xmpp.entity.InfoQuery;
@@ -34,14 +32,6 @@ import org.maodian.flyingcat.xmpp.state.XmppException;
  *
  */
 public class BindCodec extends AbstractCodec implements InfoQueryProcessor {
-
-  /**
-   * @param applicationContext
-   */
-  @Inject
-  public BindCodec(ApplicationContext applicationContext) {
-    super(applicationContext);
-  }
 
   /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.codec.Decoder#decode(java.lang.String)

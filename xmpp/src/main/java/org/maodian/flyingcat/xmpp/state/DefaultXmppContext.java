@@ -21,7 +21,6 @@ import javax.inject.Inject;
 import javax.xml.namespace.QName;
 
 import org.maodian.flyingcat.im.IMSession;
-import org.maodian.flyingcat.im.InMemorySession;
 import org.maodian.flyingcat.xmpp.ApplicationContext;
 import org.maodian.flyingcat.xmpp.state.StreamState.OpeningStreamState;
 
@@ -35,7 +34,7 @@ import com.google.inject.assistedinject.Assisted;
 public class DefaultXmppContext implements XmppContext {
   private final ChannelHandlerContext nettyCtx;
   private final ApplicationContext appCtx;
-  private IMSession session;
+  private final IMSession imSession;
   private State state;
   private String bareJID;
   private String resource;
@@ -46,9 +45,10 @@ public class DefaultXmppContext implements XmppContext {
    * @param appCtx
    */
   @Inject
-  public DefaultXmppContext(ApplicationContext appCtx, @Assisted ChannelHandlerContext nettyCtx) {
+  public DefaultXmppContext(ApplicationContext appCtx, IMSession imSession, @Assisted ChannelHandlerContext nettyCtx) {
     this.nettyCtx = nettyCtx;
     this.appCtx = appCtx;
+    this.imSession = imSession;
     state = new OpeningStreamState();
   }
 
@@ -88,13 +88,12 @@ public class DefaultXmppContext implements XmppContext {
   }
   
   public void login(String username, String password) {
-    session = getIMSession();
-    session.login(username, password);
+    imSession.login(username, password);
   }
   
   public void destroy() {
-    if (session != null) {
-      session.destroy();
+    if (imSession != null) {
+      imSession.destroy();
     }
   }
 
@@ -119,10 +118,7 @@ public class DefaultXmppContext implements XmppContext {
   }
   
   public IMSession getIMSession() {
-    if (session == null) {
-      session = new InMemorySession();
-    }
-    return session;
+    return imSession;
   }
 
   /* (non-Javadoc)

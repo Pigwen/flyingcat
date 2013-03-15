@@ -18,20 +18,23 @@ package org.maodian.flyingcat.xmpp.extensions.xep0077;
 import javax.xml.namespace.QName;
 
 import org.maodian.flyingcat.xmpp.ApplicationContext;
-import org.maodian.flyingcat.xmpp.Extension;
+import org.maodian.flyingcat.xmpp.InjectableExtension;
+
+import com.google.inject.Injector;
 
 /**
  * @author Cole Wen
  *
  */
-public class InBandRegistrationExtension implements Extension {
+public class InBandRegistrationExtension extends InjectableExtension {
 
   /* (non-Javadoc)
    * @see org.maodian.flycat.Extension#register(org.maodian.flycat.ApplicationContext)
    */
   @Override
   public void register(ApplicationContext ctx) {
-    RegistrationCodec codec = new RegistrationCodec(ctx);
+    Injector injector = getInjector();
+    RegistrationCodec codec = injector.getInstance(RegistrationCodec.class);
     
     ctx.registerDecoder(new QName(InBandRegistration.REGISTER, "query"), codec);
     ctx.registerEncoder(Registration.class, codec);
