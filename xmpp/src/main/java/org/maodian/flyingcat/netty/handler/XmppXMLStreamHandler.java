@@ -82,6 +82,7 @@ public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<St
       } else {
         log.info("Won't respond client's close stream request since the channel has been closed (may because ssl has been closed)");
       }
+      xmppContext.destroy();
       return;
     }
     

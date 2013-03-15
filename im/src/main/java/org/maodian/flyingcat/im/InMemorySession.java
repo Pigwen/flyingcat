@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.annotation.RequiresGuest;
 import org.apache.shiro.subject.Subject;
 import org.maodian.flyingcat.im.entity.User;
 
@@ -68,6 +69,7 @@ public class InMemorySession implements IMSession {
    * .User)
    */
   @Override
+  @RequiresGuest
   public void register(User user) throws IMException {
     boolean success = users.putIfAbsent(user.getUsername(), user) == null;
     if (!success) {
@@ -107,10 +109,9 @@ public class InMemorySession implements IMSession {
    */
   @Override
   public void destroy() {
-    if (subject == null) {
-      throw new IllegalStateException("No subject found");
+    if (subject != null) {
+      subject.logout();
     }
-    subject.logout();
   }
 
   /* (non-Javadoc)
