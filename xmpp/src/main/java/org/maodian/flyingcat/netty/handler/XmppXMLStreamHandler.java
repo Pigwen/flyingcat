@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<String> {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private XmppContext xmppContext;
   private XmppContextFactory xmppContextFactory;
   
@@ -68,17 +68,19 @@ public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<St
     // deal with </stream:stream>
     if (StringUtils.contains(msg, ":stream") && StringUtils.contains(msg, "</")) {
       if (initCloseingStream) {
-        logger.info("Close Stream and underhood socket due to requested by server");
+        log.info("Close Stream and underhood socket due to requested by server");
         ctx.channel().close();
-      } else {
+      } else if (ctx.channel().isOpen()){
         ctx.write("</stream:stream>").addListener(new ChannelFutureListener() {
           
           @Override
           public void operationComplete(ChannelFuture future) throws Exception {
-            logger.info("Close Stream and underhood socket due to requested by client");
+            log.info("Close Stream and underhood socket due to requested by client");
             future.channel().close();
           }
         });
+      } else {
+        log.info("Won't respond client's close stream request since the channel has been closed (may because ssl has been closed)");
       }
       return;
     }
@@ -102,7 +104,7 @@ public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<St
         StringBuilder xml = new StringBuilder(xmppException.getXmppError().toXML()).append("</stream:stream>");
         initCloseingStream = true;
         ctx.write(xml.toString()).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
-        logger.error("Close the XMPP Stream due to error", cause);
+        log.error("Close the XMPP Stream due to error", cause);
       }
       return;
     }
@@ -110,7 +112,7 @@ public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<St
     String xml = "</stream:stream>";
     initCloseingStream = true;
     ctx.write(xml).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
-    logger.error("Close the XMPP Stream due to error", cause);
+    log.error("Close the XMPP Stream due to error", cause);
     super.exceptionCaught(ctx, cause);
   }
 

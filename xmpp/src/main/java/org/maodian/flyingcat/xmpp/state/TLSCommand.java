@@ -15,6 +15,10 @@
  */
 package org.maodian.flyingcat.xmpp.state;
 
+import java.lang.invoke.MethodHandles;
+
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.ssl.SslHandler;
 
@@ -27,12 +31,15 @@ import javax.xml.stream.XMLStreamWriter;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
 import org.maodian.flyingcat.xmpp.codec.SecureSslContextFactory;
 import org.maodian.flyingcat.xmpp.state.StreamState.TLSStreamState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cole Wen
  *
  */
 public class TLSCommand extends ContextAwareCommand {
+  private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   /* (non-Javadoc)
    * @see org.maodian.flycat.xmpp.state.Command#execute(javax.xml.stream.XMLStreamReader, javax.xml.stream.XMLStreamWriter)
@@ -48,7 +55,16 @@ public class TLSCommand extends ContextAwareCommand {
     ChannelHandlerContext ctx = getXmppContext().getNettyChannelHandlerContext();
     SSLEngine engine = SecureSslContextFactory.getServerContext().createSSLEngine();
     engine.setUseClientMode(false);
-    ctx.pipeline().addFirst("ssl", new SslHandler(engine, true));
+    SslHandler sslHandler = new SslHandler(engine, true);
+    sslHandler.sslCloseFuture().addListener(new ChannelFutureListener() {
+      
+      @Override
+      public void operationComplete(ChannelFuture future) throws Exception {
+        log.info("Close the socket since SSL connection has been closed by client");
+        future.channel().close();
+      }
+    });
+    ctx.pipeline().addFirst("ssl", sslHandler);
     
     xmlsw.writeEmptyElement("", "proceed", XmppNamespace.TLS);
     xmlsw.setPrefix("", XmppNamespace.TLS);
