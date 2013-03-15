@@ -24,8 +24,6 @@ import java.util.concurrent.ConcurrentMap;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.config.IniSecurityManagerFactory;
-import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.subject.Subject;
 import org.maodian.flyingcat.im.entity.User;
 
@@ -56,10 +54,10 @@ public class InMemorySession implements IMSession {
     }
   };
   
-  private static final SecurityManager securityManager = new IniSecurityManagerFactory("classpath:shiro.ini").getInstance();
+  /*private static final SecurityManager securityManager = new IniSecurityManagerFactory("classpath:shiro.ini").getInstance();
   static {
     SecurityUtils.setSecurityManager(securityManager);
-  }
+  }*/
   
   private Subject subject;
   
