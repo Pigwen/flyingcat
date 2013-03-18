@@ -20,8 +20,6 @@ import javax.xml.namespace.QName;
 import org.maodian.flyingcat.xmpp.ApplicationContext;
 import org.maodian.flyingcat.xmpp.InjectableExtension;
 
-import com.google.inject.Injector;
-
 /**
  * @author Cole Wen
  *
@@ -33,9 +31,9 @@ public class ServiceDiscoveryExtension extends InjectableExtension {
    */
   @Override
   public void register(ApplicationContext ctx) {
-    Injector injector = getInjector();
-    QueryInfoCodec queryInfoCodec = injector.getInstance(QueryInfoCodec.class);
-    QueryItemCodec queryItemCodec = injector.getInstance(QueryItemCodec.class);
+    org.springframework.context.ApplicationContext injector = getInjector();
+    QueryInfoCodec queryInfoCodec = injector.getBean(QueryInfoCodec.class);
+    QueryItemCodec queryItemCodec = injector.getBean(QueryItemCodec.class);
     
     ctx.registerDecoder(new QName(ServiceDiscovery.INFORMATION, "query"), queryInfoCodec);
     ctx.registerDecoder(new QName(ServiceDiscovery.ITEM, "query"), queryItemCodec);

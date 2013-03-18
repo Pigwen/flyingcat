@@ -24,7 +24,9 @@ import java.util.concurrent.ConcurrentMap;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresGuest;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.maodian.flyingcat.im.entity.User;
 
@@ -81,6 +83,7 @@ public class InMemorySession implements IMSession {
    * @see org.maodian.flyingcat.im.Session#getRoster()
    */
   @Override
+  @RequiresAuthentication
   public List<User> getContactList() {
     User user = users.get((String) subject.getPrincipal());
     return new ArrayList<>(roster.get(user).values());
@@ -90,6 +93,7 @@ public class InMemorySession implements IMSession {
    * @see org.maodian.flyingcat.im.IMSession#login(java.lang.String, java.lang.String)
    */
   @Override
+  @RequiresGuest
   public void login(String username, String password) {
     Subject user = SecurityUtils.getSubject();
     if ((subject != null && subject.isAuthenticated()) || user.isAuthenticated()) {
@@ -99,6 +103,8 @@ public class InMemorySession implements IMSession {
     try {
       user.login(token);
       subject = user;
+      Session shiroSession = subject.getSession();
+      shiroSession.getId();
     } catch (AuthenticationException e) {
       throw new IMException("", e, UserError.AUTHENTICATED_FAILS);
     }
@@ -118,6 +124,7 @@ public class InMemorySession implements IMSession {
    * @see org.maodian.flyingcat.im.IMSession#removeContact()
    */
   @Override
+  @RequiresAuthentication
   public void removeContact(User user) {
     User owner = users.get((String) subject.getPrincipal());
     roster.get(owner).remove(user.getUsername());
@@ -127,6 +134,7 @@ public class InMemorySession implements IMSession {
    * @see org.maodian.flyingcat.im.IMSession#saveContact(org.maodian.flyingcat.im.entity.User)
    */
   @Override
+  @RequiresAuthentication
   public void saveContact(User user) {
     User owner = users.get((String) subject.getPrincipal());
     roster.get(owner).put(user.getUsername(), user);

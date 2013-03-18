@@ -18,8 +18,8 @@ package org.maodian.flyingcat.xmpp;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.xml.namespace.QName;
 
 import org.maodian.flyingcat.xmpp.codec.BindCodec;
@@ -43,7 +43,6 @@ import org.maodian.flyingcat.xmpp.state.TLSCommand;
  * @author Cole Wen
  *
  */
-@Singleton
 public class DefaultApplicationContext implements ApplicationContext {
   private Map<QName, Decoder> decoderMap = new ConcurrentHashMap<>();
   private Map<Class<?>, Encoder> encoderMap = new ConcurrentHashMap<>();
@@ -60,6 +59,7 @@ public class DefaultApplicationContext implements ApplicationContext {
     
   }
   
+  @PostConstruct
   public void init() {
     if (init == false) {
       decoderMap.put(new QName(XmppNamespace.CLIENT_CONTENT, "iq"), infoQueryCodec);

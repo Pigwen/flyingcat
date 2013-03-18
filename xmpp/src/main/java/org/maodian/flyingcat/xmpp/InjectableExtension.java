@@ -15,24 +15,24 @@
  */
 package org.maodian.flyingcat.xmpp;
 
-import com.google.inject.Injector;
+import org.springframework.context.ApplicationContext;
 
 /**
  * @author Cole Wen
  *
  */
 public abstract class InjectableExtension implements Extension {
-  private Injector injector;
+  private ApplicationContext beanFactory;
   
   /* (non-Javadoc)
    * @see org.maodian.flyingcat.xmpp.Extension#setInjector(com.google.inject.Injector)
    */
   @Override
-  public void setInjector(Injector injector) {
-    this.injector = injector;
+  public void setInjector(ApplicationContext beanFactory) {
+    this.beanFactory = beanFactory;
   }
   
-  protected Injector getInjector() {
-    return injector;
+  protected ApplicationContext getInjector() {
+    return beanFactory;
   }
 }

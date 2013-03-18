@@ -36,9 +36,18 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <spring.version>3.2.2.RELEASE</spring.version>
     <guice.version>3.0</guice.version>
     <shiro.version>1.2.1</shiro.version>
   </properties>
+
+  <repositories>
+    <repository>
+      <id>springsource-repo</id>
+      <name>SpringSource Repository</name>
+      <url>http://repo.springsource.org/release</url>
+    </repository>
+  </repositories>
 
   <build>
     <pluginManagement>
@@ -80,6 +89,12 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.apache.shiro</groupId>
         <artifactId>shiro-core</artifactId>
         <version>${shiro.version}</version>
@@ -87,9 +102,12 @@
 
       <dependency>
         <groupId>org.apache.shiro</groupId>
-        <artifactId>shiro-guice</artifactId>
+        <artifactId>shiro-spring</artifactId>
         <version>${shiro.version}</version>
       </dependency>
+
+      <!-- <dependency> <groupId>org.apache.shiro</groupId> <artifactId>shiro-guice</artifactId> <version>${shiro.version}</version> 
+        </dependency> -->
     </dependencies>
   </dependencyManagement>
 
@@ -100,17 +118,9 @@
       <version>4.0.0.Beta2</version>
     </dependency>
 
-    <dependency>
-      <groupId>com.google.inject</groupId>
-      <artifactId>guice</artifactId>
-      <version>${guice.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.google.inject.extensions</groupId>
-      <artifactId>guice-assistedinject</artifactId>
-      <version>${guice.version}</version>
-    </dependency>
+    <!-- <dependency> <groupId>com.google.inject</groupId> <artifactId>guice</artifactId> <version>${guice.version}</version> 
+      </dependency> <dependency> <groupId>com.google.inject.extensions</groupId> <artifactId>guice-assistedinject</artifactId> 
+      <version>${guice.version}</version> </dependency> -->
 
     <!-- <dependency> <groupId>org.codehaus.woodstox</groupId> <artifactId>woodstox-core-asl</artifactId> <version>4.1.4</version> 
       </dependency> -->

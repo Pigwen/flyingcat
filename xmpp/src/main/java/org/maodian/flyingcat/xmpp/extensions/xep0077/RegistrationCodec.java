@@ -36,11 +36,13 @@ import org.maodian.flyingcat.xmpp.state.StanzaErrorCondition;
 import org.maodian.flyingcat.xmpp.state.StreamError;
 import org.maodian.flyingcat.xmpp.state.XmppContext;
 import org.maodian.flyingcat.xmpp.state.XmppException;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Cole Wen
  *
  */
+@Component
 public class RegistrationCodec extends AbstractCodec implements InfoQueryProcessor {
 
   /* (non-Javadoc)

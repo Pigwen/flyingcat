@@ -20,8 +20,6 @@ import javax.xml.namespace.QName;
 import org.maodian.flyingcat.xmpp.ApplicationContext;
 import org.maodian.flyingcat.xmpp.InjectableExtension;
 
-import com.google.inject.Injector;
-
 /**
  * @author Cole Wen
  *
@@ -33,8 +31,8 @@ public class InBandRegistrationExtension extends InjectableExtension {
    */
   @Override
   public void register(ApplicationContext ctx) {
-    Injector injector = getInjector();
-    RegistrationCodec codec = injector.getInstance(RegistrationCodec.class);
+    org.springframework.context.ApplicationContext injector = getInjector();
+    RegistrationCodec codec = injector.getBean(RegistrationCodec.class);
     
     ctx.registerDecoder(new QName(InBandRegistration.REGISTER, "query"), codec);
     ctx.registerEncoder(Registration.class, codec);

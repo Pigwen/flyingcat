@@ -28,8 +28,7 @@ import org.maodian.flyingcat.netty.handler.LoggerEnabledStringDecoder;
 import org.maodian.flyingcat.netty.handler.LoggerEnabledStringEncoder;
 import org.maodian.flyingcat.netty.handler.XMLFragmentDecoder;
 import org.maodian.flyingcat.netty.handler.XmppXMLStreamHandler;
-
-import com.google.inject.Injector;
+import org.springframework.context.ApplicationContext;
 
 /**
  * @author Cole Wen
@@ -38,13 +37,13 @@ import com.google.inject.Injector;
 public class XmppServerInitializer extends ChannelInitializer<SocketChannel> implements ChannelHandler {
   private static final LoggerEnabledStringDecoder DECODER = new LoggerEnabledStringDecoder();
   private static final LoggerEnabledStringEncoder ENCODER = new LoggerEnabledStringEncoder();
-  private final Injector injector;
+  private final ApplicationContext beanFactory;
 
   /**
    * @param injector
    */
-  public XmppServerInitializer(Injector injector) {
-    this.injector = injector;
+  public XmppServerInitializer(ApplicationContext beanFactory) {
+    this.beanFactory = beanFactory;
   }
 
   /*
@@ -67,7 +66,7 @@ public class XmppServerInitializer extends ChannelInitializer<SocketChannel> imp
     p.addLast("Encoder", ENCODER);
     // p.addLast("Echo", new XmppMessageInboundHandler());
     // p.addLast("Echo", new StreamNegotiationHandler());
-    XmppXMLStreamHandler streamHandler = injector.getInstance(XmppXMLStreamHandler.class);
+    XmppXMLStreamHandler streamHandler = beanFactory.getBean(XmppXMLStreamHandler.class);
     p.addLast("Echo", streamHandler);
   }
 }

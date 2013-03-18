@@ -26,11 +26,13 @@ import org.maodian.flyingcat.xmpp.entity.InfoQuery;
 import org.maodian.flyingcat.xmpp.state.StreamError;
 import org.maodian.flyingcat.xmpp.state.XmppContext;
 import org.maodian.flyingcat.xmpp.state.XmppException;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Cole Wen
  *
  */
+@Component
 public class BindCodec extends AbstractCodec implements InfoQueryProcessor {
 
   /* (non-Javadoc)

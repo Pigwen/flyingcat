@@ -26,11 +26,13 @@ import org.maodian.flyingcat.xmpp.entity.InfoQuery;
 import org.maodian.flyingcat.xmpp.entity.InfoQuery.Builder;
 import org.maodian.flyingcat.xmpp.state.StanzaErrorCondition;
 import org.maodian.flyingcat.xmpp.state.XmppException;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Cole Wen
  *
  */
+@Component
 public class InfoQueryCodec extends AbstractCodec {
 
   /* (non-Javadoc)

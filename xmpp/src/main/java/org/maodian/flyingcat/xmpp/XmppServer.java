@@ -22,14 +22,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import java.util.ServiceLoader;
 
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.guice.aop.ShiroAopModule;
-import org.apache.shiro.mgt.SecurityManager;
-import org.maodian.flyingcat.di.XmppModule;
-import org.maodian.flyingcat.di.XmppShiroModule;
-
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * @author Cole Wen
@@ -43,13 +36,13 @@ public class XmppServer {
     this.port = port;
   }
 
-  private void run(Injector injector) throws InterruptedException {
+  private void run(org.springframework.context.ApplicationContext springCtx) throws InterruptedException {
     ServerBootstrap b = new ServerBootstrap();
     try {
       b.group(new NioEventLoopGroup(), new NioEventLoopGroup())
       .channel(NioServerSocketChannel.class)
       .localAddress(port)
-      .childHandler(new XmppServerInitializer(injector)) 
+      .childHandler(new XmppServerInitializer(springCtx)) 
       .option(ChannelOption.TCP_NODELAY, true)
       .option(ChannelOption.SO_KEEPALIVE, true);
 
@@ -69,19 +62,19 @@ public class XmppServer {
     } else {
         port = 5222;
     }
-    Injector injector = Guice.createInjector(new XmppModule(), new XmppShiroModule(), new ShiroAopModule());
+    org.springframework.context.ApplicationContext springCtx = new ClassPathXmlApplicationContext("beans.xml", "shiro.xml");
     
-    SecurityManager securityManager = injector.getInstance(SecurityManager.class);
-    SecurityUtils.setSecurityManager(securityManager);
-    new XmppServer(port).preRun(injector).run(injector);
+    
+/*    SecurityManager securityManager = injector.getInstance(SecurityManager.class);
+    SecurityUtils.setSecurityManager(securityManager);*/
+    new XmppServer(port).preRun(springCtx).run(springCtx);
   }
 
-  private XmppServer preRun(Injector injector) {
-    ApplicationContext ctx = injector.getInstance(ApplicationContext.class);
-    ctx.init();
+  private XmppServer preRun(org.springframework.context.ApplicationContext springCtx) {
+    ApplicationContext ctx = springCtx.getBean(ApplicationContext.class);
     ServiceLoader<Extension> extLoader = ServiceLoader.load(Extension.class);
     for (Extension ext : extLoader) {
-      ext.setInjector(injector);
+      ext.setInjector(springCtx);
       ext.register(ctx);
     }
     return this;

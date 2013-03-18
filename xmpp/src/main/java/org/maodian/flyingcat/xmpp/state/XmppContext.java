@@ -52,6 +52,8 @@ public interface XmppContext {
   
   ChannelHandlerContext getNettyChannelHandlerContext();
   
+  void setNettyChannelHandlerContext(ChannelHandlerContext nettyCtx);
+  
   ApplicationContext getApplicationContext();
   
   String wrapStreamTag(String xml);

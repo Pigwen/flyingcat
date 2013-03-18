@@ -17,14 +17,11 @@ package org.maodian.flyingcat.xmpp.state;
 
 import io.netty.channel.ChannelHandlerContext;
 
-import javax.inject.Inject;
 import javax.xml.namespace.QName;
 
 import org.maodian.flyingcat.im.IMSession;
 import org.maodian.flyingcat.xmpp.ApplicationContext;
 import org.maodian.flyingcat.xmpp.state.StreamState.OpeningStreamState;
-
-import com.google.inject.assistedinject.Assisted;
 
 /**
  * 
@@ -32,9 +29,9 @@ import com.google.inject.assistedinject.Assisted;
  *
  */
 public class DefaultXmppContext implements XmppContext {
-  private final ChannelHandlerContext nettyCtx;
   private final ApplicationContext appCtx;
   private final IMSession imSession;
+  private ChannelHandlerContext nettyCtx;
   private State state;
   private String bareJID;
   private String resource;
@@ -44,9 +41,7 @@ public class DefaultXmppContext implements XmppContext {
    * @param nettyCtx
    * @param appCtx
    */
-  @Inject
-  public DefaultXmppContext(ApplicationContext appCtx, IMSession imSession, @Assisted ChannelHandlerContext nettyCtx) {
-    this.nettyCtx = nettyCtx;
+  public DefaultXmppContext(ApplicationContext appCtx, IMSession imSession) {
     this.appCtx = appCtx;
     this.imSession = imSession;
     state = new OpeningStreamState();
@@ -81,6 +76,10 @@ public class DefaultXmppContext implements XmppContext {
   
   public ChannelHandlerContext getNettyChannelHandlerContext() {
     return nettyCtx;
+  }
+  
+  public void setNettyChannelHandlerContext(ChannelHandlerContext nettyCtx) {
+    this.nettyCtx = nettyCtx;
   }
   
   public String wrapStreamTag(String xml) {
@@ -128,5 +127,4 @@ public class DefaultXmppContext implements XmppContext {
   public ApplicationContext getApplicationContext() {
     return appCtx;
   }
-  
 }

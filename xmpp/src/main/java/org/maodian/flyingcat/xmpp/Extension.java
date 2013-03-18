@@ -15,13 +15,12 @@
  */
 package org.maodian.flyingcat.xmpp;
 
-import com.google.inject.Injector;
 
 /**
  * @author Cole Wen
  *
  */
 public interface Extension {
-  void setInjector(Injector injector);
+  void setInjector(org.springframework.context.ApplicationContext injector);
   void register(ApplicationContext ctx);
 }
