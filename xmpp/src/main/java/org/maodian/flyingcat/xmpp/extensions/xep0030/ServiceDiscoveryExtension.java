@@ -17,7 +17,7 @@ package org.maodian.flyingcat.xmpp.extensions.xep0030;
 
 import javax.xml.namespace.QName;
 
-import org.maodian.flyingcat.xmpp.ApplicationContext;
+import org.maodian.flyingcat.xmpp.GlobalContext;
 import org.maodian.flyingcat.xmpp.InjectableExtension;
 
 /**
@@ -30,7 +30,7 @@ public class ServiceDiscoveryExtension extends InjectableExtension {
    * @see org.maodian.flycat.Extension#register(org.maodian.flycat.ApplicationContext)
    */
   @Override
-  public void register(ApplicationContext ctx) {
+  public void register(GlobalContext ctx) {
     org.springframework.context.ApplicationContext injector = getInjector();
     QueryInfoCodec queryInfoCodec = injector.getBean(QueryInfoCodec.class);
     QueryItemCodec queryItemCodec = injector.getBean(QueryItemCodec.class);

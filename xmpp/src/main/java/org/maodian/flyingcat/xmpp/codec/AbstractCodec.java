@@ -21,7 +21,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang3.StringUtils;
-import org.maodian.flyingcat.xmpp.ApplicationContext;
+import org.maodian.flyingcat.xmpp.GlobalContext;
 import org.maodian.flyingcat.xmpp.entity.Stanzas;
 import org.maodian.flyingcat.xmpp.state.StanzaError;
 import org.maodian.flyingcat.xmpp.state.StanzaError.Type;
@@ -34,7 +34,7 @@ import org.maodian.flyingcat.xmpp.state.XmppException;
  *
  */
 public abstract class AbstractCodec implements Decoder, Encoder {
-  private ApplicationContext applicationContext;
+  private GlobalContext applicationContext;
   
   protected Decoder findDecoder(QName key, Stanzas stanzas) {
     Decoder decoder = applicationContext.getDecoder(key);
@@ -80,7 +80,7 @@ public abstract class AbstractCodec implements Decoder, Encoder {
   }
 
   @Inject
-  void setApplicationContext(ApplicationContext applicationContext) {
+  void setApplicationContext(GlobalContext applicationContext) {
     this.applicationContext = applicationContext;
   }
 }

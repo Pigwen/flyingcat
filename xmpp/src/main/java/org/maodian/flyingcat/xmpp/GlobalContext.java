@@ -26,7 +26,7 @@ import org.maodian.flyingcat.xmpp.state.ContextAwareCommand;
  * @author Cole Wen
  *
  */
-public interface ApplicationContext {
+public interface GlobalContext {
   void init();
   
   void registerDecoder(QName qname, Decoder decoder);

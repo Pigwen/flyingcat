@@ -22,6 +22,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import java.util.ServiceLoader;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -36,13 +37,13 @@ public class XmppServer {
     this.port = port;
   }
 
-  private void run(org.springframework.context.ApplicationContext springCtx) throws InterruptedException {
+  private void run(ApplicationContext beanFactory) throws InterruptedException {
     ServerBootstrap b = new ServerBootstrap();
     try {
       b.group(new NioEventLoopGroup(), new NioEventLoopGroup())
       .channel(NioServerSocketChannel.class)
       .localAddress(port)
-      .childHandler(new XmppServerInitializer(springCtx)) 
+      .childHandler(new XmppServerInitializer(beanFactory)) 
       .option(ChannelOption.TCP_NODELAY, true)
       .option(ChannelOption.SO_KEEPALIVE, true);
 
@@ -62,19 +63,15 @@ public class XmppServer {
     } else {
         port = 5222;
     }
-    org.springframework.context.ApplicationContext springCtx = new ClassPathXmlApplicationContext("beans.xml", "shiro.xml");
-    
-    
-/*    SecurityManager securityManager = injector.getInstance(SecurityManager.class);
-    SecurityUtils.setSecurityManager(securityManager);*/
-    new XmppServer(port).preRun(springCtx).run(springCtx);
+    ApplicationContext beanFactory = new ClassPathXmlApplicationContext("beans.xml", "shiro.xml");
+    new XmppServer(port).preRun(beanFactory).run(beanFactory);
   }
 
-  private XmppServer preRun(org.springframework.context.ApplicationContext springCtx) {
-    ApplicationContext ctx = springCtx.getBean(ApplicationContext.class);
+  private XmppServer preRun(ApplicationContext beanFactory) {
+    GlobalContext ctx = beanFactory.getBean(GlobalContext.class);
     ServiceLoader<Extension> extLoader = ServiceLoader.load(Extension.class);
     for (Extension ext : extLoader) {
-      ext.setInjector(springCtx);
+      ext.setBeanFactory(beanFactory);
       ext.register(ctx);
     }
     return this;

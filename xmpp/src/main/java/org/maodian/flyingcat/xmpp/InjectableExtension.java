@@ -28,7 +28,7 @@ public abstract class InjectableExtension implements Extension {
    * @see org.maodian.flyingcat.xmpp.Extension#setInjector(com.google.inject.Injector)
    */
   @Override
-  public void setInjector(ApplicationContext beanFactory) {
+  public void setBeanFactory(ApplicationContext beanFactory) {
     this.beanFactory = beanFactory;
   }
   

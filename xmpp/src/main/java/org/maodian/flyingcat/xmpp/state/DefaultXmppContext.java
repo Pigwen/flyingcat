@@ -20,7 +20,7 @@ import io.netty.channel.ChannelHandlerContext;
 import javax.xml.namespace.QName;
 
 import org.maodian.flyingcat.im.IMSession;
-import org.maodian.flyingcat.xmpp.ApplicationContext;
+import org.maodian.flyingcat.xmpp.GlobalContext;
 import org.maodian.flyingcat.xmpp.state.StreamState.OpeningStreamState;
 
 /**
@@ -29,7 +29,7 @@ import org.maodian.flyingcat.xmpp.state.StreamState.OpeningStreamState;
  *
  */
 public class DefaultXmppContext implements XmppContext {
-  private final ApplicationContext appCtx;
+  private final GlobalContext appCtx;
   private final IMSession imSession;
   private ChannelHandlerContext nettyCtx;
   private State state;
@@ -41,7 +41,7 @@ public class DefaultXmppContext implements XmppContext {
    * @param nettyCtx
    * @param appCtx
    */
-  public DefaultXmppContext(ApplicationContext appCtx, IMSession imSession) {
+  public DefaultXmppContext(GlobalContext appCtx, IMSession imSession) {
     this.appCtx = appCtx;
     this.imSession = imSession;
     state = new OpeningStreamState();
@@ -124,7 +124,7 @@ public class DefaultXmppContext implements XmppContext {
    * @see org.maodian.flyingcat.xmpp.state.XmppContext#getApplicationContext()
    */
   @Override
-  public ApplicationContext getApplicationContext() {
+  public GlobalContext getApplicationContext() {
     return appCtx;
   }
 }

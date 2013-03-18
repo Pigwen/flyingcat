@@ -43,7 +43,7 @@ import org.maodian.flyingcat.xmpp.state.TLSCommand;
  * @author Cole Wen
  *
  */
-public class DefaultApplicationContext implements ApplicationContext {
+public class DefaultApplicationContext implements GlobalContext {
   private Map<QName, Decoder> decoderMap = new ConcurrentHashMap<>();
   private Map<Class<?>, Encoder> encoderMap = new ConcurrentHashMap<>();
   private Map<Class<?>, InfoQueryProcessor> processorMap = new ConcurrentHashMap<>();

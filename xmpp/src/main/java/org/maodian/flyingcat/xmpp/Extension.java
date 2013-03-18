@@ -21,6 +21,6 @@ package org.maodian.flyingcat.xmpp;
  *
  */
 public interface Extension {
-  void setInjector(org.springframework.context.ApplicationContext injector);
-  void register(ApplicationContext ctx);
+  void setBeanFactory(org.springframework.context.ApplicationContext injector);
+  void register(GlobalContext ctx);
 }

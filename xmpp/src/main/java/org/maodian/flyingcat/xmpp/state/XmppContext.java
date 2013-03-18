@@ -20,7 +20,7 @@ import io.netty.channel.ChannelHandlerContext;
 import javax.xml.namespace.QName;
 
 import org.maodian.flyingcat.im.IMSession;
-import org.maodian.flyingcat.xmpp.ApplicationContext;
+import org.maodian.flyingcat.xmpp.GlobalContext;
 
 
 
@@ -54,7 +54,7 @@ public interface XmppContext {
   
   void setNettyChannelHandlerContext(ChannelHandlerContext nettyCtx);
   
-  ApplicationContext getApplicationContext();
+  GlobalContext getApplicationContext();
   
   String wrapStreamTag(String xml);
   
