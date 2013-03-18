@@ -5,6 +5,8 @@ target/
 .settings/*
 generated-sources/
 
+.springBeans
+
 # Package Files #
 *.jar
 *.war
