@@ -42,7 +42,7 @@ public class LoggerEnabledStringEncoder extends StringEncoder {
    * @see io.netty.handler.codec.string.StringEncoder#flush(io.netty.channel.ChannelHandlerContext, java.lang.CharSequence)
    */
   @Override
-  protected void flush(ChannelHandlerContext ctx, CharSequence msg) throws Exception {
+  public void flush(ChannelHandlerContext ctx, CharSequence msg) throws Exception {
     String object = msg.toString();
     logger.debug("Outbound String: {}", object);
     super.flush(ctx, msg);

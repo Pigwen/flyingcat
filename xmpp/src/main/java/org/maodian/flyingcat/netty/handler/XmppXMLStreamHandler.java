@@ -55,7 +55,7 @@ public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<St
    * .netty.channel.ChannelHandlerContext, java.lang.Object)
    */
   @Override
-  protected void messageReceived(ChannelHandlerContext ctx, String msg) throws Exception {
+  public void messageReceived(ChannelHandlerContext ctx, String msg) throws Exception {
     // discard xml declaration
     if (StringUtils.startsWith(msg, "<?xml ")) {
       return;
