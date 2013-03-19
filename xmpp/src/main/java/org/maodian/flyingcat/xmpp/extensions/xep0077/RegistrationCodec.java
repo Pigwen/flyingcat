@@ -26,7 +26,7 @@ import org.maodian.flyingcat.im.ErrorCode;
 import org.maodian.flyingcat.im.IMException;
 import org.maodian.flyingcat.im.IMSession;
 import org.maodian.flyingcat.im.UserError;
-import org.maodian.flyingcat.im.entity.User;
+import org.maodian.flyingcat.im.entity.Account;
 import org.maodian.flyingcat.xmpp.codec.AbstractCodec;
 import org.maodian.flyingcat.xmpp.codec.InfoQueryProcessor;
 import org.maodian.flyingcat.xmpp.entity.InfoQuery;
@@ -104,7 +104,9 @@ public class RegistrationCodec extends AbstractCodec implements InfoQueryProcess
     
     IMSession session = context.getIMSession();
     try {
-      session.register(new User(username, password));
+      Account u = new Account(username);
+      u.setPassword(password);
+      session.register(u);
     } catch (IMException e) {
       ErrorCode errorCode = e.getErrorCode();
       if (errorCode == UserError.DUPLICATED_USERNAME) {

@@ -25,7 +25,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.maodian.flyingcat.im.IMSession;
-import org.maodian.flyingcat.im.entity.User;
+import org.maodian.flyingcat.im.entity.Account;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
 import org.maodian.flyingcat.xmpp.entity.Contact;
 import org.maodian.flyingcat.xmpp.entity.InfoQuery;
@@ -83,9 +83,9 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
   @Override
   public Object processGet(XmppContext context, InfoQuery iq) {
     IMSession session = context.getIMSession();
-    List<User> users = session.getContactList();
+    List<Account> users = session.getContactList();
     List<Contact> contacts = new ArrayList<>(users.size());
-    for (User u: users) {
+    for (Account u: users) {
       Contact c = new Contact(u.getUsername());
       contacts.add(c);
     }
@@ -105,9 +105,9 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
     Contact c = roster.iterator().next();
     IMSession session = context.getIMSession();
     if (StringUtils.equals(c.getSubscription(), Contact.SUB_REMOVE)) {
-      session.removeContact(new User(c.getName()));
+      session.removeContact(new Account(c.getName()));
     } else {
-      session.saveContact(new User(c.getName()));
+      session.saveContact(new Account(c.getName()));
     }
     
     // TODO: implement roster push

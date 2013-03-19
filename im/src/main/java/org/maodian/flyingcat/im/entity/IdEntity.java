@@ -13,27 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flyingcat.im;
-
-import java.util.List;
-
-import org.maodian.flyingcat.im.entity.Account;
+package org.maodian.flyingcat.im.entity;
 
 /**
  * @author Cole Wen
  *
  */
-public interface IMSession {
-
-  void register(Account user) throws IMException;
-  
-  List<Account> getContactList();
-  
-  void removeContact(Account user);
-  
-  void saveContact(Account user);
-  
-  void login(String username, String password);
-  
-  void destroy();
+public interface IdEntity {
+  String getId();
 }

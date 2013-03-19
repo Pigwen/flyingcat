@@ -15,67 +15,106 @@
  */
 package org.maodian.flyingcat.im;
 
+import java.util.Collections;
 import java.util.List;
 
-import org.maodian.flyingcat.im.entity.User;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
+import org.maodian.flyingcat.im.entity.Account;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 /**
  * @author Cole Wen
- *
+ * 
  */
 public class MongoSession implements IMSession {
+  private Subject subject;
+  private MongoTemplate template;
 
-  /* (non-Javadoc)
-   * @see org.maodian.flyingcat.im.IMSession#register(org.maodian.flyingcat.im.entity.User)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.maodian.flyingcat.im.IMSession#register(org.maodian.flyingcat.im.entity
+   * .User)
    */
   @Override
-  public void register(User user) throws IMException {
-    
+  public void register(Account account) throws IMException {
+    template.insert(account);
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.maodian.flyingcat.im.IMSession#getContactList()
    */
   @Override
-  public List<User> getContactList() {
-    // TODO Auto-generated method stub
-    return null;
+  public List<Account> getContactList() {
+    return Collections.emptyList();
   }
 
-  /* (non-Javadoc)
-   * @see org.maodian.flyingcat.im.IMSession#removeContact(org.maodian.flyingcat.im.entity.User)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.maodian.flyingcat.im.IMSession#removeContact(org.maodian.flyingcat.
+   * im.entity.User)
    */
   @Override
-  public void removeContact(User user) {
+  public void removeContact(Account user) {
     // TODO Auto-generated method stub
 
   }
 
-  /* (non-Javadoc)
-   * @see org.maodian.flyingcat.im.IMSession#saveContact(org.maodian.flyingcat.im.entity.User)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.maodian.flyingcat.im.IMSession#saveContact(org.maodian.flyingcat.im
+   * .entity.User)
    */
   @Override
-  public void saveContact(User user) {
+  public void saveContact(Account user) {
     // TODO Auto-generated method stub
 
   }
 
-  /* (non-Javadoc)
-   * @see org.maodian.flyingcat.im.IMSession#login(java.lang.String, java.lang.String)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.maodian.flyingcat.im.IMSession#login(java.lang.String,
+   * java.lang.String)
    */
   @Override
   public void login(String username, String password) {
-    // TODO Auto-generated method stub
-
+    Subject user = SecurityUtils.getSubject();
+    if ((subject != null && subject.isAuthenticated()) || user.isAuthenticated()) {
+      throw new IllegalStateException("The user has already been authenticated");
+    }
+    UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+    try {
+      user.login(token);
+      subject = user;
+    } catch (AuthenticationException e) {
+      throw new IMException("", e, UserError.AUTHENTICATED_FAILS);
+    }
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.maodian.flyingcat.im.IMSession#destroy()
    */
   @Override
   public void destroy() {
     // TODO Auto-generated method stub
 
+  }
+
+  public void setMongoTemplate(MongoTemplate template) {
+    this.template = template;
   }
 
 }

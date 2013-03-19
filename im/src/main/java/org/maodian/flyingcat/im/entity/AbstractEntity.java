@@ -17,41 +17,20 @@ package org.maodian.flyingcat.im.entity;
 
 /**
  * @author Cole Wen
- * 
+ *
  */
-public class User {
-  private final String username;
-  private final String nickname;
-  private String password;
+public abstract class AbstractEntity implements IdEntity {
+  private String id;
 
-  /**
-   * @param username
-   * @param password
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.im.entity.IdEntity#getId()
    */
-  public User(String username, String nickname, String password) {
-    this.username = username;
-    this.nickname = nickname;
-    this.password = password;
+  @Override
+  public String getId() {
+    return id;
   }
   
-  public User(String username, String nickname) {
-    this(username, nickname, null);
+  public void setId(String id) {
+    this.id = id;
   }
-  
-  public User(String username) {
-    this(username, username);
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
-  public String getUsername() {
-    return username;
-  }
-
 }

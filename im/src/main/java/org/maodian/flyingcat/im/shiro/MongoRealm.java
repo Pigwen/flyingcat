@@ -25,14 +25,21 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.maodian.flyingcat.im.InMemorySession;
 import org.maodian.flyingcat.im.entity.Account;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 /**
  * @author Cole Wen
  *
  */
-public class InMemoryRealm extends AuthorizingRealm {
+public class MongoRealm extends AuthorizingRealm {
+  private MongoTemplate template;
+
+  public void setMongoTemplate(MongoTemplate template) {
+    this.template = template;
+  }
 
   /* (non-Javadoc)
    * @see org.apache.shiro.realm.AuthorizingRealm#doGetAuthorizationInfo(org.apache.shiro.subject.PrincipalCollection)
@@ -53,7 +60,11 @@ public class InMemoryRealm extends AuthorizingRealm {
     if (StringUtils.isBlank(username)) {
       throw new AccountException("Null or blank usernames are not allowed by this realm.");
     }
-    Account user = InMemorySession.users.get(username);
+    Account user = template.findOne(Query.query(Criteria.where("username").is(username)), Account.class);
+    if (user == null) {
+      throw new AccountException("No user found for username:" + username);
+    }
+    
     SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(username, user.getPassword(), getName());
     return info;
   }

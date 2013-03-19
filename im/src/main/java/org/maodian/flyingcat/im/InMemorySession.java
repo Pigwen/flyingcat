@@ -28,27 +28,27 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresGuest;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
-import org.maodian.flyingcat.im.entity.User;
+import org.maodian.flyingcat.im.entity.Account;
 
 /**
  * @author Cole Wen
  * 
  */
 public class InMemorySession implements IMSession {
-  private static final User cole = new User("cole", "", "11");
-  private static final User cole2 = new User("cole2", "", "22");
-  private static final User cole3 = new User("cole3", "", "33");
+  private static final Account cole = new Account("cole", "", "11");
+  private static final Account cole2 = new Account("cole2", "", "22");
+  private static final Account cole3 = new Account("cole3", "", "33");
   
-  public static final ConcurrentMap<String, User> users = new ConcurrentHashMap<String, User>() {
+  public static final ConcurrentMap<String, Account> users = new ConcurrentHashMap<String, Account>() {
     {
       put(cole.getUsername(), cole); 
       put(cole2.getUsername(), cole2);
       put(cole3.getUsername(), cole3);
     }
   };
-  public static final ConcurrentHashMap<User, Map<String, User>> roster = new ConcurrentHashMap<User, Map<String, User>>() {
+  public static final ConcurrentHashMap<Account, Map<String, Account>> roster = new ConcurrentHashMap<Account, Map<String, Account>>() {
     {
-      put(cole, new ConcurrentHashMap<String, User>() {
+      put(cole, new ConcurrentHashMap<String, Account>() {
         {
           put(cole2.getUsername(), cole2);
           put(cole3.getUsername(), cole3);
@@ -72,7 +72,7 @@ public class InMemorySession implements IMSession {
    */
   @Override
   @RequiresGuest
-  public void register(User user) throws IMException {
+  public void register(Account user) throws IMException {
     boolean success = users.putIfAbsent(user.getUsername(), user) == null;
     if (!success) {
       throw new IMException(UserError.DUPLICATED_USERNAME);
@@ -84,8 +84,8 @@ public class InMemorySession implements IMSession {
    */
   @Override
   @RequiresAuthentication
-  public List<User> getContactList() {
-    User user = users.get((String) subject.getPrincipal());
+  public List<Account> getContactList() {
+    Account user = users.get((String) subject.getPrincipal());
     return new ArrayList<>(roster.get(user).values());
   }
  
@@ -125,8 +125,8 @@ public class InMemorySession implements IMSession {
    */
   @Override
   @RequiresAuthentication
-  public void removeContact(User user) {
-    User owner = users.get((String) subject.getPrincipal());
+  public void removeContact(Account user) {
+    Account owner = users.get((String) subject.getPrincipal());
     roster.get(owner).remove(user.getUsername());
   }
 
@@ -135,8 +135,8 @@ public class InMemorySession implements IMSession {
    */
   @Override
   @RequiresAuthentication
-  public void saveContact(User user) {
-    User owner = users.get((String) subject.getPrincipal());
+  public void saveContact(Account user) {
+    Account owner = users.get((String) subject.getPrincipal());
     roster.get(owner).put(user.getUsername(), user);
   }
 

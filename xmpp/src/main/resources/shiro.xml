@@ -16,8 +16,20 @@
 
   <bean id="securityManager" class="org.apache.shiro.mgt.DefaultSecurityManager">
     <property name="realm">
-      <bean class="org.maodian.flyingcat.im.shiro.InMemoryRealm" />
+      <bean class="org.maodian.flyingcat.im.shiro.MongoRealm">
+        <property name="mongoTemplate" ref="mongoTemplate"/>
+      </bean>
     </property>
+    
+    <!-- <property name="sessionManager">
+      <bean class="org.apache.shiro.session.mgt.DefaultSessionManager">
+        <property name="sessionDAO">
+          <bean class="org.maodian.flyingcat.im.shiro.MongoSessionDAO">
+            <property name="mongoTemplate" ref="mongoTemplate"/>
+          </bean>
+        </property>
+      </bean>
+    </property> -->
   </bean>
 
   <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor" />
