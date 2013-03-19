@@ -19,6 +19,7 @@ import io.netty.channel.ChannelHandlerContext;
 
 import javax.xml.namespace.QName;
 
+import org.maodian.flyingcat.im.IMException;
 import org.maodian.flyingcat.im.IMSession;
 import org.maodian.flyingcat.xmpp.GlobalContext;
 import org.maodian.flyingcat.xmpp.state.StreamState.OpeningStreamState;
@@ -87,7 +88,11 @@ public class DefaultXmppContext implements XmppContext {
   }
   
   public void login(String username, String password) {
-    imSession.login(username, password);
+    try {
+      imSession.login(username, password);
+    } catch (IMException e) {
+      throw new XmppException(e, SASLError.NOT_AUTHORIZED);
+    }
   }
   
   public void destroy() {
