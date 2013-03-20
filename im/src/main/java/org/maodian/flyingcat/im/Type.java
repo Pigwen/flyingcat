@@ -28,5 +28,6 @@ public enum Type {
   REVIEW,
   SERVICE,
   TASK,
-  VIDEO;
+  VIDEO,
+  SESSION;
 }

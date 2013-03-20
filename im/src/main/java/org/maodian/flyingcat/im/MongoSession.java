@@ -21,7 +21,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.maodian.flyingcat.im.GlobalContext.Actor;
@@ -98,12 +97,8 @@ public class MongoSession implements IMSession {
       throw new IllegalStateException("The user has already been authenticated");
     }
     UsernamePasswordToken token = new UsernamePasswordToken(username, password);
-    try {
-      user.login(token);
-      subject = user;
-    } catch (AuthenticationException e) {
-      throw new IMException("", e, UserError.AUTHENTICATED_FAILS);
-    }
+    action(Verb.CREATE, Type.SESSION, token);
+    subject = user;
   }
 
   /*
