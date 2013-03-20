@@ -19,6 +19,9 @@ package org.maodian.flyingcat.im.template;
 import org.maodian.flyingcat.im.Type;
 import org.maodian.flyingcat.im.Verb;
 import org.maodian.flyingcat.im.entity.Account;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.index.Index;
+import org.springframework.data.mongodb.core.query.Order;
 import org.springframework.stereotype.Service;
 
 /**
@@ -31,6 +34,8 @@ public class AccountTemplate extends AbstractTemplate {
 
   @Operation(Verb.CREATE)
   public void register(Account account) {
+    MongoTemplate template = getMongoTemplate();
+    template.indexOps(Account.class).ensureIndex(new Index("username", Order.ASCENDING).unique());
     getMongoTemplate().insert(account);
   }
 }
