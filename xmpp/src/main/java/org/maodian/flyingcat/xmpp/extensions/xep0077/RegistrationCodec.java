@@ -23,15 +23,17 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.maodian.flyingcat.im.ErrorCode;
+import org.maodian.flyingcat.im.GenericError;
 import org.maodian.flyingcat.im.IMException;
 import org.maodian.flyingcat.im.IMSession;
+import org.maodian.flyingcat.im.Type;
 import org.maodian.flyingcat.im.UserError;
+import org.maodian.flyingcat.im.Verb;
 import org.maodian.flyingcat.im.entity.Account;
 import org.maodian.flyingcat.xmpp.codec.AbstractCodec;
 import org.maodian.flyingcat.xmpp.codec.InfoQueryProcessor;
 import org.maodian.flyingcat.xmpp.entity.InfoQuery;
 import org.maodian.flyingcat.xmpp.state.StanzaError;
-import org.maodian.flyingcat.xmpp.state.StanzaError.Type;
 import org.maodian.flyingcat.xmpp.state.StanzaErrorCondition;
 import org.maodian.flyingcat.xmpp.state.StreamError;
 import org.maodian.flyingcat.xmpp.state.XmppContext;
@@ -99,21 +101,25 @@ public class RegistrationCodec extends AbstractCodec implements InfoQueryProcess
     String username = registration.getUsername();
     String password = registration.getPassword();
     if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
-      throw new XmppException(new StanzaError(iq, StanzaErrorCondition.NOT_ACCEPTABLE, Type.MODIFY));
+      throw new XmppException(new StanzaError(iq, StanzaErrorCondition.NOT_ACCEPTABLE, StanzaError.Type.MODIFY));
     }
     
     IMSession session = context.getIMSession();
     try {
       Account u = new Account(username);
       u.setPassword(password);
-      session.register(u);
+      session.action(Verb.CREATE, Type.PERSON, u);
+      return null;
     } catch (IMException e) {
       ErrorCode errorCode = e.getErrorCode();
       if (errorCode == UserError.DUPLICATED_USERNAME) {
-        throw new XmppException(e, new StanzaError(iq, StanzaErrorCondition.CONFLICT, Type.CANCEL));
+        throw new XmppException(e, new StanzaError(iq, StanzaErrorCondition.CONFLICT, StanzaError.Type.CANCEL));
+      } else if (errorCode == GenericError.INTERNAL_ERROR) {
+        throw new XmppException(e, new StanzaError(iq, StanzaErrorCondition.INTERNAL_SERVER_ERROR, StanzaError.Type.CANCEL));
+      } else {
+        throw new XmppException(e, new StanzaError(iq, StanzaErrorCondition.BAD_REQUEST, StanzaError.Type.CANCEL));
       }
     }
-    return null;
   }
 
 }

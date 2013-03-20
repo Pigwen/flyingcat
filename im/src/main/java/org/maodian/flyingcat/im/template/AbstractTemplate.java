@@ -13,31 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flyingcat.im;
+package org.maodian.flyingcat.im.template;
 
-import java.util.List;
+import javax.inject.Inject;
 
-import org.maodian.flyingcat.im.entity.Account;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 /**
  * @author Cole Wen
  *
  */
-public interface IMSession {
+public abstract class AbstractTemplate {
+  private MongoTemplate template;
+  
+  @Inject
+  void setMongoTemplate(MongoTemplate template) {
+    this.template = template;
+  }
 
-  void register(Account user) throws IMException;
-  
-  List<Account> getContactList();
-  
-  void removeContact(Account user);
-  
-  void saveContact(Account user);
-  
-  void login(String username, String password);
-  
-  void destroy();
-  
-  Object action(Verb verb, Type objectType, Object objectData, Type target, Object targetData);
-  
-  Object action(Verb verb, Type objectType, Object objectData);
+  protected MongoTemplate getMongoTemplate() {
+    return template;
+  }
 }

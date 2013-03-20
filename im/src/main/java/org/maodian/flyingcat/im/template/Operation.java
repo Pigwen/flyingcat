@@ -13,31 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flyingcat.im;
+package org.maodian.flyingcat.im.template;
 
-import java.util.List;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.maodian.flyingcat.im.entity.Account;
+import org.maodian.flyingcat.im.Verb;
 
 /**
  * @author Cole Wen
  *
  */
-public interface IMSession {
-
-  void register(Account user) throws IMException;
-  
-  List<Account> getContactList();
-  
-  void removeContact(Account user);
-  
-  void saveContact(Account user);
-  
-  void login(String username, String password);
-  
-  void destroy();
-  
-  Object action(Verb verb, Type objectType, Object objectData, Type target, Object targetData);
-  
-  Object action(Verb verb, Type objectType, Object objectData);
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Operation {
+  Verb value();
 }

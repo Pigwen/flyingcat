@@ -140,4 +140,20 @@ public class InMemorySession implements IMSession {
     roster.get(owner).put(user.getUsername(), user);
   }
 
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.im.IMSession#action(org.maodian.flyingcat.im.Verb, org.maodian.flyingcat.im.Type, java.lang.Object, org.maodian.flyingcat.im.Type, java.lang.Object)
+   */
+  @Override
+  public Object action(Verb verb, Type objectType, Object objectData, Type target, Object targetData) {
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.im.IMSession#action(org.maodian.flyingcat.im.Verb, org.maodian.flyingcat.im.Type, java.lang.Object)
+   */
+  @Override
+  public Object action(Verb verb, Type objectType, Object objectData) {
+    return null;
+  }
+
 }

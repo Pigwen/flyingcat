@@ -15,29 +15,28 @@
  */
 package org.maodian.flyingcat.im;
 
-import java.util.List;
-
-import org.maodian.flyingcat.im.entity.Account;
-
 /**
  * @author Cole Wen
  *
  */
-public interface IMSession {
+public enum GenericError implements ErrorCode {
+  INTERNAL_ERROR(1001);
 
-  void register(Account user) throws IMException;
+private final int number;
   
-  List<Account> getContactList();
-  
-  void removeContact(Account user);
-  
-  void saveContact(Account user);
-  
-  void login(String username, String password);
-  
-  void destroy();
-  
-  Object action(Verb verb, Type objectType, Object objectData, Type target, Object targetData);
-  
-  Object action(Verb verb, Type objectType, Object objectData);
+  /**
+   * @param number
+   */
+  private GenericError(int number) {
+    this.number = number;
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.im.ErrorCode#getNumber()
+   */
+  @Override
+  public int getNumber() {
+    return number;
+  }
+
 }

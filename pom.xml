@@ -93,7 +93,7 @@
         <artifactId>spring-context</artifactId>
         <version>${spring.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-tx</artifactId>
@@ -124,6 +124,12 @@
 
     <!-- <dependency> <groupId>org.codehaus.woodstox</groupId> <artifactId>woodstox-core-asl</artifactId> <version>4.1.4</version> 
       </dependency> -->
+
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <version>1</version>
+    </dependency>
 
     <dependency>
       <groupId>org.apache.commons</groupId>

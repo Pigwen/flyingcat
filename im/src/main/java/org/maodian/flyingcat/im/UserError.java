@@ -20,8 +20,8 @@ package org.maodian.flyingcat.im;
  *
  */
 public enum UserError implements ErrorCode {
-  DUPLICATED_USERNAME(1001),
-  AUTHENTICATED_FAILS(1002);
+  DUPLICATED_USERNAME(2001),
+  AUTHENTICATED_FAILS(2002);
   
   private final int number;
   

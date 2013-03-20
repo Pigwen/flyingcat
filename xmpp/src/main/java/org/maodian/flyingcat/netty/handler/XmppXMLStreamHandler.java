@@ -91,6 +91,7 @@ public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<St
   
   @Override
   public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    log.error("Catch exceptions", cause);
     if (cause instanceof XmppException) {
       XmppException xmppException = (XmppException) cause;
       XmppError error = xmppException.getXmppError();
@@ -109,7 +110,7 @@ public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<St
     String xml = "</stream:stream>";
     initCloseingStream = true;
     ctx.write(xml).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
-    log.error("Close the XMPP Stream due to error", cause);
+    log.error("Close the XMPP Stream due to error");
     super.exceptionCaught(ctx, cause);
   }
 

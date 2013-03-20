@@ -18,10 +18,13 @@ package org.maodian.flyingcat.im;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
+import org.maodian.flyingcat.im.GlobalContext.Actor;
 import org.maodian.flyingcat.im.entity.Account;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -32,6 +35,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 public class MongoSession implements IMSession {
   private Subject subject;
   private MongoTemplate template;
+  private GlobalContext globalContext;
 
   /*
    * (non-Javadoc)
@@ -109,12 +113,34 @@ public class MongoSession implements IMSession {
    */
   @Override
   public void destroy() {
-    // TODO Auto-generated method stub
-
+    if (subject != null) {
+      subject.logout();
+    }
   }
 
   public void setMongoTemplate(MongoTemplate template) {
     this.template = template;
   }
 
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.im.IMSession#action(org.maodian.flyingcat.im.Verb, org.maodian.flyingcat.im.Type, java.lang.Object, org.maodian.flyingcat.im.Type, java.lang.Object)
+   */
+  @Override
+  public Object action(Verb verb, Type objectType, Object objectData, Type targetType, Object targetData) {
+    Actor actor = globalContext.getTemlateActor(verb, objectType);
+    return actor.action(objectData, targetData);
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.im.IMSession#action(org.maodian.flyingcat.im.Verb, org.maodian.flyingcat.im.Type, java.lang.Object)
+   */
+  @Override
+  public Object action(Verb verb, Type objectType, Object objectData) {
+    return action(verb, objectType, objectData, null, null);
+  }
+
+  @Inject
+  void setGlobalContext(GlobalContext globalContext) {
+    this.globalContext = globalContext;
+  }
 }
