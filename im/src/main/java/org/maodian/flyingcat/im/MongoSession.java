@@ -17,6 +17,7 @@ package org.maodian.flyingcat.im;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
@@ -92,13 +93,12 @@ public class MongoSession implements IMSession {
    */
   @Override
   public void login(String username, String password) {
-    Subject user = SecurityUtils.getSubject();
-    if ((subject != null && subject.isAuthenticated()) || user.isAuthenticated()) {
+    if ((subject != null && subject.isAuthenticated())) {
       throw new IllegalStateException("The user has already been authenticated");
     }
+    subject = SecurityUtils.getSubject();
     UsernamePasswordToken token = new UsernamePasswordToken(username, password);
     action(Verb.CREATE, Type.SESSION, token);
-    subject = user;
   }
 
   /*
@@ -121,9 +121,20 @@ public class MongoSession implements IMSession {
    * @see org.maodian.flyingcat.im.IMSession#action(org.maodian.flyingcat.im.Verb, org.maodian.flyingcat.im.Type, java.lang.Object, org.maodian.flyingcat.im.Type, java.lang.Object)
    */
   @Override
-  public Object action(Verb verb, Type objectType, Object objectData, Type targetType, Object targetData) {
-    Actor actor = globalContext.getTemlateActor(verb, objectType);
-    return actor.action(objectData, targetData);
+  public Object action(Verb verb, Type objectType, final Object objectData, Type targetType, final Object targetData) {
+    final Actor actor = globalContext.getTemlateActor(verb, objectType);
+    if (subject == null) {
+      subject = SecurityUtils.getSubject();
+    }
+    return subject.execute(new Callable<Object>() {
+      /* (non-Javadoc)
+       * @see java.util.concurrent.Callable#call()
+       */
+      @Override
+      public Object call() throws Exception {
+        return actor.action(objectData, targetData);
+      }
+    });
   }
 
   /* (non-Javadoc)
