@@ -131,13 +131,10 @@ class GlobalContext {
       try {
         return target == null ? method.invoke(obj, data) : method.invoke(obj, data, target);
       } catch (IllegalAccessException | IllegalArgumentException e) {
-        throw new IMException(e, GenericError.INTERNAL_ERROR);
+        throw IMException.wrap(e, ServerError.INTERNAL_ERROR);
       } catch (InvocationTargetException e) {
         Throwable cause = e.getCause();
-        if (cause instanceof IMException) {
-          throw (IMException) cause;
-        }
-        throw new IMException(e, GenericError.INTERNAL_ERROR);
+        throw IMException.wrap(cause);
       }
     }
 

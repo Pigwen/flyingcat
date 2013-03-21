@@ -19,15 +19,16 @@ package org.maodian.flyingcat.im;
  * @author Cole Wen
  *
  */
-public enum GenericError implements ErrorCode {
-  INTERNAL_ERROR(1001);
+public enum ServerError implements ErrorCode {
+  GENERIC_ERROR(1001),
+  INTERNAL_ERROR(1002);
 
 private final int number;
   
   /**
    * @param number
    */
-  private GenericError(int number) {
+  private ServerError(int number) {
     this.number = number;
   }
 

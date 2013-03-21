@@ -55,4 +55,20 @@ public class IMException extends RuntimeException {
     properties.put(key, value);
     return this;
   }
+  
+  public static IMException wrap(Throwable t, ErrorCode code) {
+    if (t instanceof IMException) {
+      IMException ime = (IMException) t;
+      if (code != null & code != ime.getErrorCode()) {
+        return new IMException(t.getMessage(), t, code);
+      }
+      return ime;
+    } else {
+      return new IMException(t.getMessage(), t, code);
+    }
+  }
+  
+  public static IMException wrap(Throwable t) {
+    return wrap(t, null);
+  }
 }

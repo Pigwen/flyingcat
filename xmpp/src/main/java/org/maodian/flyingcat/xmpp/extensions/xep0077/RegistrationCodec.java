@@ -23,7 +23,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.maodian.flyingcat.im.ErrorCode;
-import org.maodian.flyingcat.im.GenericError;
+import org.maodian.flyingcat.im.ServerError;
 import org.maodian.flyingcat.im.IMException;
 import org.maodian.flyingcat.im.IMSession;
 import org.maodian.flyingcat.im.Type;
@@ -114,7 +114,7 @@ public class RegistrationCodec extends AbstractCodec implements InfoQueryProcess
       ErrorCode errorCode = e.getErrorCode();
       if (errorCode == UserError.DUPLICATED_USERNAME) {
         throw new XmppException(e, new StanzaError(iq, StanzaErrorCondition.CONFLICT, StanzaError.Type.CANCEL));
-      } else if (errorCode == GenericError.INTERNAL_ERROR) {
+      } else if (errorCode == ServerError.INTERNAL_ERROR) {
         throw new XmppException(e, new StanzaError(iq, StanzaErrorCondition.INTERNAL_SERVER_ERROR, StanzaError.Type.CANCEL));
       } else {
         throw new XmppException(e, new StanzaError(iq, StanzaErrorCondition.BAD_REQUEST, StanzaError.Type.CANCEL));
