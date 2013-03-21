@@ -15,10 +15,17 @@
  */
 package org.maodian.flyingcat.im.template;
 
+import java.lang.invoke.MethodHandles;
+
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.maodian.flyingcat.im.IMException;
 import org.maodian.flyingcat.im.Type;
+import org.maodian.flyingcat.im.UserError;
 import org.maodian.flyingcat.im.Verb;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -28,9 +35,15 @@ import org.springframework.stereotype.Component;
 @Component
 @Domain(Type.SESSION)
 public class SessionTemplate extends AbstractTemplate {
-
+  private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  
   @Operation(Verb.CREATE)
   public void login(UsernamePasswordToken token) {
-    SecurityUtils.getSubject().login(token);
+    try {
+      SecurityUtils.getSubject().login(token);
+    } catch (AuthenticationException e) {
+      log.warn("User [{}] login failed", token.getPrincipal());
+      throw IMException.wrap(e, UserError.AUTHENTICATED_FAILS);
+    }
   }
 }
