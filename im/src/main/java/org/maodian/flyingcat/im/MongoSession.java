@@ -17,13 +17,14 @@ package org.maodian.flyingcat.im;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.subject.support.SubjectThreadState;
+import org.apache.shiro.util.ThreadState;
 import org.maodian.flyingcat.im.GlobalContext.Actor;
 import org.maodian.flyingcat.im.entity.Account;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -126,15 +127,13 @@ public class MongoSession implements IMSession {
     if (subject == null) {
       subject = SecurityUtils.getSubject();
     }
-    return subject.execute(new Callable<Object>() {
-      /* (non-Javadoc)
-       * @see java.util.concurrent.Callable#call()
-       */
-      @Override
-      public Object call() throws Exception {
-        return actor.action(objectData, targetData);
-      }
-    });
+    ThreadState threadState = new SubjectThreadState(subject);
+    threadState.bind();
+    try {
+      return actor.action(objectData, targetData);
+    } finally {
+      threadState.clear();
+    }
   }
 
   /* (non-Javadoc)
