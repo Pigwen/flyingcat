@@ -40,7 +40,7 @@ public abstract class AbstractCodec implements Decoder, Encoder {
     Decoder decoder = applicationContext.getDecoder(key);
     //TODO: here we should distinguish service_unavailable and feature_not_implemented
     if (decoder == null) {
-      throw new XmppException("The ", new StanzaError(stanzas, StanzaErrorCondition.SERVICE_UNAVAILABLE, Type.CANCEL));
+      throw new XmppException("Cant find Decoder for:" + key.toString(), new StanzaError(stanzas, StanzaErrorCondition.SERVICE_UNAVAILABLE, Type.CANCEL));
     }
     return decoder;
   }
