@@ -63,6 +63,7 @@ public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<St
     
     // deal with </stream:stream>
     if (StringUtils.contains(msg, ":stream") && StringUtils.contains(msg, "</")) {
+      xmppContext.destroy();
       if (initCloseingStream) {
         log.info("Close Stream and underhood socket due to requested by server");
         ctx.channel().close();
@@ -78,7 +79,6 @@ public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<St
       } else {
         log.info("Won't respond client's close stream request since the channel has been closed (may because ssl has been closed)");
       }
-      xmppContext.destroy();
       return;
     }
     
