@@ -86,7 +86,7 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
   public Object processGet(XmppContext context, InfoQuery iq) {
     IMSession session = context.getIMSession();
     // null means get profile of current user
-    List<SimpleUser> imContacts = ((Account) session.action(Verb.RETRIEVE, Type.PERSON, null)).getContactList();
+    List<SimpleUser> imContacts = ((Account) session.action(Verb.RETRIEVE, Type.PERSON, context.getUsername())).getContactList();
     List<Contact> xmppContacts = new ArrayList<>();
     for (SimpleUser su : imContacts) {
       Contact c = new Contact(su.getUsername());

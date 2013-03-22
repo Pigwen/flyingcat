@@ -40,8 +40,6 @@ public interface XmppContext {
   
   void setState(State state);
   
-  void setBareJID(String bareJID);
-  
   public void setResource(String resource);
   
   public void setStreamTag(String streamTag);
@@ -49,6 +47,8 @@ public interface XmppContext {
   public String getResource();
 
   public String getBareJID();
+  
+  public String getUsername();
   
   ChannelHandlerContext getNettyChannelHandlerContext();
   

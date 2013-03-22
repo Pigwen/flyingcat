@@ -83,7 +83,6 @@ public class SASLCommand extends ContextAwareCommand {
       
       XmppContext ctx = getXmppContext();
       ctx.login(authcid, password);
-      ctx.setBareJID(authcid + "@localhost");
       xmlsw.setPrefix("", XmppNamespace.SASL);
       xmlsw.writeEmptyElement(XmppNamespace.SASL, "success");
       xmlsw.writeDefaultNamespace(XmppNamespace.SASL);

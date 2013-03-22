@@ -34,6 +34,7 @@ public class DefaultXmppContext implements XmppContext {
   private final IMSession imSession;
   private ChannelHandlerContext nettyCtx;
   private State state;
+  private String username;
   private String bareJID;
   private String resource;
   private String streamTag;
@@ -50,10 +51,6 @@ public class DefaultXmppContext implements XmppContext {
 
   public void setState(State state) {
     this.state = state;
-  }
-  
-  public void setBareJID(String bareJID) {
-    this.bareJID = bareJID;
   }
   
   public void setResource(String resource) {
@@ -75,6 +72,10 @@ public class DefaultXmppContext implements XmppContext {
     return bareJID;
   }
   
+  public String getUsername() {
+    return username;
+  }
+  
   public ChannelHandlerContext getNettyChannelHandlerContext() {
     return nettyCtx;
   }
@@ -90,6 +91,8 @@ public class DefaultXmppContext implements XmppContext {
   public void login(String username, String password) {
     try {
       imSession.login(username, password);
+      this.username = username;
+      this.bareJID = username + "@localhost";
     } catch (IMException e) {
       throw new XmppException(e, SASLError.NOT_AUTHORIZED);
     }

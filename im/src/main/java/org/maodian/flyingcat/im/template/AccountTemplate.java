@@ -18,7 +18,6 @@ package org.maodian.flyingcat.im.template;
 
 import java.lang.invoke.MethodHandles;
 
-import org.apache.shiro.SecurityUtils;
 import org.maodian.flyingcat.im.IMException;
 import org.maodian.flyingcat.im.Type;
 import org.maodian.flyingcat.im.UserError;
@@ -59,9 +58,6 @@ public class AccountTemplate extends AbstractTemplate {
   @Operation(Verb.RETRIEVE)
   public Account profile(String username) {
     MongoTemplate template = getMongoTemplate();
-    if (username == null) {
-      username = (String) SecurityUtils.getSubject().getPrincipal();
-    }
     Query query = Query.query(Criteria.where(SimpleUser.USERNAME).is(username));
     return template.findOne(query, Account.class);
   }
