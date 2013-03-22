@@ -27,8 +27,6 @@ public interface IMSession {
 
   void register(Account user) throws IMException;
   
-  List<Account> getContactList();
-  
   void removeContact(Account user);
   
   void saveContact(Account user);

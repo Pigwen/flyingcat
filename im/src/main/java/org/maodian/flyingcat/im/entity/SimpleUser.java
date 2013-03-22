@@ -15,30 +15,34 @@
  */
 package org.maodian.flyingcat.im.entity;
 
+
 /**
  * @author Cole Wen
  * 
  */
-public abstract class AbstractEntity implements IdEntity {
-  private String id;
+public class SimpleUser extends AbstractEntity {
+  private final String username;
+  private final String nickname;
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.maodian.flyingcat.im.entity.IdEntity#getId()
+  /**
+   * @param username
+   * @param nickname
    */
-  @Override
-  public String getId() {
-    return id;
+  public SimpleUser(String username, String nickname) {
+    this.username = username;
+    this.nickname = nickname;
   }
 
-  public void setId(String id) {
-    this.id = id;
+  public String getUsername() {
+    return username;
+  }
+
+  public String getNickname() {
+    return nickname;
   }
 
   @Override
   public String toString() {
-    return "AbstractEntity [id=" + id + "]";
+    return "SimpleUser [username=" + username + ", nickname=" + nickname + ", toString()=" + super.toString() + "]";
   }
-
 }

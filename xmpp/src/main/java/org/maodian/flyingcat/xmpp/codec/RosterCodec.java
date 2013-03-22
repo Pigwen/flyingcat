@@ -25,13 +25,15 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.maodian.flyingcat.im.IMSession;
+import org.maodian.flyingcat.im.Type;
+import org.maodian.flyingcat.im.Verb;
 import org.maodian.flyingcat.im.entity.Account;
+import org.maodian.flyingcat.im.entity.SimpleUser;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
 import org.maodian.flyingcat.xmpp.entity.Contact;
 import org.maodian.flyingcat.xmpp.entity.InfoQuery;
 import org.maodian.flyingcat.xmpp.entity.Roster;
 import org.maodian.flyingcat.xmpp.state.StanzaError;
-import org.maodian.flyingcat.xmpp.state.StanzaError.Type;
 import org.maodian.flyingcat.xmpp.state.StanzaErrorCondition;
 import org.maodian.flyingcat.xmpp.state.StreamError;
 import org.maodian.flyingcat.xmpp.state.XmppContext;
@@ -83,14 +85,17 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
   @Override
   public Object processGet(XmppContext context, InfoQuery iq) {
     IMSession session = context.getIMSession();
-    List<Account> users = session.getContactList();
-    List<Contact> contacts = new ArrayList<>(users.size());
-    for (Account u: users) {
-      Contact c = new Contact(u.getUsername());
-      contacts.add(c);
+    // null means get profile of current user
+    List<SimpleUser> imContacts = ((Account) session.action(Verb.RETRIEVE, Type.PERSON, null)).getContactList();
+    List<Contact> xmppContacts = new ArrayList<>();
+    for (SimpleUser su : imContacts) {
+      Contact c = new Contact(su.getUsername());
+      c.setName(su.getNickname());
+      xmppContacts.add(c);
     }
     
-    return new Roster(contacts.hashCode() + "", contacts.toArray(new Contact[0]));
+    
+    return new Roster(xmppContacts.hashCode() + "", xmppContacts.toArray(new Contact[0]));
   }
 
   /* (non-Javadoc)
@@ -100,7 +105,7 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
   public Object processSet(XmppContext context, InfoQuery iq) {
     Roster roster = (Roster) iq.getPayload();
     if (roster.size() != 1) {
-      throw new XmppException("Can only modify one contact each time", new StanzaError(iq, StanzaErrorCondition.BAD_REQUEST, Type.MODIFY));
+      throw new XmppException("Can only modify one contact each time", new StanzaError(iq, StanzaErrorCondition.BAD_REQUEST, StanzaError.Type.MODIFY));
     }
     Contact c = roster.iterator().next();
     IMSession session = context.getIMSession();

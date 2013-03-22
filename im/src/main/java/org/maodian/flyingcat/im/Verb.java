@@ -70,6 +70,7 @@ public enum Verb {
   RESOLVE,
   RETURN,
   RETRACT,
+  RETRIEVE,
   RSVP_MAYBE,
   RSVP_NO,
   RSVP_YES,

@@ -17,6 +17,8 @@ package org.maodian.flyingcat.im.template;
 
 import javax.inject.Inject;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 /**
@@ -33,5 +35,9 @@ public abstract class AbstractTemplate {
 
   protected MongoTemplate getMongoTemplate() {
     return template;
+  }
+  
+  protected Subject getSubject() {
+    return SecurityUtils.getSubject();
   }
 }

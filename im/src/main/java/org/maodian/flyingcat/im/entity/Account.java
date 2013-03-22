@@ -15,6 +15,11 @@
  */
 package org.maodian.flyingcat.im.entity;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -22,10 +27,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * 
  */
 @Document(collection = "account")
-public class Account extends AbstractEntity {
-  private final String username;
-  private final String nickname;
+public class Account extends SimpleUser {
   private String password;
+  private final List<SimpleUser> contacts = new ArrayList<>();
   
   Account() {
     this(null, null, null);
@@ -36,8 +40,7 @@ public class Account extends AbstractEntity {
    * @param password
    */
   public Account(String username, String nickname, String password) {
-    this.username = username;
-    this.nickname = nickname;
+    super(username, nickname);
     this.password = password;
   }
 
@@ -56,15 +59,18 @@ public class Account extends AbstractEntity {
   public void setPassword(String password) {
     this.password = password;
   }
-
-  public String getUsername() {
-    return username;
+  
+  public void addContact(SimpleUser... contactList) {
+    for (SimpleUser c : contactList) {
+      contacts.add(c);
+    }
   }
-
-  @Override
-  public String toString() {
-    return "User [username=" + username + ", nickname=" + nickname + ", getId()=" + getId()
-        + "]";
+  
+  public void addContact(Collection<SimpleUser> contactList) {
+    contacts.addAll(contactList);
   }
-
+  
+  public List<SimpleUser> getContactList() {
+    return Collections.unmodifiableList(contacts);
+  }
 }

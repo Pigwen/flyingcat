@@ -53,16 +53,6 @@ public class MongoSession implements IMSession {
   /*
    * (non-Javadoc)
    * 
-   * @see org.maodian.flyingcat.im.IMSession#getContactList()
-   */
-  @Override
-  public List<Account> getContactList() {
-    return Collections.emptyList();
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
    * @see
    * org.maodian.flyingcat.im.IMSession#removeContact(org.maodian.flyingcat.
    * im.entity.User)
@@ -118,8 +108,13 @@ public class MongoSession implements IMSession {
     this.template = template;
   }
 
-  /* (non-Javadoc)
-   * @see org.maodian.flyingcat.im.IMSession#action(org.maodian.flyingcat.im.Verb, org.maodian.flyingcat.im.Type, java.lang.Object, org.maodian.flyingcat.im.Type, java.lang.Object)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.maodian.flyingcat.im.IMSession#action(org.maodian.flyingcat.im.Verb,
+   * org.maodian.flyingcat.im.Type, java.lang.Object,
+   * org.maodian.flyingcat.im.Type, java.lang.Object)
    */
   @Override
   public Object action(Verb verb, Type objectType, final Object objectData, Type targetType, final Object targetData) {
@@ -136,8 +131,12 @@ public class MongoSession implements IMSession {
     }
   }
 
-  /* (non-Javadoc)
-   * @see org.maodian.flyingcat.im.IMSession#action(org.maodian.flyingcat.im.Verb, org.maodian.flyingcat.im.Type, java.lang.Object)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.maodian.flyingcat.im.IMSession#action(org.maodian.flyingcat.im.Verb,
+   * org.maodian.flyingcat.im.Type, java.lang.Object)
    */
   @Override
   public Object action(Verb verb, Type objectType, Object objectData) {

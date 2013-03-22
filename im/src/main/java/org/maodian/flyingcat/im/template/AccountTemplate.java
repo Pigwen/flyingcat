@@ -18,6 +18,7 @@ package org.maodian.flyingcat.im.template;
 
 import java.lang.invoke.MethodHandles;
 
+import org.apache.shiro.SecurityUtils;
 import org.maodian.flyingcat.im.IMException;
 import org.maodian.flyingcat.im.Type;
 import org.maodian.flyingcat.im.UserError;
@@ -28,7 +29,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.index.Index;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Order;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 /**
@@ -50,5 +53,15 @@ public class AccountTemplate extends AbstractTemplate {
       log.warn("The username [{}] has been occupied", account.getUsername());
       throw IMException.wrap(e, UserError.DUPLICATED_USERNAME);
     }
+  }
+  
+  @Operation(Verb.RETRIEVE)
+  public Account profile(String username) {
+    MongoTemplate template = getMongoTemplate();
+    if (username == null) {
+      username = (String) SecurityUtils.getSubject().getPrincipal();
+    }
+    Query query = Query.query(Criteria.where("username").is(username));
+    return template.findOne(query, Account.class);
   }
 }

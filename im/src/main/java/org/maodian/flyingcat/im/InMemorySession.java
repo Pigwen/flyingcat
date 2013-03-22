@@ -15,8 +15,6 @@
  */
 package org.maodian.flyingcat.im;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -79,16 +77,6 @@ public class InMemorySession implements IMSession {
     }
   }
 
-  /* (non-Javadoc)
-   * @see org.maodian.flyingcat.im.Session#getRoster()
-   */
-  @Override
-  @RequiresAuthentication
-  public List<Account> getContactList() {
-    Account user = users.get((String) subject.getPrincipal());
-    return new ArrayList<>(roster.get(user).values());
-  }
- 
   /* (non-Javadoc)
    * @see org.maodian.flyingcat.im.IMSession#login(java.lang.String, java.lang.String)
    */
