@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -28,16 +29,25 @@ import org.springframework.data.mongodb.core.mapping.Field;
  * 
  */
 @Document(collection = "account")
-public class Account extends SimpleUser {
+public class Account extends AbstractEntity {
+  public static final String USERNAME = "uid";
+  public static final String NICK = "nick";
   public static final String PASSWORD = "pwd";
   public static final String CONTACTS = "cont";
-  
+
+  @Field(USERNAME)
+  @Indexed(unique = true)
+  private final String username;
+
+  @Field(NICK)
+  private final String nickname;
+
   @Field(PASSWORD)
   private String password;
-  
+
   @Field(CONTACTS)
   private final List<SimpleUser> contacts = new ArrayList<>();
-  
+
   Account() {
     this(null, null, null);
   }
@@ -47,7 +57,8 @@ public class Account extends SimpleUser {
    * @param password
    */
   public Account(String username, String nickname, String password) {
-    super(username, nickname);
+    this.username = username;
+    this.nickname = nickname;
     this.password = password;
   }
 
@@ -59,6 +70,14 @@ public class Account extends SimpleUser {
     this(username, username);
   }
 
+  public String getUsername() {
+    return username;
+  }
+
+  public String getNickname() {
+    return nickname;
+  }
+
   public String getPassword() {
     return password;
   }
@@ -66,18 +85,25 @@ public class Account extends SimpleUser {
   public void setPassword(String password) {
     this.password = password;
   }
-  
+
   public void addContact(SimpleUser... contactList) {
     for (SimpleUser c : contactList) {
       contacts.add(c);
     }
   }
-  
+
   public void addContact(Collection<SimpleUser> contactList) {
     contacts.addAll(contactList);
   }
-  
+
   public List<SimpleUser> getContactList() {
     return Collections.unmodifiableList(contacts);
   }
+
+  @Override
+  public String toString() {
+    return "Account [username=" + username + ", nickname=" + nickname + ", contacts=" + contacts + ", toString()="
+        + super.toString() + "]";
+  }
+
 }

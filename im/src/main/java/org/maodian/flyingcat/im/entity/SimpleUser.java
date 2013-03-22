@@ -15,7 +15,6 @@
  */
 package org.maodian.flyingcat.im.entity;
 
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 
@@ -28,7 +27,6 @@ public class SimpleUser extends AbstractEntity {
   public static final String NICK = "nick";
   
   @Field(USERNAME)
-  @Indexed(unique = true)
   private final String username;
   
   @Field(NICK)
