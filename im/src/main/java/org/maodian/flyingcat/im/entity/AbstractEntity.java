@@ -15,11 +15,14 @@
  */
 package org.maodian.flyingcat.im.entity;
 
+import org.springframework.data.annotation.Id;
+
 /**
  * @author Cole Wen
  * 
  */
 public abstract class AbstractEntity implements IdEntity {
+  @Id
   private String id;
 
   /*

@@ -24,6 +24,7 @@ import org.maodian.flyingcat.im.Type;
 import org.maodian.flyingcat.im.UserError;
 import org.maodian.flyingcat.im.Verb;
 import org.maodian.flyingcat.im.entity.Account;
+import org.maodian.flyingcat.im.entity.SimpleUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
@@ -46,7 +47,7 @@ public class AccountTemplate extends AbstractTemplate {
   @Operation(Verb.CREATE)
   public void register(Account account) {
     MongoTemplate template = getMongoTemplate();
-    template.indexOps(Account.class).ensureIndex(new Index("username", Order.ASCENDING).unique());
+    template.indexOps(Account.class).ensureIndex(new Index(SimpleUser.USERNAME, Order.ASCENDING).unique());
     try {
       getMongoTemplate().insert(account);
     } catch (DuplicateKeyException e) {
@@ -61,7 +62,7 @@ public class AccountTemplate extends AbstractTemplate {
     if (username == null) {
       username = (String) SecurityUtils.getSubject().getPrincipal();
     }
-    Query query = Query.query(Criteria.where("username").is(username));
+    Query query = Query.query(Criteria.where(SimpleUser.USERNAME).is(username));
     return template.findOne(query, Account.class);
   }
 }

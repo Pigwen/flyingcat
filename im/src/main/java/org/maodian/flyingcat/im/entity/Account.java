@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 /**
  * @author Cole Wen
@@ -28,7 +29,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
  */
 @Document(collection = "account")
 public class Account extends SimpleUser {
+  public static final String PASSWORD = "pwd";
+  public static final String CONTACTS = "cont";
+  
+  @Field(PASSWORD)
   private String password;
+  
+  @Field(CONTACTS)
   private final List<SimpleUser> contacts = new ArrayList<>();
   
   Account() {
