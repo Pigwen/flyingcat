@@ -22,7 +22,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
  * @author Cole Wen
  * 
  */
-public class SimpleUser extends AbstractEntity {
+public class SimpleUser {
   public static final String USERNAME = "uid";
   public static final String NICK = "nick";
   
