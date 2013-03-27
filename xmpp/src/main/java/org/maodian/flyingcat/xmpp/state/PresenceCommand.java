@@ -21,6 +21,8 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.maodian.flyingcat.xmpp.XmppNamespace;
+import org.maodian.flyingcat.xmpp.entity.BareJID;
+import org.maodian.flyingcat.xmpp.entity.Presence;
 
 /**
  * @author Cole Wen
@@ -37,6 +39,12 @@ public class PresenceCommand extends ContextAwareCommand {
     if (!xmlsr.getName().equals(qName)) {
       throw new XmppException(StreamError.INVALID_NAMESPACE).set("QName", xmlsr.getName());
     }
+    
+    String id = xmlsr.getAttributeValue("", "id");
+    String to = xmlsr.getAttributeValue("", "to");
+    String type = xmlsr.getAttributeValue("", "type");
+    BareJID recv = BareJID.fromString(to);
+    Presence req = new Presence(recv, type);
     XmppContext ctx = getXmppContext();
     xmlsw.writeEmptyElement("", "presence", XmppNamespace.CLIENT_CONTENT);
     xmlsw.writeAttribute("from", ctx.getBareJID() + "/" + ctx.getResource());

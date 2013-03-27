@@ -15,8 +15,6 @@
  */
 package org.maodian.flyingcat.im;
 
-import java.util.List;
-
 import org.maodian.flyingcat.im.entity.Account;
 
 /**
@@ -28,8 +26,6 @@ public interface IMSession {
   void register(Account user) throws IMException;
   
   void removeContact(Account user);
-  
-  void saveContact(Account user);
   
   void login(String username, String password);
   

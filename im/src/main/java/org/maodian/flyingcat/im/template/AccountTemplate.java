@@ -18,6 +18,7 @@ package org.maodian.flyingcat.im.template;
 
 import java.lang.invoke.MethodHandles;
 
+import org.apache.shiro.SecurityUtils;
 import org.maodian.flyingcat.im.IMException;
 import org.maodian.flyingcat.im.Type;
 import org.maodian.flyingcat.im.UserError;
@@ -28,10 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Order;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 /**
@@ -45,8 +45,6 @@ public class AccountTemplate extends AbstractTemplate {
 
   @Operation(Verb.CREATE)
   public void register(Account account) {
-    MongoTemplate template = getMongoTemplate();
-    template.indexOps(Account.class).ensureIndex(new Index(SimpleUser.USERNAME, Order.ASCENDING).unique());
     try {
       getMongoTemplate().insert(account);
     } catch (DuplicateKeyException e) {
@@ -60,5 +58,13 @@ public class AccountTemplate extends AbstractTemplate {
     MongoTemplate template = getMongoTemplate();
     Query query = Query.query(Criteria.where(SimpleUser.USERNAME).is(username));
     return template.findOne(query, Account.class);
+  }
+  
+  @Operation(Verb.FOLLOW)
+  public void follow(SimpleUser su) {
+    String username = (String) SecurityUtils.getSubject().getPrincipal();
+    Query query = Query.query(Criteria.where(Account.USERNAME).is(username));
+    Update update = new Update().addToSet(Account.CONTACTS, su);
+    getMongoTemplate().updateFirst(query, update, Account.class);
   }
 }

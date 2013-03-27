@@ -15,9 +15,6 @@
  */
 package org.maodian.flyingcat.im;
 
-import java.util.Collections;
-import java.util.List;
-
 import javax.inject.Inject;
 
 import org.apache.shiro.SecurityUtils;
@@ -59,19 +56,6 @@ public class MongoSession implements IMSession {
    */
   @Override
   public void removeContact(Account user) {
-    // TODO Auto-generated method stub
-
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.maodian.flyingcat.im.IMSession#saveContact(org.maodian.flyingcat.im
-   * .entity.User)
-   */
-  @Override
-  public void saveContact(Account user) {
     // TODO Auto-generated method stub
 
   }

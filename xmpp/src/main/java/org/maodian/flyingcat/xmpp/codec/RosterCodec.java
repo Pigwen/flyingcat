@@ -108,11 +108,12 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
       throw new XmppException("Can only modify one contact each time", new StanzaError(iq, StanzaErrorCondition.BAD_REQUEST, StanzaError.Type.MODIFY));
     }
     Contact c = roster.iterator().next();
+    SimpleUser su = new SimpleUser(c.getJabberId(), c.getName());
     IMSession session = context.getIMSession();
     if (StringUtils.equals(c.getSubscription(), Contact.SUB_REMOVE)) {
       session.removeContact(new Account(c.getName()));
     } else {
-      session.saveContact(new Account(c.getName()));
+      session.action(Verb.FOLLOW, Type.PERSON, su);
     }
     
     // TODO: implement roster push
