@@ -19,7 +19,7 @@ package org.maodian.flyingcat.xmpp.entity;
  * @author Cole Wen
  *
  */
-public interface Stanzas {
+public interface Stanzas extends Visitee {
 
   String getTo();
   String getId();

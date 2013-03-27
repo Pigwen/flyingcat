@@ -15,8 +15,13 @@
  */
 package org.maodian.flyingcat.xmpp.entity;
 
+import javax.xml.stream.XMLStreamException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.maodian.flyingcat.xmpp.state.StanzaErrorCondition;
+import org.maodian.flyingcat.xmpp.state.State;
+import org.maodian.flyingcat.xmpp.state.Visitor;
+import org.maodian.flyingcat.xmpp.state.XmppContext;
 import org.maodian.flyingcat.xmpp.state.XmppException;
 
 /**
@@ -137,5 +142,13 @@ public class InfoQuery implements Stanzas {
     public InfoQuery build() {
       return new InfoQuery(this);
     }
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.xmpp.entity.Visitee#accept(org.maodian.flyingcat.xmpp.state.Visitor)
+   */
+  @Override
+  public State accept(XmppContext ctx, Visitor visitor) throws XMLStreamException {
+    return visitor.handleInfoQuery(ctx, this);
   }
 }

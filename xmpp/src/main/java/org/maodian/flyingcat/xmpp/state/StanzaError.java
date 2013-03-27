@@ -18,6 +18,8 @@ package org.maodian.flyingcat.xmpp.state;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.stream.XMLStreamException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.maodian.flyingcat.xmpp.entity.InfoQuery;
 import org.maodian.flyingcat.xmpp.entity.Stanzas;
@@ -132,5 +134,13 @@ public class StanzaError implements Stanzas, XmppError {
     CONTINUE,
     MODIFY,
     WAIT
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.xmpp.entity.Visitee#accept(org.maodian.flyingcat.xmpp.state.XmppContext, org.maodian.flyingcat.xmpp.state.Visitor)
+   */
+  @Override
+  public State accept(XmppContext ctx, Visitor visitor) throws XMLStreamException {
+    throw new UnsupportedOperationException();
   }
 }

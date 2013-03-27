@@ -13,28 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flyingcat.xmpp.state;
+package org.maodian.flyingcat.xmpp.entity;
+
+import javax.xml.stream.XMLStreamException;
+
+import org.maodian.flyingcat.xmpp.state.State;
+import org.maodian.flyingcat.xmpp.state.Visitor;
+import org.maodian.flyingcat.xmpp.state.XmppContext;
 
 /**
  * @author Cole Wen
  *
  */
-final class DefaultResult implements Result {
-  private final State nextState;
-  
-  /**
-   * @param nextState
-   * @param data
-   */
-  public DefaultResult(State nextState) {
-    this.nextState = nextState;
-  }
+public class TLS implements Visitee {
 
   /* (non-Javadoc)
-   * @see org.maodian.flycat.xmpp.state.Result#getNextState()
+   * @see org.maodian.flyingcat.xmpp.entity.Visitee#accept(org.maodian.flyingcat.xmpp.state.XmppContext, org.maodian.flyingcat.xmpp.state.Visitor)
    */
   @Override
-  public State getNextState() {
-    return nextState;
+  public State accept(XmppContext ctx, Visitor visitor) throws XMLStreamException {
+    return visitor.handleTLS(ctx, this); 
   }
+
 }

@@ -82,11 +82,7 @@ public class XmppXMLStreamHandler extends ChannelInboundMessageHandlerAdapter<St
       return;
     }
     
-    String result = xmppContext.parseXML(msg);
-    if (StringUtils.isNotBlank(result)) {
-      ctx.write(result).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
-      ctx.flush();
-    }
+    xmppContext.parseXML(msg);
   }
   
   @Override

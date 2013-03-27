@@ -29,6 +29,7 @@ import org.maodian.flyingcat.xmpp.codec.InfoQueryCodec;
 import org.maodian.flyingcat.xmpp.codec.InfoQueryProcessor;
 import org.maodian.flyingcat.xmpp.codec.RosterCodec;
 import org.maodian.flyingcat.xmpp.codec.SessionCodec;
+import org.maodian.flyingcat.xmpp.codec.TLSCodec;
 import org.maodian.flyingcat.xmpp.entity.Bind;
 import org.maodian.flyingcat.xmpp.entity.InfoQuery;
 import org.maodian.flyingcat.xmpp.entity.Roster;
@@ -53,6 +54,7 @@ public class DefaultApplicationContext implements GlobalContext {
   private BindCodec bindCodec;
   private SessionCodec sessionCodec;
   private RosterCodec rosterCodec;
+  private TLSCodec tlsCodec;
   private boolean init = false;
   
   DefaultApplicationContext() {
@@ -66,6 +68,7 @@ public class DefaultApplicationContext implements GlobalContext {
       decoderMap.put(new QName(XmppNamespace.BIND, "bind"), bindCodec);
       decoderMap.put(new QName(XmppNamespace.SESSION, "session"), sessionCodec);
       decoderMap.put(new QName(XmppNamespace.ROSTER, "query"), rosterCodec);
+      decoderMap.put(new QName(XmppNamespace.TLS, "starttls"), tlsCodec);
       
       encoderMap.put(InfoQuery.class, infoQueryCodec);
       encoderMap.put(Bind.class, bindCodec);
@@ -131,4 +134,11 @@ public class DefaultApplicationContext implements GlobalContext {
   void setRosterCodec(RosterCodec rosterCodec) {
     this.rosterCodec = rosterCodec;
   }
+
+  @Inject
+  void setTlsCodec(TLSCodec tlsCodec) {
+    this.tlsCodec = tlsCodec;
+  }
+  
+  
 }

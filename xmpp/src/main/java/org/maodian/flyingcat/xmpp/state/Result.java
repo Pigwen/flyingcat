@@ -21,5 +21,4 @@ package org.maodian.flyingcat.xmpp.state;
  */
 public interface Result {
   State getNextState();
-  String getData();
 }

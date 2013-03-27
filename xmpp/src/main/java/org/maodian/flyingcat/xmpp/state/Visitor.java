@@ -15,26 +15,23 @@
  */
 package org.maodian.flyingcat.xmpp.state;
 
+import javax.xml.stream.XMLStreamException;
+
+import org.maodian.flyingcat.xmpp.entity.InfoQuery;
+import org.maodian.flyingcat.xmpp.entity.Presence;
+import org.maodian.flyingcat.xmpp.entity.TLS;
+
 /**
  * @author Cole Wen
  *
  */
-final class DefaultResult implements Result {
-  private final State nextState;
-  
+public interface Visitor {
+  State handleInfoQuery(XmppContext ctx, InfoQuery iq) throws XMLStreamException;
+  void handlePresence(Presence p);
   /**
-   * @param nextState
-   * @param data
+   * @param ctx
+   * @param visitor
+   * @return
    */
-  public DefaultResult(State nextState) {
-    this.nextState = nextState;
-  }
-
-  /* (non-Javadoc)
-   * @see org.maodian.flycat.xmpp.state.Result#getNextState()
-   */
-  @Override
-  public State getNextState() {
-    return nextState;
-  }
+  State handleTLS(XmppContext ctx, TLS tls) throws XMLStreamException;
 }

@@ -56,7 +56,8 @@ public abstract class StreamState implements State {
         XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
         doHandle(context, xmlsr, xmlsw);
         context.setStreamTag(xml);
-        Result result = new DefaultResult(new SelectState(), writer.toString());
+        context.flush(writer.toString());
+        Result result = new DefaultResult(new SelectState());
         return result;
       } catch (XMLStreamException e) {
         throw new XmppException(e, StreamError.BAD_FORMAT);

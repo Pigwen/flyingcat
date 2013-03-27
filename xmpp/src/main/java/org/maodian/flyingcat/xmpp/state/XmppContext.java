@@ -64,8 +64,9 @@ public interface XmppContext {
 
   public Command lookup(QName qName);
 
-  public String parseXML(final String xml);
+  public void parseXML(final String xml);
   
   public IMSession getIMSession();
   
+  public void flush(String str);
 }

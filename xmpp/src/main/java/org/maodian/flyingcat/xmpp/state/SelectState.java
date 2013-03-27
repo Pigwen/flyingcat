@@ -18,15 +18,14 @@ package org.maodian.flyingcat.xmpp.state;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.StringWriter;
 
-import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
 
 import org.maodian.flyingcat.holder.XMLInputFactoryHolder;
-import org.maodian.flyingcat.holder.XMLOutputFactoryHolder;
+import org.maodian.flyingcat.xmpp.codec.Decoder;
+import org.maodian.flyingcat.xmpp.entity.Visitee;
 
 /**
  * @author Cole Wen
@@ -40,13 +39,17 @@ public class SelectState implements State {
   @Override
   public Result step(XmppContext context, String xml) {
     String fragment = context.wrapStreamTag(xml);
-    try (Reader reader = new StringReader(fragment);
-        StringWriter writer = new StringWriter();) {
+    try (Reader reader = new StringReader(fragment);) {
       try {
         XMLStreamReader xmlsr = XMLInputFactoryHolder.getXMLInputFactory().createXMLStreamReader(reader);
-        XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
-        State nextState = doHandle(context, xmlsr, xmlsw);
-        Result result = new DefaultResult(nextState, writer.toString());
+        // skip stream tag
+        xmlsr.nextTag();
+        xmlsr.nextTag();
+        Decoder decoder = context.getApplicationContext().getDecoder(xmlsr.getName());
+        Visitee elem = (Visitee) decoder.decode(xmlsr);
+        Visitor handler = new FirstLevelElementVisitor();
+        State nextState = elem.accept(context, handler);
+        Result result = new DefaultResult(nextState);
         return result;
       } catch (XMLStreamException e) {
         throw new XmppException(e, StreamError.BAD_FORMAT);
@@ -56,15 +59,4 @@ public class SelectState implements State {
       throw new XmppException(ioe, StreamError.INTERNAL_SERVER_ERROR);
     }
   }
-  
-  private State doHandle(XmppContext context, XMLStreamReader xmlsr, XMLStreamWriter xmlsw) throws XMLStreamException {
-    //skip stream tag
-    xmlsr.nextTag();
-    //to first level tag of stream
-    xmlsr.nextTag();
-    QName qName = xmlsr.getName();
-    Command cmd = context.lookup(qName);
-    return cmd.execute(xmlsr, xmlsw);
-  }
-
 }

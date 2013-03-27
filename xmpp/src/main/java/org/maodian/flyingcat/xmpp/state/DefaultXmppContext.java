@@ -15,10 +15,12 @@
  */
 package org.maodian.flyingcat.xmpp.state;
 
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang3.StringUtils;
 import org.maodian.flyingcat.im.IMException;
 import org.maodian.flyingcat.im.IMSession;
 import org.maodian.flyingcat.xmpp.GlobalContext;
@@ -118,10 +120,9 @@ public class DefaultXmppContext implements XmppContext {
     }
   }
 
-  public String parseXML(final String xml) {
+  public void parseXML(final String xml) {
     Result result = state.step(this, xml);
     state = result.getNextState();
-    return result.getData();
   }
   
   public IMSession getIMSession() {
@@ -134,5 +135,16 @@ public class DefaultXmppContext implements XmppContext {
   @Override
   public GlobalContext getApplicationContext() {
     return appCtx;
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.xmpp.state.XmppContext#flush(java.lang.String)
+   */
+  @Override
+  public void flush(String str) {
+    if (StringUtils.isNotBlank(str)) {
+      nettyCtx.write(str).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
+      nettyCtx.flush();
+    }
   }
 }
