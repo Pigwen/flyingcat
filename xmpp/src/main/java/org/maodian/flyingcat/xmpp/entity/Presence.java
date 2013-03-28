@@ -15,15 +15,25 @@
  */
 package org.maodian.flyingcat.xmpp.entity;
 
+import javax.xml.stream.XMLStreamException;
+
+import org.maodian.flyingcat.xmpp.state.State;
+import org.maodian.flyingcat.xmpp.state.Visitor;
+import org.maodian.flyingcat.xmpp.state.XmppContext;
+
 /**
  * @author Cole Wen
  * 
  */
-public class Presence {
-  private final BareJID to;
-  private final PresenceType type;
+public class Presence implements Visitee {
+  private BareJID to;
+  private PresenceType type;
   private String id;
   private BareJID from;
+
+  public Presence() {
+
+  }
 
   /**
    * @param to
@@ -58,12 +68,17 @@ public class Presence {
     return type;
   }
 
+  public void setTo(BareJID to) {
+    this.to = to;
+  }
+
+  public void setType(PresenceType type) {
+    this.type = type;
+  }
+
   public enum PresenceType {
-    SUBSCRIBE,
-    UNSUBSCRIBE,
-    SUBSCRIBED,
-    UNSUBSCRIBED;
-    
+    SUBSCRIBE, UNSUBSCRIBE, SUBSCRIBED, UNSUBSCRIBED;
+
     public static PresenceType fromString(String str) {
       String type = str.toUpperCase();
       switch (type) {
@@ -80,5 +95,13 @@ public class Presence {
         throw new RuntimeException("JID not wellformed");
       }
     }
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.xmpp.entity.Visitee#accept(org.maodian.flyingcat.xmpp.state.XmppContext, org.maodian.flyingcat.xmpp.state.Visitor)
+   */
+  @Override
+  public State accept(XmppContext ctx, Visitor visitor) throws XMLStreamException {
+    return visitor.handlePresence(ctx, this);
   }
 }

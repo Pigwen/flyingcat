@@ -28,7 +28,7 @@ import org.maodian.flyingcat.xmpp.entity.TLS;
  */
 public interface Visitor {
   State handleInfoQuery(XmppContext ctx, InfoQuery iq) throws XMLStreamException;
-  void handlePresence(Presence p);
+  State handlePresence(XmppContext ctx, Presence p) throws XMLStreamException;
   /**
    * @param ctx
    * @param visitor

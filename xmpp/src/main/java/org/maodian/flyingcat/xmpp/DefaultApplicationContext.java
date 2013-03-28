@@ -27,6 +27,7 @@ import org.maodian.flyingcat.xmpp.codec.Decoder;
 import org.maodian.flyingcat.xmpp.codec.Encoder;
 import org.maodian.flyingcat.xmpp.codec.InfoQueryCodec;
 import org.maodian.flyingcat.xmpp.codec.InfoQueryProcessor;
+import org.maodian.flyingcat.xmpp.codec.PresenceCodec;
 import org.maodian.flyingcat.xmpp.codec.RosterCodec;
 import org.maodian.flyingcat.xmpp.codec.SASLCodec;
 import org.maodian.flyingcat.xmpp.codec.SessionCodec;
@@ -57,6 +58,7 @@ public class DefaultApplicationContext implements GlobalContext {
   private RosterCodec rosterCodec;
   private TLSCodec tlsCodec;
   private SASLCodec saslCodec;
+  private PresenceCodec presenceCodec;
 
   private boolean init = false;
 
@@ -73,6 +75,7 @@ public class DefaultApplicationContext implements GlobalContext {
       decoderMap.put(new QName(XmppNamespace.ROSTER, "query"), rosterCodec);
       decoderMap.put(new QName(XmppNamespace.TLS, "starttls"), tlsCodec);
       decoderMap.put(new QName(XmppNamespace.SASL, "auth"), saslCodec);
+      decoderMap.put(new QName(XmppNamespace.CLIENT_CONTENT, "presence"), presenceCodec);
 
       encoderMap.put(InfoQuery.class, infoQueryCodec);
       encoderMap.put(Bind.class, bindCodec);
@@ -148,4 +151,10 @@ public class DefaultApplicationContext implements GlobalContext {
   void setSaslCodec(SASLCodec saslCodec) {
     this.saslCodec = saslCodec;
   }
+
+  @Inject
+  public void setPresenceCodec(PresenceCodec presenceCodec) {
+    this.presenceCodec = presenceCodec;
+  }
+
 }

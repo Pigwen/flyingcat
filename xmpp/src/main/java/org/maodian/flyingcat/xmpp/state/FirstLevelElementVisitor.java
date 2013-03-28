@@ -85,9 +85,15 @@ public class FirstLevelElementVisitor implements Visitor {
    * @see org.maodian.flyingcat.xmpp.state.Visitor#handlePresence(org.maodian.flyingcat.xmpp.entity.Presence)
    */
   @Override
-  public void handlePresence(Presence p) {
-    // TODO Auto-generated method stub
-
+  public State handlePresence(XmppContext ctx, Presence p) throws XMLStreamException {
+    StringWriter writer = new StringWriter();
+    XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
+    xmlsw.writeEmptyElement("presence");
+    xmlsw.writeAttribute("from", ctx.getUsername() + "@localhost" + "/" + ctx.getResource());
+    xmlsw.writeAttribute("to", ctx.getUsername() + "@localhost");
+    xmlsw.writeEndDocument();
+    ctx.flush(writer.toString());
+    return new SelectState();
   }
 
   /* (non-Javadoc)
