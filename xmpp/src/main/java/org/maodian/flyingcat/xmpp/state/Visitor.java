@@ -17,6 +17,7 @@ package org.maodian.flyingcat.xmpp.state;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.maodian.flyingcat.xmpp.entity.Auth;
 import org.maodian.flyingcat.xmpp.entity.InfoQuery;
 import org.maodian.flyingcat.xmpp.entity.Presence;
 import org.maodian.flyingcat.xmpp.entity.TLS;
@@ -34,4 +35,6 @@ public interface Visitor {
    * @return
    */
   State handleTLS(XmppContext ctx, TLS tls) throws XMLStreamException;
+  
+  State handleSASL(XmppContext ctx, Auth auth) throws XMLStreamException;
 }

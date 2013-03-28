@@ -28,6 +28,7 @@ import org.maodian.flyingcat.xmpp.codec.Encoder;
 import org.maodian.flyingcat.xmpp.codec.InfoQueryCodec;
 import org.maodian.flyingcat.xmpp.codec.InfoQueryProcessor;
 import org.maodian.flyingcat.xmpp.codec.RosterCodec;
+import org.maodian.flyingcat.xmpp.codec.SASLCodec;
 import org.maodian.flyingcat.xmpp.codec.SessionCodec;
 import org.maodian.flyingcat.xmpp.codec.TLSCodec;
 import org.maodian.flyingcat.xmpp.entity.Bind;
@@ -42,25 +43,27 @@ import org.maodian.flyingcat.xmpp.state.TLSCommand;
 
 /**
  * @author Cole Wen
- *
+ * 
  */
 public class DefaultApplicationContext implements GlobalContext {
   private Map<QName, Decoder> decoderMap = new ConcurrentHashMap<>();
   private Map<Class<?>, Encoder> encoderMap = new ConcurrentHashMap<>();
   private Map<Class<?>, InfoQueryProcessor> processorMap = new ConcurrentHashMap<>();
-  private Map<QName, Class<? extends ContextAwareCommand>> cmdMap = new ConcurrentHashMap<>(); 
-  
+  private Map<QName, Class<? extends ContextAwareCommand>> cmdMap = new ConcurrentHashMap<>();
+
   private InfoQueryCodec infoQueryCodec;
   private BindCodec bindCodec;
   private SessionCodec sessionCodec;
   private RosterCodec rosterCodec;
   private TLSCodec tlsCodec;
+  private SASLCodec saslCodec;
+
   private boolean init = false;
-  
+
   DefaultApplicationContext() {
-    
+
   }
-  
+
   @PostConstruct
   public void init() {
     if (init == false) {
@@ -69,16 +72,17 @@ public class DefaultApplicationContext implements GlobalContext {
       decoderMap.put(new QName(XmppNamespace.SESSION, "session"), sessionCodec);
       decoderMap.put(new QName(XmppNamespace.ROSTER, "query"), rosterCodec);
       decoderMap.put(new QName(XmppNamespace.TLS, "starttls"), tlsCodec);
-      
+      decoderMap.put(new QName(XmppNamespace.SASL, "auth"), saslCodec);
+
       encoderMap.put(InfoQuery.class, infoQueryCodec);
       encoderMap.put(Bind.class, bindCodec);
       encoderMap.put(Session.class, sessionCodec);
       encoderMap.put(Roster.class, rosterCodec);
-      
+
       processorMap.put(Session.class, sessionCodec);
       processorMap.put(Bind.class, bindCodec);
       processorMap.put(Roster.class, rosterCodec);
-      
+
       cmdMap.put(new QName(XmppNamespace.TLS, "starttls"), TLSCommand.class);
       cmdMap.put(new QName(XmppNamespace.SASL, "auth"), SASLCommand.class);
       cmdMap.put(new QName(XmppNamespace.CLIENT_CONTENT, "iq"), InfoQueryCommand.class);
@@ -86,27 +90,27 @@ public class DefaultApplicationContext implements GlobalContext {
       init = true;
     }
   }
-  
+
   public void registerDecoder(QName qname, Decoder decoder) {
     decoderMap.put(qname, decoder);
   }
-  
+
   public void registerEncoder(Class<?> clazz, Encoder encoder) {
     encoderMap.put(clazz, encoder);
   }
-  
+
   public void registerProcessor(Class<?> clazz, InfoQueryProcessor processor) {
     processorMap.put(clazz, processor);
   }
-  
+
   public Decoder getDecoder(QName qname) {
     return decoderMap.get(qname);
   }
-  
+
   public Encoder getEncoder(Class<?> clazz) {
     return encoderMap.get(clazz);
   }
-  
+
   public InfoQueryProcessor getProcessor(Class<?> clazz) {
     return processorMap.get(clazz);
   }
@@ -139,6 +143,9 @@ public class DefaultApplicationContext implements GlobalContext {
   void setTlsCodec(TLSCodec tlsCodec) {
     this.tlsCodec = tlsCodec;
   }
-  
-  
+
+  @Inject
+  void setSaslCodec(SASLCodec saslCodec) {
+    this.saslCodec = saslCodec;
+  }
 }

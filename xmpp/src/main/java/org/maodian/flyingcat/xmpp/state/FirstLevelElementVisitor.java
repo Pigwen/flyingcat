@@ -32,9 +32,11 @@ import org.maodian.flyingcat.xmpp.XmppNamespace;
 import org.maodian.flyingcat.xmpp.codec.Encoder;
 import org.maodian.flyingcat.xmpp.codec.InfoQueryProcessor;
 import org.maodian.flyingcat.xmpp.codec.SecureSslContextFactory;
+import org.maodian.flyingcat.xmpp.entity.Auth;
 import org.maodian.flyingcat.xmpp.entity.InfoQuery;
 import org.maodian.flyingcat.xmpp.entity.Presence;
 import org.maodian.flyingcat.xmpp.entity.TLS;
+import org.maodian.flyingcat.xmpp.state.StreamState.AuthenticatedStreamState;
 import org.maodian.flyingcat.xmpp.state.StreamState.TLSStreamState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,6 +117,22 @@ public class FirstLevelElementVisitor implements Visitor {
     xmlsw.writeEndDocument();
     xmppCtx.flush(writer.toString());
     return new TLSStreamState();
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.xmpp.state.Visitor#handleSASL(org.maodian.flyingcat.xmpp.state.XmppContext, org.maodian.flyingcat.xmpp.entity.Auth)
+   */
+  @Override
+  public State handleSASL(XmppContext ctx, Auth auth) throws XMLStreamException {
+    ctx.login(auth.getAuthcid(), auth.getPassword());
+    StringWriter writer = new StringWriter();
+    XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
+    xmlsw.setPrefix("", XmppNamespace.SASL);
+    xmlsw.writeEmptyElement(XmppNamespace.SASL, "success");
+    xmlsw.writeDefaultNamespace(XmppNamespace.SASL);
+    xmlsw.writeEndDocument();
+    ctx.flush(writer.toString());
+    return new AuthenticatedStreamState();
   }
 
 }
