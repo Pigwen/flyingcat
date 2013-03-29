@@ -17,6 +17,7 @@
   <context:component-scan base-package="org.maodian.flyingcat"/>
 
   <bean id="appContex" class="org.maodian.flyingcat.xmpp.DefaultApplicationContext"></bean>
+  <bean id="xmppContextManager" class="org.maodian.flyingcat.xmpp.state.DefaultXmppContextManager"/>
   <bean id="xmppContext" class="org.maodian.flyingcat.xmpp.state.DefaultXmppContext" scope="prototype">
     <constructor-arg ref="appContex"/>
     <constructor-arg>
@@ -24,6 +25,7 @@
         <property name="mongoTemplate" ref="mongoTemplate"/>
       </bean>
     </constructor-arg>
+    <property name="xmppContextManger" ref="xmppContextManager"/>
   </bean>
   <bean class="org.maodian.flyingcat.netty.handler.XmppXMLStreamHandler" scope="prototype">
     <property name="xmppContext" ref="xmppContext"/>
