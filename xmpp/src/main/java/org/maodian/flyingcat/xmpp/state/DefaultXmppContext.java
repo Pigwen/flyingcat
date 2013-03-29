@@ -18,29 +18,43 @@ package org.maodian.flyingcat.xmpp.state;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang3.StringUtils;
+import org.maodian.flyingcat.holder.XMLOutputFactoryHolder;
 import org.maodian.flyingcat.im.IMException;
 import org.maodian.flyingcat.im.IMSession;
+import org.maodian.flyingcat.im.Type;
+import org.maodian.flyingcat.im.Verb;
+import org.maodian.flyingcat.im.entity.Account;
 import org.maodian.flyingcat.xmpp.GlobalContext;
+import org.maodian.flyingcat.xmpp.codec.Encoder;
+import org.maodian.flyingcat.xmpp.entity.JabberID;
 import org.maodian.flyingcat.xmpp.state.StreamState.OpeningStreamState;
 
 /**
  * 
  * @author Cole Wen
- *
+ * 
  */
 public class DefaultXmppContext implements XmppContext {
   private final GlobalContext appCtx;
   private final IMSession imSession;
   private ChannelHandlerContext nettyCtx;
   private State state;
-  private String username;
-  private String bareJID;
-  private String resource;
+  private JabberID jid;
   private String streamTag;
-  
+  private XmppContextManager xmppCtxMgr;
+  private Set<XmppContextListener> listeners;
+
   /**
    * @param nettyCtx
    * @param appCtx
@@ -48,64 +62,86 @@ public class DefaultXmppContext implements XmppContext {
   public DefaultXmppContext(GlobalContext appCtx, IMSession imSession) {
     this.appCtx = appCtx;
     this.imSession = imSession;
+    listeners = new CopyOnWriteArraySet<>();
     state = new OpeningStreamState();
   }
 
+  @Override
   public void setState(State state) {
     this.state = state;
   }
-  
-  public void setResource(String resource) {
-    if (this.resource != null) {
-      throw new IllegalStateException("Resource has already been set");
-    }
-    this.resource = resource;
-  }
-  
+
+  @Override
   public void setStreamTag(String streamTag) {
     this.streamTag = streamTag;
   }
 
-  public String getResource() {
-    return resource;
-  }
-
-  public String getBareJID() {
-    return bareJID;
-  }
-  
-  public String getUsername() {
-    return username;
-  }
-  
+  @Override
   public ChannelHandlerContext getNettyChannelHandlerContext() {
     return nettyCtx;
   }
-  
+
+  @Override
   public void setNettyChannelHandlerContext(ChannelHandlerContext nettyCtx) {
     this.nettyCtx = nettyCtx;
   }
-  
+
+  public void setXmppContextManger(XmppContextManager xmppCtxMgr) {
+    this.xmppCtxMgr = xmppCtxMgr;
+    listeners.add(this.xmppCtxMgr);
+  }
+
+  @Override
   public String wrapStreamTag(String xml) {
     return streamTag + xml;
   }
-  
+
+  @Override
   public void login(String username, String password) {
     try {
+      preLogin();
       imSession.login(username, password);
-      this.username = username;
-      this.bareJID = username + "@localhost";
+      setJabberID(JabberID.fromString(username + "@localhost"));
+      postLogin();
     } catch (IMException e) {
       throw new XmppException(e, SASLError.NOT_AUTHORIZED);
     }
   }
-  
-  public void destroy() {
-    if (imSession != null) {
-      imSession.destroy();
+
+  private void preLogin() {
+    for (XmppContextListener listener : listeners) {
+      listener.onPreLogin(this);
     }
   }
 
+  private void postLogin() {
+    for (XmppContextListener listener : listeners) {
+      listener.onPostLogin(this);
+    }
+  }
+
+  @Override
+  public void destroy() {
+    preDestroy();
+    if (imSession != null) {
+      imSession.destroy();
+    }
+    postDestroy();
+  }
+
+  private void preDestroy() {
+    for (XmppContextListener listener : listeners) {
+      listener.onPreDestroy(this);
+    }
+  }
+
+  private void postDestroy() {
+    for (XmppContextListener listener : listeners) {
+      listener.onPostDestroy(this);
+    }
+  }
+
+  @Override
   public Command lookup(QName qName) {
     Class<? extends ContextAwareCommand> cmd = appCtx.getCommand(qName);
     if (cmd == null) {
@@ -120,16 +156,20 @@ public class DefaultXmppContext implements XmppContext {
     }
   }
 
+  @Override
   public void parseXML(final String xml) {
     Result result = state.step(this, xml);
     state = result.getNextState();
   }
-  
+
+  @Override
   public IMSession getIMSession() {
     return imSession;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.maodian.flyingcat.xmpp.state.XmppContext#getApplicationContext()
    */
   @Override
@@ -137,7 +177,9 @@ public class DefaultXmppContext implements XmppContext {
     return appCtx;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.maodian.flyingcat.xmpp.state.XmppContext#flush(java.lang.String)
    */
   @Override
@@ -145,6 +187,63 @@ public class DefaultXmppContext implements XmppContext {
     if (StringUtils.isNotBlank(str)) {
       nettyCtx.write(str).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
       nettyCtx.flush();
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.maodian.flyingcat.xmpp.state.XmppContext#setJabberID(org.maodian.flyingcat
+   * .xmpp.entity.JabberID)
+   */
+  @Override
+  public void setJabberID(JabberID jid) {
+    this.jid = jid;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.maodian.flyingcat.xmpp.state.XmppContext#getJabberID()
+   */
+  @Override
+  public JabberID getJabberID() {
+    return jid;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.maodian.flyingcat.xmpp.state.XmppContext#send(org.maodian.flyingcat
+   * .xmpp.entity.JabberID, java.lang.Object)
+   */
+  @Override
+  public void send(JabberID to, Object payload) {
+    Account ta = (Account) imSession.action(Verb.RETRIEVE, Type.PERSON, to.getUid());
+    if (ta == null) {
+      throw new RuntimeException("User does not existed");
+    }
+    xmppCtxMgr.transfer(getJabberID(), to, payload);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.maodian.flyingcat.xmpp.state.XmppContext#receive(org.maodian.flyingcat
+   * .xmpp.entity.JabberID, java.lang.Object)
+   */
+  @Override
+  public void receive(JabberID from, Object payload) {
+    Encoder encoder = appCtx.getEncoder(payload.getClass());
+    try (Writer writer = new StringWriter();) {
+      XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
+      encoder.encode(payload, xmlsw);
+      flush(writer.toString());
+    } catch (XMLStreamException | IOException e) {
+      throw new RuntimeException("Error when receiving payload", e);
     }
   }
 }

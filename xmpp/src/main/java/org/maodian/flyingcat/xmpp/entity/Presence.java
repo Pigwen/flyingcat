@@ -26,22 +26,13 @@ import org.maodian.flyingcat.xmpp.state.XmppContext;
  * 
  */
 public class Presence implements Visitee {
-  private BareJID to;
+  private JabberID to;
   private PresenceType type;
   private String id;
-  private BareJID from;
+  private JabberID from;
 
   public Presence() {
 
-  }
-
-  /**
-   * @param to
-   * @param type
-   */
-  public Presence(BareJID to, String type) {
-    this.to = to;
-    this.type = PresenceType.fromString(type);
   }
 
   public String getId() {
@@ -52,15 +43,15 @@ public class Presence implements Visitee {
     this.id = id;
   }
 
-  public BareJID getFrom() {
+  public JabberID getFrom() {
     return from;
   }
 
-  public void setFrom(BareJID from) {
+  public void setFrom(JabberID from) {
     this.from = from;
   }
 
-  public BareJID getTo() {
+  public JabberID getTo() {
     return to;
   }
 
@@ -68,7 +59,7 @@ public class Presence implements Visitee {
     return type;
   }
 
-  public void setTo(BareJID to) {
+  public void setTo(JabberID to) {
     this.to = to;
   }
 

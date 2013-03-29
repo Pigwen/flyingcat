@@ -21,17 +21,23 @@ import org.apache.commons.lang3.StringUtils;
  * @author Cole Wen
  * 
  */
-public class BareJID {
+public class JabberID {
   private final String uid;
   private final String domain;
+  private final String resource;
 
   /**
    * @param uid
    * @param domain
    */
-  public BareJID(String uid, String domain) {
+  private JabberID(String uid, String domain) {
+    this(uid, domain, null);
+  }
+
+  private JabberID(String uid, String domain, String resource) {
     this.uid = uid;
     this.domain = domain;
+    this.resource = resource;
   }
 
   public String getUid() {
@@ -42,11 +48,33 @@ public class BareJID {
     return domain;
   }
 
+  public String getResource() {
+    return resource;
+  }
+  
+  public JabberID appendResource(String resource) {
+    return new JabberID(uid, domain, resource);
+  }
+  
+  public String toBareJID() {
+    StringBuilder sb = new StringBuilder(uid).append("@").append(domain);
+    return sb.toString();
+  }
+  
+  public String toFullJID() {
+    StringBuilder sb = new StringBuilder(toBareJID());
+    if (StringUtils.isNotBlank(resource)) {
+      sb.append("/").append(resource);
+    }
+    return sb.toString();
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((domain == null) ? 0 : domain.hashCode());
+    result = prime * result + ((resource == null) ? 0 : resource.hashCode());
     result = prime * result + ((uid == null) ? 0 : uid.hashCode());
     return result;
   }
@@ -59,11 +87,16 @@ public class BareJID {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    BareJID other = (BareJID) obj;
+    JabberID other = (JabberID) obj;
     if (domain == null) {
       if (other.domain != null)
         return false;
     } else if (!domain.equals(other.domain))
+      return false;
+    if (resource == null) {
+      if (other.resource != null)
+        return false;
+    } else if (!resource.equals(other.resource))
       return false;
     if (uid == null) {
       if (other.uid != null)
@@ -75,10 +108,10 @@ public class BareJID {
 
   @Override
   public String toString() {
-    return "BareJID [uid=" + uid + ", domain=" + domain + "]";
+    return "JabberID [uid=" + uid + ", domain=" + domain + ", resource=" + resource + "]";
   }
 
-  public static BareJID fromString(String str) {
+  public static JabberID fromString(String str) {
     int atIndex = StringUtils.indexOf(str, "@");
     if (atIndex < 1) {
       // TODO: JID mailformed stanzs error
@@ -86,7 +119,17 @@ public class BareJID {
     }
     String uid = StringUtils.substring(str, 0, atIndex);
     int slashIndex = StringUtils.indexOf(str, "/");
-    String domain = StringUtils.substring(str, atIndex, slashIndex);
-    return new BareJID(uid, domain);
+    if (slashIndex == str.length()) {
+   // TODO: JID mailformed stanzs error
+      throw new RuntimeException("JID not well formed");
+    }
+    if (slashIndex != -1) {
+      String domain = StringUtils.substring(str, atIndex + 1, slashIndex);
+      String resource = StringUtils.substring(str, slashIndex);
+      return new JabberID(uid, domain, resource);
+    } else {
+      String domain = StringUtils.substring(str, atIndex + 1);
+      return new JabberID(uid, domain);
+    }
   }
 }

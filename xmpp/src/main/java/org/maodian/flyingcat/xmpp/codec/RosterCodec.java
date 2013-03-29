@@ -18,7 +18,6 @@ package org.maodian.flyingcat.xmpp.codec;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -55,7 +54,7 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
     try {
       xmlsr.nextTag();
       // check end element for empty tag
-      xmlsr.require(XMLStreamConstants.END_ELEMENT, XmppNamespace.ROSTER, "query");
+      // xmlsr.require(XMLStreamConstants.END_ELEMENT, XmppNamespace.ROSTER, "query");
       return new Roster();
     } catch (XMLStreamException e) {
       throw new XmppException(e, StreamError.INVALID_XML);
@@ -86,7 +85,7 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
   public Object processGet(XmppContext context, InfoQuery iq) {
     IMSession session = context.getIMSession();
     // null means get profile of current user
-    List<SimpleUser> imContacts = ((Account) session.action(Verb.RETRIEVE, Type.PERSON, context.getUsername())).getContactList();
+    List<SimpleUser> imContacts = ((Account) session.action(Verb.RETRIEVE, Type.PERSON, context.getJabberID().getUid())).getContactList();
     List<Contact> xmppContacts = new ArrayList<>();
     for (SimpleUser su : imContacts) {
       Contact c = new Contact(su.getUsername());

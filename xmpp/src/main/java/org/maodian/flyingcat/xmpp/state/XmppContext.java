@@ -21,6 +21,7 @@ import javax.xml.namespace.QName;
 
 import org.maodian.flyingcat.im.IMSession;
 import org.maodian.flyingcat.xmpp.GlobalContext;
+import org.maodian.flyingcat.xmpp.entity.JabberID;
 
 
 
@@ -40,16 +41,12 @@ public interface XmppContext {
   
   void setState(State state);
   
-  public void setResource(String resource);
+  void setJabberID(JabberID jid);
   
-  public void setStreamTag(String streamTag);
+  JabberID getJabberID();
+  
+  void setStreamTag(String streamTag);
 
-  public String getResource();
-
-  public String getBareJID();
-  
-  public String getUsername();
-  
   ChannelHandlerContext getNettyChannelHandlerContext();
   
   void setNettyChannelHandlerContext(ChannelHandlerContext nettyCtx);
@@ -58,15 +55,23 @@ public interface XmppContext {
   
   String wrapStreamTag(String xml);
   
-  public void login(String username, String password);
+  void login(String username, String password);
   
-  public void destroy();
+  void destroy();
 
-  public Command lookup(QName qName);
+  Command lookup(QName qName);
 
-  public void parseXML(final String xml);
+  void parseXML(final String xml);
   
-  public IMSession getIMSession();
+  IMSession getIMSession();
   
-  public void flush(String str);
+  void flush(String str);
+  
+  void send(JabberID to, Object payload);
+
+  /**
+   * @param from
+   * @param payload
+   */
+  void receive(JabberID from, Object payload);
 }

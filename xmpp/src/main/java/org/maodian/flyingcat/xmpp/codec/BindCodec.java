@@ -23,6 +23,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
 import org.maodian.flyingcat.xmpp.entity.Bind;
 import org.maodian.flyingcat.xmpp.entity.InfoQuery;
+import org.maodian.flyingcat.xmpp.entity.JabberID;
 import org.maodian.flyingcat.xmpp.state.StreamError;
 import org.maodian.flyingcat.xmpp.state.XmppContext;
 import org.maodian.flyingcat.xmpp.state.XmppException;
@@ -81,9 +82,10 @@ public class BindCodec extends AbstractCodec implements InfoQueryProcessor {
   @Override
   public Object processSet(XmppContext context, InfoQuery iq) {
     String resource = ((Bind)iq.getPayload()).getResource();
-    context.setResource(resource);
+    JabberID jid = context.getJabberID().appendResource(resource);
+    context.setJabberID(jid);
     Bind bind = new Bind();
-    bind.setJabberId(context.getBareJID() + "/" + resource);
+    bind.setJabberId(context.getJabberID().toFullJID());
     return bind;
   }
 

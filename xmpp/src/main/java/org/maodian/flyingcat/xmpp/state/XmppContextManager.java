@@ -26,5 +26,11 @@ import org.maodian.flyingcat.xmpp.entity.JabberID;
 public interface XmppContextManager extends XmppContextListener {
 
   XmppContext getXmppContext(JabberID jid);
-  Collection<XmppContext> getXmppContexts(String uid); 
+  Collection<XmppContext> getXmppContexts(String uid);
+  /**
+   * @param jabberID
+   * @param target
+   * @param payload
+   */
+  void transfer(JabberID from, JabberID to, Object payload); 
 }

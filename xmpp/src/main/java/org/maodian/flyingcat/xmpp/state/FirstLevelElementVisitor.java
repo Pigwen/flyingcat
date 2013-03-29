@@ -34,6 +34,7 @@ import org.maodian.flyingcat.xmpp.codec.InfoQueryProcessor;
 import org.maodian.flyingcat.xmpp.codec.SecureSslContextFactory;
 import org.maodian.flyingcat.xmpp.entity.Auth;
 import org.maodian.flyingcat.xmpp.entity.InfoQuery;
+import org.maodian.flyingcat.xmpp.entity.JabberID;
 import org.maodian.flyingcat.xmpp.entity.Presence;
 import org.maodian.flyingcat.xmpp.entity.TLS;
 import org.maodian.flyingcat.xmpp.state.StreamState.AuthenticatedStreamState;
@@ -88,11 +89,18 @@ public class FirstLevelElementVisitor implements Visitor {
   public State handlePresence(XmppContext ctx, Presence p) throws XMLStreamException {
     StringWriter writer = new StringWriter();
     XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
-    xmlsw.writeEmptyElement("presence");
-    xmlsw.writeAttribute("from", ctx.getUsername() + "@localhost" + "/" + ctx.getResource());
-    xmlsw.writeAttribute("to", ctx.getUsername() + "@localhost");
-    xmlsw.writeEndDocument();
-    ctx.flush(writer.toString());
+    
+    if (p.getType() == null && p.getTo() == null) {
+      xmlsw.writeEmptyElement("presence");
+      xmlsw.writeAttribute("from", ctx.getJabberID().toFullJID());
+      xmlsw.writeAttribute("to", ctx.getJabberID().toBareJID());
+      xmlsw.writeEndDocument();
+      ctx.flush(writer.toString());
+    } else {
+      JabberID from = ctx.getJabberID();
+      p.setFrom(from);
+      ctx.send(p.getTo(), p);
+    }
     return new SelectState();
   }
 

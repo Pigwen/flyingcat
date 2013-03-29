@@ -113,6 +113,21 @@ public class DefaultXmppContextManager implements XmppContextManager {
       lock.release();
     }
   }
-  
-  
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.xmpp.state.XmppContextManager#transfer(org.maodian.flyingcat.xmpp.entity.JabberID, org.maodian.flyingcat.xmpp.entity.JabberID, java.lang.Object)
+   */
+  @Override
+  public void transfer(JabberID from, JabberID to, Object payload) {
+    ConcurrentMap<JabberID, XmppContext> m = pool.get(to.getUid());
+    if (m == null) {
+      //TODO: the target is not active, store the payload in db
+    } else {
+      Collection<XmppContext> ctxs = m.values();
+      for (XmppContext ctx : ctxs) {
+        ctx.receive(from, payload);
+      }
+    }
+    
+  }
 }

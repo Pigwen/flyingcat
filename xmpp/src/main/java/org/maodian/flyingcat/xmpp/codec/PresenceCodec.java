@@ -19,7 +19,10 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.commons.lang3.StringUtils;
+import org.maodian.flyingcat.xmpp.entity.JabberID;
 import org.maodian.flyingcat.xmpp.entity.Presence;
+import org.maodian.flyingcat.xmpp.entity.Presence.PresenceType;
 import org.springframework.stereotype.Component;
 
 /**
@@ -35,6 +38,19 @@ public class PresenceCodec extends AbstractCodec {
   @Override
   public Object decode(XMLStreamReader xmlsr) {
     Presence p = new Presence();
+    String id = xmlsr.getAttributeValue("", "id");
+    if (StringUtils.isNotBlank(id)) {
+      p.setId(id);
+    }
+    String t = xmlsr.getAttributeValue("", "to");
+    if (StringUtils.isNotBlank(t)) {
+      JabberID to = JabberID.fromString(t);
+      p.setTo(to);
+    }
+    String type = xmlsr.getAttributeValue("", "type");
+    if (StringUtils.isNotBlank(type)) {
+      p.setType(PresenceType.fromString(type));
+    }
     return p;
   }
 
@@ -43,8 +59,13 @@ public class PresenceCodec extends AbstractCodec {
    */
   @Override
   public void encode(Object object, XMLStreamWriter xmlsw) throws XMLStreamException {
-    // TODO Auto-generated method stub
-
+    Presence p = (Presence) object;
+    xmlsw.writeEmptyElement("presence");
+    writeAttributeIfNotBlank(xmlsw, "id", p.getId());
+    writeRequiredAttribute(xmlsw, "to", p.getTo().toBareJID());
+    writeRequiredAttribute(xmlsw, "from", p.getFrom().toBareJID());
+    writeRequiredAttribute(xmlsw, "type", p.getType().name().toLowerCase());
+    xmlsw.writeEndDocument();
   }
 
 }

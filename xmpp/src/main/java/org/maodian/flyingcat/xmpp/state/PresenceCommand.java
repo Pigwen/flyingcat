@@ -21,8 +21,9 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.maodian.flyingcat.xmpp.XmppNamespace;
-import org.maodian.flyingcat.xmpp.entity.BareJID;
+import org.maodian.flyingcat.xmpp.entity.JabberID;
 import org.maodian.flyingcat.xmpp.entity.Presence;
+import org.maodian.flyingcat.xmpp.entity.Presence.PresenceType;
 
 /**
  * @author Cole Wen
@@ -43,12 +44,14 @@ public class PresenceCommand extends ContextAwareCommand {
     String id = xmlsr.getAttributeValue("", "id");
     String to = xmlsr.getAttributeValue("", "to");
     String type = xmlsr.getAttributeValue("", "type");
-    BareJID recv = BareJID.fromString(to);
-    Presence req = new Presence(recv, type);
+    JabberID recv = JabberID.fromString(to);
+    Presence req = new Presence();
+    req.setTo(recv);
+    req.setType(PresenceType.fromString(type));
     XmppContext ctx = getXmppContext();
     xmlsw.writeEmptyElement("", "presence", XmppNamespace.CLIENT_CONTENT);
-    xmlsw.writeAttribute("from", ctx.getBareJID() + "/" + ctx.getResource());
-    xmlsw.writeAttribute("to", ctx.getBareJID());
+    xmlsw.writeAttribute("from", ctx.getJabberID().toFullJID());
+    xmlsw.writeAttribute("to", ctx.getJabberID().toBareJID());
     // hack to solve the output xml without '/>'
     xmlsw.writeEndDocument();
     return new SelectState();

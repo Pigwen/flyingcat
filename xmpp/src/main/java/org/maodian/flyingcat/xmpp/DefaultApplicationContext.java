@@ -34,6 +34,7 @@ import org.maodian.flyingcat.xmpp.codec.SessionCodec;
 import org.maodian.flyingcat.xmpp.codec.TLSCodec;
 import org.maodian.flyingcat.xmpp.entity.Bind;
 import org.maodian.flyingcat.xmpp.entity.InfoQuery;
+import org.maodian.flyingcat.xmpp.entity.Presence;
 import org.maodian.flyingcat.xmpp.entity.Roster;
 import org.maodian.flyingcat.xmpp.entity.Session;
 import org.maodian.flyingcat.xmpp.state.ContextAwareCommand;
@@ -81,6 +82,7 @@ public class DefaultApplicationContext implements GlobalContext {
       encoderMap.put(Bind.class, bindCodec);
       encoderMap.put(Session.class, sessionCodec);
       encoderMap.put(Roster.class, rosterCodec);
+      encoderMap.put(Presence.class, presenceCodec);
 
       processorMap.put(Session.class, sessionCodec);
       processorMap.put(Bind.class, bindCodec);
