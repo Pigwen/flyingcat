@@ -15,12 +15,15 @@
  */
 package org.maodian.flyingcat.xmpp.state;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
 
 import org.maodian.flyingcat.xmpp.entity.JabberID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -28,6 +31,7 @@ import org.maodian.flyingcat.xmpp.entity.JabberID;
  *
  */
 public class DefaultXmppContextManager implements XmppContextManager {
+  private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private final ConcurrentMap<String, ConcurrentMap<JabberID, XmppContext>> pool = new ConcurrentHashMap<>();
   private final Semaphore lock = new Semaphore(1);
   
@@ -62,11 +66,13 @@ public class DefaultXmppContextManager implements XmppContextManager {
   @Override
   public void onPostDestroy(XmppContext ctx) {
     JabberID jid = ctx.getJabberID();
+    log.debug("Post destroy of XmppContext for {}", jid);
     try {
       lock.acquire();
       ConcurrentMap<JabberID, XmppContext> m = pool.get(jid.getUid());
       m.remove(jid);
       if (m.size() == 0) {
+        log.debug("No active XmppContext for uid {} anymore", jid.getUid());
         pool.remove(jid.getUid());
       }
     } catch (InterruptedException e) {
@@ -90,14 +96,17 @@ public class DefaultXmppContextManager implements XmppContextManager {
   @Override
   public void onPostLogin(XmppContext ctx) {
     JabberID jid = ctx.getJabberID();
+    log.debug("Post login of XmppContext for {}", jid);
     try {
       lock.acquire();
       ConcurrentMap<JabberID, XmppContext> m = pool.get(jid.getUid());
       if (m == null) {
+        log.debug("No active XmppContext found for uid {}", jid.getUid());
         m = new ConcurrentHashMap<>();
         pool.put(jid.getUid(), m);
       }
       m.put(jid, ctx);
+      log.debug("Complete post login of XmppContext");
     } catch (InterruptedException e) {
       throw new RuntimeException();
     } finally {
