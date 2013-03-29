@@ -58,6 +58,7 @@ public class PresenceListener extends AbstractXmppContextListener {
       Roster roster = new Roster();
       roster.addContact(contact);
       
+      // send roster push to all available resource
       Collection<XmppContext> allCtx = xmppCtxMgr.getXmppContexts(ctx.getJabberID().getUid());
       for (XmppContext xc : allCtx) {
         String id = RandomStringUtils.randomAlphabetic(32);

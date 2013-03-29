@@ -30,7 +30,6 @@ import javax.xml.stream.XMLStreamWriter;
 import org.maodian.flyingcat.holder.XMLOutputFactoryHolder;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
 import org.maodian.flyingcat.xmpp.codec.Encoder;
-import org.maodian.flyingcat.xmpp.codec.InfoQueryProcessor;
 import org.maodian.flyingcat.xmpp.codec.SecureSslContextFactory;
 import org.maodian.flyingcat.xmpp.entity.Auth;
 import org.maodian.flyingcat.xmpp.entity.InfoQuery;
@@ -57,18 +56,17 @@ public class FirstLevelElementVisitor implements Visitor {
     InfoQuery.Builder iqBuilder = new InfoQuery.Builder(iq.getId(), "result").from("localhost").to(iq.getFrom())
         .language("en");
     Object reqPayload = iq.getPayload();
-    InfoQueryProcessor processor = ctx.getApplicationContext().getProcessor(reqPayload.getClass());
     Encoder encoder = ctx.getApplicationContext().getEncoder(InfoQuery.class);
     Object rspPayload = null;
     switch (iq.getType()) {
     case InfoQuery.GET:
-      rspPayload = processor.processGet(ctx, iq);
+      rspPayload = ctx.getApplicationContext().getProcessor(reqPayload.getClass()).processGet(ctx, iq);
       break;
     case InfoQuery.SET:
-      rspPayload = processor.processSet(ctx, iq);
+      rspPayload = ctx.getApplicationContext().getProcessor(reqPayload.getClass()).processSet(ctx, iq);
       break;
     case InfoQuery.RESULT:
-      throw new IllegalStateException("The server does not support <iq /> type as RESULT");
+      return new SelectState();
     default:
       throw new IllegalStateException("Unrecognized state: " + iq.getType());
     }
