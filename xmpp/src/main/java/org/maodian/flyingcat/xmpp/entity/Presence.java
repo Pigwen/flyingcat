@@ -18,14 +18,14 @@ package org.maodian.flyingcat.xmpp.entity;
 import javax.xml.stream.XMLStreamException;
 
 import org.maodian.flyingcat.xmpp.state.State;
-import org.maodian.flyingcat.xmpp.state.Visitor;
+import org.maodian.flyingcat.xmpp.state.FirstLevelElementVisitor;
 import org.maodian.flyingcat.xmpp.state.XmppContext;
 
 /**
  * @author Cole Wen
  * 
  */
-public class Presence implements Visitee {
+public class Presence implements FirstLevelElementVisitee {
   private JabberID to;
   private PresenceType type;
   private String id;
@@ -92,7 +92,7 @@ public class Presence implements Visitee {
    * @see org.maodian.flyingcat.xmpp.entity.Visitee#accept(org.maodian.flyingcat.xmpp.state.XmppContext, org.maodian.flyingcat.xmpp.state.Visitor)
    */
   @Override
-  public State accept(XmppContext ctx, Visitor visitor) throws XMLStreamException {
+  public State accept(XmppContext ctx, FirstLevelElementVisitor visitor) throws XMLStreamException {
     return visitor.handlePresence(ctx, this);
   }
 }

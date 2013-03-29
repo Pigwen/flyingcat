@@ -18,13 +18,13 @@ package org.maodian.flyingcat.xmpp.entity;
 import javax.xml.stream.XMLStreamException;
 
 import org.maodian.flyingcat.xmpp.state.State;
-import org.maodian.flyingcat.xmpp.state.Visitor;
+import org.maodian.flyingcat.xmpp.state.FirstLevelElementVisitor;
 import org.maodian.flyingcat.xmpp.state.XmppContext;
 
 /**
  * @author Cole Wen
  *
  */
-public interface Visitee {
-  State accept(XmppContext ctx, Visitor visitor) throws XMLStreamException;
+public interface FirstLevelElementVisitee {
+  State accept(XmppContext ctx, FirstLevelElementVisitor visitor) throws XMLStreamException;
 }

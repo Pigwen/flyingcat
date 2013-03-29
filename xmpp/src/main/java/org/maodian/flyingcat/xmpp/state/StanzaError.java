@@ -140,7 +140,7 @@ public class StanzaError implements Stanzas, XmppError {
    * @see org.maodian.flyingcat.xmpp.entity.Visitee#accept(org.maodian.flyingcat.xmpp.state.XmppContext, org.maodian.flyingcat.xmpp.state.Visitor)
    */
   @Override
-  public State accept(XmppContext ctx, Visitor visitor) throws XMLStreamException {
+  public State accept(XmppContext ctx, FirstLevelElementVisitor visitor) throws XMLStreamException {
     throw new UnsupportedOperationException();
   }
 }

@@ -18,14 +18,14 @@ package org.maodian.flyingcat.xmpp.entity;
 import javax.xml.stream.XMLStreamException;
 
 import org.maodian.flyingcat.xmpp.state.State;
-import org.maodian.flyingcat.xmpp.state.Visitor;
+import org.maodian.flyingcat.xmpp.state.FirstLevelElementVisitor;
 import org.maodian.flyingcat.xmpp.state.XmppContext;
 
 /**
  * @author Cole Wen
  * 
  */
-public class Auth implements Visitee {
+public class Auth implements FirstLevelElementVisitee {
   private final String authzid;
   private final String authcid;
   private final String password;
@@ -61,7 +61,7 @@ public class Auth implements Visitee {
    * xmpp.state.XmppContext, org.maodian.flyingcat.xmpp.state.Visitor)
    */
   @Override
-  public State accept(XmppContext ctx, Visitor visitor) throws XMLStreamException {
+  public State accept(XmppContext ctx, FirstLevelElementVisitor visitor) throws XMLStreamException {
     return visitor.handleSASL(ctx, this);
   }
 
