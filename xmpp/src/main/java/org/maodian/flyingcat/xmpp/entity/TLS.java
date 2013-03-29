@@ -18,20 +18,20 @@ package org.maodian.flyingcat.xmpp.entity;
 import javax.xml.stream.XMLStreamException;
 
 import org.maodian.flyingcat.xmpp.state.State;
-import org.maodian.flyingcat.xmpp.state.FirstLevelElementVisitor;
+import org.maodian.flyingcat.xmpp.state.ElementVisitor;
 import org.maodian.flyingcat.xmpp.state.XmppContext;
 
 /**
  * @author Cole Wen
  *
  */
-public class TLS implements FirstLevelElementVisitee {
+public class TLS implements ElementVisitee {
 
   /* (non-Javadoc)
    * @see org.maodian.flyingcat.xmpp.entity.Visitee#accept(org.maodian.flyingcat.xmpp.state.XmppContext, org.maodian.flyingcat.xmpp.state.Visitor)
    */
   @Override
-  public State accept(XmppContext ctx, FirstLevelElementVisitor visitor) throws XMLStreamException {
+  public State acceptElementVisitor(XmppContext ctx, ElementVisitor visitor) throws XMLStreamException {
     return visitor.handleTLS(ctx, this); 
   }
 

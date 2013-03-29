@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * @author Cole Wen
  *
  */
-public class DefaultFirstLevelElementVisitor implements FirstLevelElementVisitor {
+public class DefaultElementVisitor implements ElementVisitor {
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().getClass());
 
   /* (non-Javadoc)

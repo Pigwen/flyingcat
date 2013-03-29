@@ -26,7 +26,7 @@ import org.maodian.flyingcat.xmpp.entity.TLS;
  * @author Cole Wen
  *
  */
-public interface FirstLevelElementVisitor {
+public interface ElementVisitor {
   State handleInfoQuery(XmppContext ctx, InfoQuery iq) throws XMLStreamException;
   State handlePresence(XmppContext ctx, Presence p) throws XMLStreamException;
   /**

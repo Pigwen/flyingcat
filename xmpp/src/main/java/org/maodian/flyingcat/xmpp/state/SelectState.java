@@ -24,7 +24,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.maodian.flyingcat.holder.XMLInputFactoryHolder;
 import org.maodian.flyingcat.xmpp.codec.Decoder;
-import org.maodian.flyingcat.xmpp.entity.FirstLevelElementVisitee;
+import org.maodian.flyingcat.xmpp.entity.ElementVisitee;
 
 /**
  * @author Cole Wen
@@ -45,9 +45,9 @@ public class SelectState implements State {
         xmlsr.nextTag();
         xmlsr.nextTag();
         Decoder decoder = context.getApplicationContext().getDecoder(xmlsr.getName());
-        FirstLevelElementVisitee elem = (FirstLevelElementVisitee) decoder.decode(xmlsr);
-        FirstLevelElementVisitor handler = new DefaultFirstLevelElementVisitor();
-        State nextState = elem.accept(context, handler);
+        ElementVisitee elem = (ElementVisitee) decoder.decode(xmlsr);
+        ElementVisitor handler = new DefaultElementVisitor();
+        State nextState = elem.acceptElementVisitor(context, handler);
         Result result = new DefaultResult(nextState);
         return result;
       } catch (XMLStreamException e) {
