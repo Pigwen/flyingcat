@@ -69,7 +69,7 @@ public class PresenceListener extends AbstractXmppContextListener {
         try (Writer writer = new StringWriter();) {
           XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
           encoder.encode(iq, xmlsw);
-          ctx.flush(writer.toString());
+          xc.flush(writer.toString());
         } catch (XMLStreamException | IOException e) {
           log.warn("Error when onPostSend", e);
         }
