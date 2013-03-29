@@ -23,7 +23,7 @@ import org.maodian.flyingcat.xmpp.entity.JabberID;
  * @author Cole Wen
  *
  */
-public interface XmppContextManager extends XmppContextListener {
+public interface XmppContextManager {
 
   XmppContext getXmppContext(JabberID jid);
   Collection<XmppContext> getXmppContexts(String uid);

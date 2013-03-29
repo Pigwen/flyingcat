@@ -26,7 +26,19 @@
       </bean>
     </constructor-arg>
     <property name="xmppContextManger" ref="xmppContextManager"/>
+    <property name="listeners">
+      <set>
+        <ref bean="presenceListener"/>
+      </set>
+    </property>
   </bean>
+  
+  <!-- XmppContextListener START -->
+  <bean id="presenceListener" class="org.maodian.flyingcat.xmpp.state.PresenceListener">
+    <property name="xmppContextManager" ref="xmppContextManager"/>
+  </bean>
+  <!-- XmppContextListener END -->
+  
   <bean class="org.maodian.flyingcat.netty.handler.XmppXMLStreamHandler" scope="prototype">
     <property name="xmppContext" ref="xmppContext"/>
   </bean>

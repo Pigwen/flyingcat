@@ -60,6 +60,8 @@ public class InfoQueryCodec extends AbstractCodec {
         builder.payload(findDecoder(key, builder.build()).decode(xmlsr));
         break;
       case InfoQuery.RESULT:
+        // do nothing
+        break;
       case InfoQuery.ERROR:
         throw new IllegalStateException("Since this is a server, it should not dealing with incoming result and error");
       default:

@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * @author Cole Wen
  *
  */
-public class DefaultXmppContextManager implements XmppContextManager {
+public class DefaultXmppContextManager extends AbstractXmppContextListener implements XmppContextManager {
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private final ConcurrentMap<String, ConcurrentMap<JabberID, XmppContext>> pool = new ConcurrentHashMap<>();
   private final Semaphore lock = new Semaphore(1);
@@ -49,15 +49,6 @@ public class DefaultXmppContextManager implements XmppContextManager {
   @Override
   public Collection<XmppContext> getXmppContexts(String uid) {
     return pool.get(uid).values();
-  }
-
-  /* (non-Javadoc)
-   * @see org.maodian.flyingcat.xmpp.state.XmppContextListener#onPreDestroy(org.maodian.flyingcat.xmpp.state.XmppContext)
-   */
-  @Override
-  public void onPreDestroy(XmppContext ctx) {
-    // TODO Auto-generated method stub
-    
   }
 
   /* (non-Javadoc)
@@ -80,14 +71,6 @@ public class DefaultXmppContextManager implements XmppContextManager {
     } finally {
       lock.release();
     }
-  }
-
-  /* (non-Javadoc)
-   * @see org.maodian.flyingcat.xmpp.state.XmppContextListener#onPreLogin(org.maodian.flyingcat.xmpp.state.XmppContext)
-   */
-  @Override
-  public void onPreLogin(XmppContext ctx) {
-    
   }
 
   /* (non-Javadoc)

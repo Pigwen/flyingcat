@@ -88,7 +88,11 @@ public class DefaultXmppContext implements XmppContext {
 
   public void setXmppContextManger(XmppContextManager xmppCtxMgr) {
     this.xmppCtxMgr = xmppCtxMgr;
-    listeners.add(this.xmppCtxMgr);
+    listeners.add((XmppContextListener) this.xmppCtxMgr);
+  }
+  
+  public void setListeners(Set<XmppContextListener> listeners) {
+    this.listeners.addAll(listeners);
   }
 
   @Override
@@ -225,7 +229,19 @@ public class DefaultXmppContext implements XmppContext {
     if (ta == null) {
       throw new RuntimeException("User does not existed");
     }
+    preSend(payload);
     xmppCtxMgr.transfer(getJabberID(), to, payload);
+    postSend(payload);
+  }
+  
+  private void preSend(Object payload) {
+    
+  }
+  
+  private void postSend(Object payload) {
+    for (XmppContextListener listener : listeners) {
+      listener.onPostSend(this, payload);
+    }
   }
 
   /*
