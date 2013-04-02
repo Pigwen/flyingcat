@@ -75,30 +75,6 @@ public class DefaultXmppContextManager extends AbstractXmppContextListener imple
   }
 
   /* (non-Javadoc)
-   * @see org.maodian.flyingcat.xmpp.state.XmppContextListener#onPostLogin(org.maodian.flyingcat.xmpp.state.XmppContext)
-   */
-  /*@Override
-  public void onPostLogin(XmppContext ctx) {
-    JabberID jid = ctx.getJabberID();
-    log.debug("Post login of XmppContext for {}", jid);
-    try {
-      lock.acquire();
-      ConcurrentMap<JabberID, XmppContext> m = pool.get(jid.getUid());
-      if (m == null) {
-        log.debug("No active XmppContext found for uid {}", jid.getUid());
-        m = new ConcurrentHashMap<>();
-        pool.put(jid.getUid(), m);
-      }
-      m.put(jid, ctx);
-      log.debug("Complete post login of XmppContext");
-    } catch (InterruptedException e) {
-      throw new RuntimeException();
-    } finally {
-      lock.release();
-    }
-  }*/
-  
-  /* (non-Javadoc)
    * @see org.maodian.flyingcat.xmpp.state.AbstractXmppContextListener#onPostBind(org.maodian.flyingcat.xmpp.state.XmppContext)
    */
   @Override
