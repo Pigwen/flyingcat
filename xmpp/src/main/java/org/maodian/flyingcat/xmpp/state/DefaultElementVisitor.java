@@ -28,6 +28,12 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.maodian.flyingcat.holder.XMLOutputFactoryHolder;
+import org.maodian.flyingcat.im.IMSession;
+import org.maodian.flyingcat.im.Type;
+import org.maodian.flyingcat.im.Verb;
+import org.maodian.flyingcat.im.entity.SimpleUser;
+import org.maodian.flyingcat.im.entity.SimpleUser.Pending;
+import org.maodian.flyingcat.im.entity.SimpleUser.SubState;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
 import org.maodian.flyingcat.xmpp.codec.Encoder;
 import org.maodian.flyingcat.xmpp.codec.SecureSslContextFactory;
@@ -45,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author Cole Wen
  *
  */
-public class DefaultElementVisitor implements ElementVisitor {
+public class DefaultElementVisitor implements ElementVisitor, PersistedVisitor {
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().getClass());
 
   /* (non-Javadoc)
@@ -145,6 +151,28 @@ public class DefaultElementVisitor implements ElementVisitor {
     xmlsw.writeEndDocument();
     ctx.flush(writer.toString());
     return new AuthenticatedStreamState();
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.xmpp.state.PersistedVisitor#persistPresenceSubscription(org.maodian.flyingcat.xmpp.state.XmppContext, org.maodian.flyingcat.xmpp.entity.PersistedVisitee)
+   */
+  @Override
+  public void persistPresenceSubscription(XmppContext ctx, Presence p) {
+    String uid = ctx.getJabberID().getUid();
+    SimpleUser su = new SimpleUser(uid, uid);
+    IMSession session = ctx.getIMSession();
+    switch (p.getType()) {
+    case SUBSCRIBE:
+      su.setPending(Pending.PENDING_OUT);
+      su.setSubState(SubState.NONE);
+      session.action(Verb.FOLLOW, Type.PERSON, su);
+      break;
+    case SUBSCRIBED:
+    case UNSUBSCRIBE:
+    case UNSUBSCRIBED:
+    default:
+      throw new RuntimeException("should not reach here");
+    }
   }
 
 }

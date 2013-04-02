@@ -75,4 +75,22 @@ public class AbstractXmppContextListener implements XmppContextListener {
 
   }
 
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.xmpp.state.XmppContextListener#onPreBind(org.maodian.flyingcat.xmpp.state.XmppContext)
+   */
+  @Override
+  public void onPreBind(XmppContext ctx) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.xmpp.state.XmppContextListener#onPostBind(org.maodian.flyingcat.xmpp.state.XmppContext)
+   */
+  @Override
+  public void onPostBind(XmppContext ctx) {
+    // TODO Auto-generated method stub
+    
+  }
+
 }

@@ -25,6 +25,8 @@ public interface XmppContextListener {
   void onPostDestroy(XmppContext ctx);
   void onPreLogin(XmppContext ctx);
   void onPostLogin(XmppContext ctx);
+  void onPreBind(XmppContext ctx);
+  void onPostBind(XmppContext ctx);
   void onPreSend(XmppContext ctx, Object payload);
   void onPostSend(XmppContext ctx, Object payload);
 }

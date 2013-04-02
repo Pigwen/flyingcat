@@ -123,6 +123,27 @@ public class DefaultXmppContext implements XmppContext {
       listener.onPostLogin(this);
     }
   }
+  
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.xmpp.state.XmppContext#bindResource(java.lang.String)
+   */
+  @Override
+  public void bind(String resource) {
+    preBind();
+    JabberID newJid = JabberID.createInstance(jid.getUid(), jid.getDomain(), resource);
+    this.jid = newJid;
+    postBind();
+  }
+  
+  private void preBind() {
+    
+  }
+  
+  private void postBind() {
+    for (XmppContextListener listener : listeners) {
+      listener.onPostBind(this);
+    }
+  }
 
   @Override
   public void destroy() {

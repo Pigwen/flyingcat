@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
 
 import org.maodian.flyingcat.xmpp.entity.JabberID;
+import org.maodian.flyingcat.xmpp.entity.PersistedVisitee;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +77,7 @@ public class DefaultXmppContextManager extends AbstractXmppContextListener imple
   /* (non-Javadoc)
    * @see org.maodian.flyingcat.xmpp.state.XmppContextListener#onPostLogin(org.maodian.flyingcat.xmpp.state.XmppContext)
    */
-  @Override
+  /*@Override
   public void onPostLogin(XmppContext ctx) {
     JabberID jid = ctx.getJabberID();
     log.debug("Post login of XmppContext for {}", jid);
@@ -95,6 +96,30 @@ public class DefaultXmppContextManager extends AbstractXmppContextListener imple
     } finally {
       lock.release();
     }
+  }*/
+  
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.xmpp.state.AbstractXmppContextListener#onPostBind(org.maodian.flyingcat.xmpp.state.XmppContext)
+   */
+  @Override
+  public void onPostBind(XmppContext ctx) {
+    JabberID jid = ctx.getJabberID();
+    log.debug("Post bind of XmppContext for {}", jid);
+    try {
+      lock.acquire();
+      ConcurrentMap<JabberID, XmppContext> m = pool.get(jid.getUid());
+      if (m == null) {
+        log.debug("No connected XmppContext found for uid {}", jid.getUid());
+        m = new ConcurrentHashMap<>();
+        pool.put(jid.getUid(), m);
+      }
+      m.put(jid, ctx);
+      log.debug("Complete post bind of XmppContext");
+    } catch (InterruptedException e) {
+      throw new RuntimeException();
+    } finally {
+      lock.release();
+    }
   }
 
   /* (non-Javadoc)
@@ -103,8 +128,17 @@ public class DefaultXmppContextManager extends AbstractXmppContextListener imple
   @Override
   public void transfer(JabberID from, JabberID to, Object payload) {
     ConcurrentMap<JabberID, XmppContext> m = pool.get(to.getUid());
-    if (m == null) {
-      //TODO: the target is not active, store the payload in db
+    log.info("Transfer payload {} from {} to {}", new Object[] {payload.getClass().getSimpleName(), from, to});
+    if (m == null || m.size() == 0) {
+      log.info("{} is not online", to);
+      if (payload instanceof PersistedVisitee) {
+        PersistedVisitee pv = (PersistedVisitee) payload;
+        DefaultElementVisitor visitor = new DefaultElementVisitor();
+        XmppContext ctx = getXmppContext(from);
+        pv.acceptPersistedVisitor(ctx, visitor);
+      } else {
+        log.info("{} is not persistable", payload.getClass().getSimpleName());
+      }
     } else {
       Collection<XmppContext> ctxs = m.values();
       for (XmppContext ctx : ctxs) {

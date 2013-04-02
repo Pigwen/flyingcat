@@ -17,15 +17,16 @@ package org.maodian.flyingcat.xmpp.entity;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.maodian.flyingcat.xmpp.state.State;
 import org.maodian.flyingcat.xmpp.state.ElementVisitor;
+import org.maodian.flyingcat.xmpp.state.PersistedVisitor;
+import org.maodian.flyingcat.xmpp.state.State;
 import org.maodian.flyingcat.xmpp.state.XmppContext;
 
 /**
  * @author Cole Wen
  * 
  */
-public class Presence implements ElementVisitee {
+public class Presence implements ElementVisitee, PersistedVisitee {
   private JabberID to;
   private PresenceType type;
   private String id;
@@ -94,5 +95,13 @@ public class Presence implements ElementVisitee {
   @Override
   public State acceptElementVisitor(XmppContext ctx, ElementVisitor visitor) throws XMLStreamException {
     return visitor.handlePresence(ctx, this);
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.xmpp.entity.PersistedVisitee#acceptPersistedVisitor(org.maodian.flyingcat.xmpp.state.XmppContext, org.maodian.flyingcat.xmpp.state.PersistedVisitor)
+   */
+  @Override
+  public void acceptPersistedVisitor(XmppContext ctx, PersistedVisitor visitor) {
+    visitor.persistPresenceSubscription(ctx, this);
   }
 }

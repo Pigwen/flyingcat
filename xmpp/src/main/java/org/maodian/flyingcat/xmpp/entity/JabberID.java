@@ -51,16 +51,12 @@ public class JabberID {
   public String getResource() {
     return resource;
   }
-  
-  public JabberID appendResource(String resource) {
-    return new JabberID(uid, domain, resource);
-  }
-  
+
   public String toBareJID() {
     StringBuilder sb = new StringBuilder(uid).append("@").append(domain);
     return sb.toString();
   }
-  
+
   public String toFullJID() {
     StringBuilder sb = new StringBuilder(toBareJID());
     if (StringUtils.isNotBlank(resource)) {
@@ -120,7 +116,7 @@ public class JabberID {
     String uid = StringUtils.substring(str, 0, atIndex);
     int slashIndex = StringUtils.indexOf(str, "/");
     if (slashIndex == str.length()) {
-   // TODO: JID mailformed stanzs error
+      // TODO: JID mailformed stanzs error
       throw new RuntimeException("JID not well formed");
     }
     if (slashIndex != -1) {
@@ -131,5 +127,9 @@ public class JabberID {
       String domain = StringUtils.substring(str, atIndex + 1);
       return new JabberID(uid, domain);
     }
+  }
+
+  public static JabberID createInstance(String uid, String domain, String resource) {
+    return new JabberID(uid, domain, resource);
   }
 }

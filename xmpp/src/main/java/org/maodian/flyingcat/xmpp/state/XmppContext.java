@@ -46,6 +46,8 @@ public interface XmppContext {
   JabberID getJabberID();
   
   void setStreamTag(String streamTag);
+  
+  void bind(String resource);
 
   ChannelHandlerContext getNettyChannelHandlerContext();
   
