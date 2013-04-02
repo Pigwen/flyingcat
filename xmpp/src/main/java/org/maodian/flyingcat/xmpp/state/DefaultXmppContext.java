@@ -215,15 +215,7 @@ public class DefaultXmppContext implements XmppContext {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.maodian.flyingcat.xmpp.state.XmppContext#setJabberID(org.maodian.flyingcat
-   * .xmpp.entity.JabberID)
-   */
-  @Override
-  public void setJabberID(JabberID jid) {
+  private void setJabberID(JabberID jid) {
     this.jid = jid;
   }
 

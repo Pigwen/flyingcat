@@ -41,8 +41,6 @@ public interface XmppContext {
   
   void setState(State state);
   
-  void setJabberID(JabberID jid);
-  
   JabberID getJabberID();
   
   void setStreamTag(String streamTag);
