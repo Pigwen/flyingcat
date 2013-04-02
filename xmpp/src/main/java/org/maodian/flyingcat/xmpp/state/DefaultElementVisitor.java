@@ -158,7 +158,7 @@ public class DefaultElementVisitor implements ElementVisitor, PersistedVisitor {
    */
   @Override
   public void persistPresenceSubscription(XmppContext ctx, Presence p) {
-    String uid = ctx.getJabberID().getUid();
+    String uid = p.getTo().getUid();
     SimpleUser su = new SimpleUser(uid, uid);
     IMSession session = ctx.getIMSession();
     switch (p.getType()) {

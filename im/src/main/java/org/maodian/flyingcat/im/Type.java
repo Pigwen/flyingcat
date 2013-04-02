@@ -11,6 +11,7 @@ public enum Type {
   BOOKMARK,
   COLLECTION,
   COMMENT,
+  CONTACT,
   DEVICE,
   EVENT,
   FILE,

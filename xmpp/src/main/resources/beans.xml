@@ -17,7 +17,17 @@
   <context:component-scan base-package="org.maodian.flyingcat"/>
 
   <bean id="appContex" class="org.maodian.flyingcat.xmpp.DefaultApplicationContext"></bean>
-  <bean id="xmppContextManager" class="org.maodian.flyingcat.xmpp.state.DefaultXmppContextManager"/>
+  <bean id="xmppContextManager" class="org.maodian.flyingcat.xmpp.state.DefaultXmppContextManager">
+    <property name="postBindHandler">
+      <bean class="org.maodian.flyingcat.xmpp.state.DefaultPostBindHandler">
+        <property name="pipelineHandlerList">
+          <list>
+            <bean class="org.maodian.flyingcat.xmpp.state.SubscriptionRequestPipeline"/>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
   <bean id="xmppContext" class="org.maodian.flyingcat.xmpp.state.DefaultXmppContext" scope="prototype">
     <constructor-arg ref="appContex"/>
     <constructor-arg>

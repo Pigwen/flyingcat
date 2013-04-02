@@ -56,7 +56,7 @@ public class AccountTemplate extends AbstractTemplate {
   @Operation(Verb.RETRIEVE)
   public Account profile(String username) {
     MongoTemplate template = getMongoTemplate();
-    Query query = Query.query(Criteria.where(SimpleUser.USERNAME).is(username));
+    Query query = Query.query(Criteria.where(Account.USERNAME).is(username));
     return template.findOne(query, Account.class);
   }
   

@@ -15,12 +15,14 @@
  */
 package org.maodian.flyingcat.im.entity;
 
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 /**
  * @author Cole Wen
  * 
  */
+@Document
 public class SimpleUser {
   public static final String USERNAME = "uid";
   public static final String NICK = "nick";
@@ -28,10 +30,10 @@ public class SimpleUser {
   public static final String PENDING = "pend";
 
   @Field(USERNAME)
-  private final String username;
+  private String username;
 
   @Field(NICK)
-  private final String nickname;
+  private String nickname;
 
   @Field(SUB_STATE)
   private SubState subState;

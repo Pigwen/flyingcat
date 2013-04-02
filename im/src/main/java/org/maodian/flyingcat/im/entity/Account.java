@@ -28,8 +28,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
  * @author Cole Wen
  * 
  */
-@Document(collection = "account")
+@Document(collection = Account.COLLECTION_NAME)
 public class Account extends AbstractEntity {
+  public static final String COLLECTION_NAME = "account";
   public static final String USERNAME = "uid";
   public static final String NICK = "nick";
   public static final String PASSWORD = "pwd";

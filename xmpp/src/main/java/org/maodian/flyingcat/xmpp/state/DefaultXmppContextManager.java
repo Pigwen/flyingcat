@@ -26,34 +26,46 @@ import org.maodian.flyingcat.xmpp.entity.PersistedVisitee;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * @author Cole Wen
- *
+ * 
  */
 public class DefaultXmppContextManager extends AbstractXmppContextListener implements XmppContextManager {
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private final ConcurrentMap<String, ConcurrentMap<JabberID, XmppContext>> pool = new ConcurrentHashMap<>();
   private final Semaphore lock = new Semaphore(1);
-  
-  /* (non-Javadoc)
-   * @see org.maodian.flyingcat.xmpp.state.XmppContextManager#getXmppContext(org.maodian.flyingcat.xmpp.entity.JabberID)
+  private PostBindHandler postBindHandler;
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.maodian.flyingcat.xmpp.state.XmppContextManager#getXmppContext(org.
+   * maodian.flyingcat.xmpp.entity.JabberID)
    */
   @Override
   public XmppContext getXmppContext(JabberID jid) {
     return pool.get(jid.getUid()).get(jid);
   }
 
-  /* (non-Javadoc)
-   * @see org.maodian.flyingcat.xmpp.state.XmppContextManager#getXmppContexts(java.lang.String)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.maodian.flyingcat.xmpp.state.XmppContextManager#getXmppContexts(java
+   * .lang.String)
    */
   @Override
   public Collection<XmppContext> getXmppContexts(String uid) {
     return pool.get(uid).values();
   }
 
-  /* (non-Javadoc)
-   * @see org.maodian.flyingcat.xmpp.state.XmppContextListener#onPostDestroy(org.maodian.flyingcat.xmpp.state.XmppContext)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.maodian.flyingcat.xmpp.state.XmppContextListener#onPostDestroy(org.
+   * maodian.flyingcat.xmpp.state.XmppContext)
    */
   @Override
   public void onPostDestroy(XmppContext ctx) {
@@ -74,13 +86,26 @@ public class DefaultXmppContextManager extends AbstractXmppContextListener imple
     }
   }
 
-  /* (non-Javadoc)
-   * @see org.maodian.flyingcat.xmpp.state.AbstractXmppContextListener#onPostBind(org.maodian.flyingcat.xmpp.state.XmppContext)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.maodian.flyingcat.xmpp.state.AbstractXmppContextListener#onPostBind
+   * (org.maodian.flyingcat.xmpp.state.XmppContext)
    */
   @Override
   public void onPostBind(XmppContext ctx) {
+    log.debug("Post bind of XmppContext for {}", ctx.getJabberID());
+    // 1. registe XmppContext into XmppContextManager should happen first
+    registe(ctx);
+    
+    // 2. then do other task (retrieve unread message, retrieve unread subscription request, etc)
+    postBindHandler.handle(ctx);
+  }
+
+  private void registe(XmppContext ctx) {
     JabberID jid = ctx.getJabberID();
-    log.debug("Post bind of XmppContext for {}", jid);
+    log.debug("Registe XmppContext for {}", jid);
     try {
       lock.acquire();
       ConcurrentMap<JabberID, XmppContext> m = pool.get(jid.getUid());
@@ -90,7 +115,7 @@ public class DefaultXmppContextManager extends AbstractXmppContextListener imple
         pool.put(jid.getUid(), m);
       }
       m.put(jid, ctx);
-      log.debug("Complete post bind of XmppContext");
+      log.debug("Complete registe of XmppContext");
     } catch (InterruptedException e) {
       throw new RuntimeException();
     } finally {
@@ -98,13 +123,18 @@ public class DefaultXmppContextManager extends AbstractXmppContextListener imple
     }
   }
 
-  /* (non-Javadoc)
-   * @see org.maodian.flyingcat.xmpp.state.XmppContextManager#transfer(org.maodian.flyingcat.xmpp.entity.JabberID, org.maodian.flyingcat.xmpp.entity.JabberID, java.lang.Object)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.maodian.flyingcat.xmpp.state.XmppContextManager#transfer(org.maodian
+   * .flyingcat.xmpp.entity.JabberID,
+   * org.maodian.flyingcat.xmpp.entity.JabberID, java.lang.Object)
    */
   @Override
   public void transfer(JabberID from, JabberID to, Object payload) {
     ConcurrentMap<JabberID, XmppContext> m = pool.get(to.getUid());
-    log.info("Transfer payload {} from {} to {}", new Object[] {payload.getClass().getSimpleName(), from, to});
+    log.info("Transfer payload {} from {} to {}", new Object[] { payload.getClass().getSimpleName(), from, to });
     if (m == null || m.size() == 0) {
       log.info("{} is not online", to);
       if (payload instanceof PersistedVisitee) {
@@ -121,6 +151,10 @@ public class DefaultXmppContextManager extends AbstractXmppContextListener imple
         ctx.receive(from, payload);
       }
     }
-    
   }
+
+  public void setPostBindHandler(PostBindHandler postBindHandler) {
+    this.postBindHandler = postBindHandler;
+  }
+
 }
