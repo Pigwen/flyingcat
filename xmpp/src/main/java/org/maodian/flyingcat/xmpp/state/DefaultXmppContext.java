@@ -24,7 +24,6 @@ import java.io.Writer;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -161,21 +160,6 @@ public class DefaultXmppContext implements XmppContext {
   private void postDestroy() {
     for (XmppContextListener listener : listeners) {
       listener.onPostDestroy(this);
-    }
-  }
-
-  @Override
-  public Command lookup(QName qName) {
-    Class<? extends ContextAwareCommand> cmd = appCtx.getCommand(qName);
-    if (cmd == null) {
-      throw new RuntimeException("No suitable Command for QName: " + qName.toString());
-    }
-    try {
-      ContextAwareCommand instance = cmd.newInstance();
-      instance.setXmppContext(this);
-      return instance;
-    } catch (InstantiationException | IllegalAccessException e) {
-      throw new RuntimeException("Require a public no argument constructor", e);
     }
   }
 

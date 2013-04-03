@@ -37,11 +37,6 @@ import org.maodian.flyingcat.xmpp.entity.InfoQuery;
 import org.maodian.flyingcat.xmpp.entity.Presence;
 import org.maodian.flyingcat.xmpp.entity.Roster;
 import org.maodian.flyingcat.xmpp.entity.Session;
-import org.maodian.flyingcat.xmpp.state.ContextAwareCommand;
-import org.maodian.flyingcat.xmpp.state.InfoQueryCommand;
-import org.maodian.flyingcat.xmpp.state.PresenceCommand;
-import org.maodian.flyingcat.xmpp.state.SASLCommand;
-import org.maodian.flyingcat.xmpp.state.TLSCommand;
 
 /**
  * @author Cole Wen
@@ -51,7 +46,6 @@ public class DefaultApplicationContext implements GlobalContext {
   private Map<QName, Decoder> decoderMap = new ConcurrentHashMap<>();
   private Map<Class<?>, Encoder> encoderMap = new ConcurrentHashMap<>();
   private Map<Class<?>, InfoQueryProcessor> processorMap = new ConcurrentHashMap<>();
-  private Map<QName, Class<? extends ContextAwareCommand>> cmdMap = new ConcurrentHashMap<>();
 
   private InfoQueryCodec infoQueryCodec;
   private BindCodec bindCodec;
@@ -88,10 +82,6 @@ public class DefaultApplicationContext implements GlobalContext {
       processorMap.put(Bind.class, bindCodec);
       processorMap.put(Roster.class, rosterCodec);
 
-      cmdMap.put(new QName(XmppNamespace.TLS, "starttls"), TLSCommand.class);
-      cmdMap.put(new QName(XmppNamespace.SASL, "auth"), SASLCommand.class);
-      cmdMap.put(new QName(XmppNamespace.CLIENT_CONTENT, "iq"), InfoQueryCommand.class);
-      cmdMap.put(new QName(XmppNamespace.CLIENT_CONTENT, "presence"), PresenceCommand.class);
       init = true;
     }
   }
@@ -118,10 +108,6 @@ public class DefaultApplicationContext implements GlobalContext {
 
   public InfoQueryProcessor getProcessor(Class<?> clazz) {
     return processorMap.get(clazz);
-  }
-
-  public Class<? extends ContextAwareCommand> getCommand(QName qName) {
-    return cmdMap.get(qName);
   }
 
   @Inject

@@ -17,8 +17,6 @@ package org.maodian.flyingcat.xmpp.state;
 
 import io.netty.channel.ChannelHandlerContext;
 
-import javax.xml.namespace.QName;
-
 import org.maodian.flyingcat.im.IMSession;
 import org.maodian.flyingcat.xmpp.GlobalContext;
 import org.maodian.flyingcat.xmpp.entity.JabberID;
@@ -58,8 +56,6 @@ public interface XmppContext {
   void login(String username, String password);
   
   void destroy();
-
-  Command lookup(QName qName);
 
   void parseXML(final String xml);
   

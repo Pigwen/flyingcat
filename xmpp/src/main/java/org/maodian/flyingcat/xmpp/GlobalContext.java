@@ -20,7 +20,6 @@ import javax.xml.namespace.QName;
 import org.maodian.flyingcat.xmpp.codec.Decoder;
 import org.maodian.flyingcat.xmpp.codec.Encoder;
 import org.maodian.flyingcat.xmpp.codec.InfoQueryProcessor;
-import org.maodian.flyingcat.xmpp.state.ContextAwareCommand;
 
 /**
  * @author Cole Wen
@@ -40,6 +39,4 @@ public interface GlobalContext {
   Encoder getEncoder(Class<?> clazz);
   
   InfoQueryProcessor getProcessor(Class<?> clazz);
-
-  Class<? extends ContextAwareCommand> getCommand(QName qName);
 }
