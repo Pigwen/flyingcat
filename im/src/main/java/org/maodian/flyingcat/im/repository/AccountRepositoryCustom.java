@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flyingcat.im.template;
+package org.maodian.flyingcat.im.repository;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.Collection;
 
-import org.maodian.flyingcat.im.Type;
+import org.maodian.flyingcat.im.entity.Account;
+import org.maodian.flyingcat.im.entity.SimpleUser;
 
 /**
  * @author Cole Wen
  *
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface Domain {
-  Type value();
+interface AccountRepositoryCustom {
+  void follow(SimpleUser su);
+  
+  Collection<Account> getUnreadSubscription(SimpleUser su);
 }

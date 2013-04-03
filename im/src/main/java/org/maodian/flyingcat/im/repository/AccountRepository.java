@@ -13,31 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flyingcat.im.template;
+package org.maodian.flyingcat.im.repository;
 
-import javax.inject.Inject;
-
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.maodian.flyingcat.im.entity.Account;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
  * @author Cole Wen
  *
  */
-public abstract class AbstractTemplate {
-  private MongoTemplate template;
-  
-  @Inject
-  void setMongoTemplate(MongoTemplate template) {
-    this.template = template;
-  }
+public interface AccountRepository extends MongoRepository<Account, String>, AccountRepositoryCustom {
 
-  protected MongoTemplate getMongoTemplate() {
-    return template;
-  }
-  
-  protected Subject getSubject() {
-    return SecurityUtils.getSubject();
-  }
+  Account findByUsername(String username);
 }

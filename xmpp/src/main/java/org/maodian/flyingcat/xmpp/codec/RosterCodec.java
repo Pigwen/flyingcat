@@ -22,18 +22,12 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.commons.lang3.StringUtils;
 import org.maodian.flyingcat.im.IMSession;
-import org.maodian.flyingcat.im.Type;
-import org.maodian.flyingcat.im.Verb;
-import org.maodian.flyingcat.im.entity.Account;
 import org.maodian.flyingcat.im.entity.SimpleUser;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
 import org.maodian.flyingcat.xmpp.entity.Contact;
 import org.maodian.flyingcat.xmpp.entity.InfoQuery;
 import org.maodian.flyingcat.xmpp.entity.Roster;
-import org.maodian.flyingcat.xmpp.state.StanzaError;
-import org.maodian.flyingcat.xmpp.state.StanzaErrorCondition;
 import org.maodian.flyingcat.xmpp.state.StreamError;
 import org.maodian.flyingcat.xmpp.state.XmppContext;
 import org.maodian.flyingcat.xmpp.state.XmppException;
@@ -85,7 +79,7 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
   public Object processGet(XmppContext context, InfoQuery iq) {
     IMSession session = context.getIMSession();
     // null means get profile of current user
-    List<SimpleUser> imContacts = ((Account) session.action(Verb.RETRIEVE, Type.PERSON, context.getJabberID().getUid())).getContactList();
+    List<SimpleUser> imContacts = session.getAccountRepository().findByUsername(context.getJabberID().getUid()).getContactList();
     List<Contact> xmppContacts = new ArrayList<>();
     for (SimpleUser su : imContacts) {
       Contact c = new Contact(su.getUsername());
@@ -102,7 +96,7 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
    */
   @Override
   public Object processSet(XmppContext context, InfoQuery iq) {
-    Roster roster = (Roster) iq.getPayload();
+    /*Roster roster = (Roster) iq.getPayload();
     if (roster.size() != 1) {
       throw new XmppException("Can only modify one contact each time", new StanzaError(iq, StanzaErrorCondition.BAD_REQUEST, StanzaError.Type.MODIFY));
     }
@@ -113,7 +107,7 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
       session.removeContact(new Account(c.getName()));
     } else {
       session.action(Verb.FOLLOW, Type.PERSON, su);
-    }
+    }*/
     
     // TODO: implement roster push
     return null;

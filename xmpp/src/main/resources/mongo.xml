@@ -30,4 +30,5 @@
     </property>
   </bean>
 
+  <mongo:repositories base-package="org.maodian.flyingcat.im.repository" mongo-template-ref="mongoTemplate" repository-impl-postfix="Impl"/>
 </beans>

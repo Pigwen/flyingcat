@@ -15,15 +15,18 @@
  */
 package org.maodian.flyingcat.im;
 
+import java.lang.invoke.MethodHandles;
+
 import javax.inject.Inject;
 
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
-import org.apache.shiro.subject.support.SubjectThreadState;
-import org.apache.shiro.util.ThreadState;
-import org.maodian.flyingcat.im.GlobalContext.Actor;
 import org.maodian.flyingcat.im.entity.Account;
+import org.maodian.flyingcat.im.repository.AccountRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 /**
@@ -31,9 +34,12 @@ import org.springframework.data.mongodb.core.MongoTemplate;
  * 
  */
 public class MongoSession implements IMSession {
+  private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private Subject subject;
   private MongoTemplate template;
-  private GlobalContext globalContext;
+
+  // repositories
+  private AccountRepository accountRepository;
 
   /*
    * (non-Javadoc)
@@ -73,7 +79,12 @@ public class MongoSession implements IMSession {
     }
     subject = SecurityUtils.getSubject();
     UsernamePasswordToken token = new UsernamePasswordToken(username, password);
-    action(Verb.CREATE, Type.SESSION, token);
+    try {
+      SecurityUtils.getSubject().login(token);
+    } catch (AuthenticationException e) {
+      log.warn("User [{}] login failed", token.getPrincipal());
+      throw IMException.wrap(e, UserError.AUTHENTICATED_FAILS);
+    };
   }
 
   /*
@@ -92,43 +103,14 @@ public class MongoSession implements IMSession {
     this.template = template;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.maodian.flyingcat.im.IMSession#action(org.maodian.flyingcat.im.Verb,
-   * org.maodian.flyingcat.im.Type, java.lang.Object,
-   * org.maodian.flyingcat.im.Type, java.lang.Object)
-   */
-  @Override
-  public Object action(Verb verb, Type objectType, final Object objectData, Type targetType, final Object targetData) {
-    final Actor actor = globalContext.getTemlateActor(verb, objectType);
-    if (subject == null) {
-      subject = SecurityUtils.getSubject();
-    }
-    ThreadState threadState = new SubjectThreadState(subject);
-    threadState.bind();
-    try {
-      return actor.action(objectData, targetData);
-    } finally {
-      threadState.clear();
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.maodian.flyingcat.im.IMSession#action(org.maodian.flyingcat.im.Verb,
-   * org.maodian.flyingcat.im.Type, java.lang.Object)
-   */
-  @Override
-  public Object action(Verb verb, Type objectType, Object objectData) {
-    return action(verb, objectType, objectData, null, null);
-  }
-
   @Inject
-  void setGlobalContext(GlobalContext globalContext) {
-    this.globalContext = globalContext;
+  void setAccountRepository(AccountRepository accountRepository) {
+    this.accountRepository = accountRepository;
   }
+
+  @Override
+  public AccountRepository getAccountRepository() {
+    return accountRepository;
+  }
+
 }

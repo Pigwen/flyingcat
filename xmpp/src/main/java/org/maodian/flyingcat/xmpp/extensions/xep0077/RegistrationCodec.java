@@ -23,12 +23,10 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.maodian.flyingcat.im.ErrorCode;
-import org.maodian.flyingcat.im.ServerError;
 import org.maodian.flyingcat.im.IMException;
 import org.maodian.flyingcat.im.IMSession;
-import org.maodian.flyingcat.im.Type;
+import org.maodian.flyingcat.im.ServerError;
 import org.maodian.flyingcat.im.UserError;
-import org.maodian.flyingcat.im.Verb;
 import org.maodian.flyingcat.im.entity.Account;
 import org.maodian.flyingcat.xmpp.codec.AbstractCodec;
 import org.maodian.flyingcat.xmpp.codec.InfoQueryProcessor;
@@ -108,7 +106,7 @@ public class RegistrationCodec extends AbstractCodec implements InfoQueryProcess
     try {
       Account u = new Account(username);
       u.setPassword(password);
-      session.action(Verb.CREATE, Type.PERSON, u);
+      session.getAccountRepository().save(u);
       return null;
     } catch (IMException e) {
       ErrorCode errorCode = e.getErrorCode();

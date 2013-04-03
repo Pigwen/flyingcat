@@ -13,58 +13,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flyingcat.im.template;
+package org.maodian.flyingcat.im.repository;
 
-
-import java.lang.invoke.MethodHandles;
+import java.util.Collection;
 
 import org.apache.shiro.SecurityUtils;
-import org.maodian.flyingcat.im.IMException;
-import org.maodian.flyingcat.im.Type;
-import org.maodian.flyingcat.im.UserError;
-import org.maodian.flyingcat.im.Verb;
 import org.maodian.flyingcat.im.entity.Account;
 import org.maodian.flyingcat.im.entity.SimpleUser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.maodian.flyingcat.im.entity.SimpleUser.Pending;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 /**
  * @author Cole Wen
- *
+ * 
  */
-@Service
-@Domain(Type.PERSON)
-public class AccountTemplate extends AbstractTemplate {
-  private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+@Repository
+class AccountRepositoryImpl extends AbstractRepository implements AccountRepositoryCustom {
 
-  @Operation(Verb.CREATE)
-  public void register(Account account) {
-    try {
-      getMongoTemplate().insert(account);
-    } catch (DuplicateKeyException e) {
-      log.warn("The username [{}] has been occupied", account.getUsername());
-      throw IMException.wrap(e, UserError.DUPLICATED_USERNAME);
-    }
-  }
-  
-  @Operation(Verb.RETRIEVE)
-  public Account profile(String username) {
-    MongoTemplate template = getMongoTemplate();
-    Query query = Query.query(Criteria.where(Account.USERNAME).is(username));
-    return template.findOne(query, Account.class);
-  }
-  
-  @Operation(Verb.FOLLOW)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.maodian.flyingcat.im.repository.AccountRepositoryCustom#follow(org.
+   * maodian.flyingcat.im.entity.SimpleUser)
+   */
+  @Override
   public void follow(SimpleUser su) {
     String username = (String) SecurityUtils.getSubject().getPrincipal();
     Query query = Query.query(Criteria.where(Account.USERNAME).is(username));
     Update update = new Update().addToSet(Account.CONTACTS, su);
     getMongoTemplate().updateFirst(query, update, Account.class);
   }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.im.repository.AccountRepositoryCustom#getUnreadSubscription(org.maodian.flyingcat.im.entity.SimpleUser)
+   */
+  @Override
+  public Collection<Account> getUnreadSubscription(SimpleUser su) {
+    final String kUid = Account.CONTACTS + "." + SimpleUser.USERNAME;
+    final String kPend = Account.CONTACTS + "." + SimpleUser.PENDING;
+    Query query = Query.query(Criteria.where(kUid).is(su.getUsername())
+        .and(kPend).is(Pending.PENDING_OUT.name()));
+    query.fields().include(Account.CONTACTS).include(Account.USERNAME).exclude("_id");
+    return getMongoTemplate().find(query, Account.class);
+  }
+
 }

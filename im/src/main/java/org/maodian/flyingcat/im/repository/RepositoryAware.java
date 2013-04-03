@@ -13,22 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flyingcat.im;
-
-import org.maodian.flyingcat.im.entity.Account;
-import org.maodian.flyingcat.im.repository.RepositoryAware;
+package org.maodian.flyingcat.im.repository;
 
 /**
  * @author Cole Wen
  *
  */
-public interface IMSession extends RepositoryAware {
-
-  void register(Account user) throws IMException;
-  
-  void removeContact(Account user);
-  
-  void login(String username, String password);
-  
-  void destroy();
+public interface RepositoryAware {
+  AccountRepository getAccountRepository();
 }

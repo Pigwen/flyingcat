@@ -32,8 +32,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.maodian.flyingcat.holder.XMLOutputFactoryHolder;
 import org.maodian.flyingcat.im.IMException;
 import org.maodian.flyingcat.im.IMSession;
-import org.maodian.flyingcat.im.Type;
-import org.maodian.flyingcat.im.Verb;
 import org.maodian.flyingcat.im.entity.Account;
 import org.maodian.flyingcat.xmpp.GlobalContext;
 import org.maodian.flyingcat.xmpp.codec.Encoder;
@@ -238,7 +236,7 @@ public class DefaultXmppContext implements XmppContext {
    */
   @Override
   public void send(JabberID to, Object payload) {
-    Account ta = (Account) imSession.action(Verb.RETRIEVE, Type.PERSON, to.getUid());
+    Account ta = (Account) imSession.getAccountRepository().findByUsername(to.getUid());
     if (ta == null) {
       throw new RuntimeException("User does not existed");
     }

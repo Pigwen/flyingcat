@@ -29,8 +29,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.maodian.flyingcat.holder.XMLOutputFactoryHolder;
 import org.maodian.flyingcat.im.IMSession;
-import org.maodian.flyingcat.im.Type;
-import org.maodian.flyingcat.im.Verb;
 import org.maodian.flyingcat.im.entity.SimpleUser;
 import org.maodian.flyingcat.im.entity.SimpleUser.Pending;
 import org.maodian.flyingcat.im.entity.SimpleUser.SubState;
@@ -165,7 +163,7 @@ public class DefaultElementVisitor implements ElementVisitor, PersistedVisitor {
     case SUBSCRIBE:
       su.setPending(Pending.PENDING_OUT);
       su.setSubState(SubState.NONE);
-      session.action(Verb.FOLLOW, Type.PERSON, su);
+      session.getAccountRepository().follow(su);
       break;
     case SUBSCRIBED:
     case UNSUBSCRIBE:

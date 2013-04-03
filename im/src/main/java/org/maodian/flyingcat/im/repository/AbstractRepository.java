@@ -13,21 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flyingcat.im.template;
+package org.maodian.flyingcat.im.repository;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import javax.inject.Inject;
 
-import org.maodian.flyingcat.im.Verb;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 /**
  * @author Cole Wen
  *
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Operation {
-  Verb value();
+abstract class AbstractRepository {
+  private MongoTemplate template;
+  
+  @Inject
+  void setMongoTemplate(MongoTemplate template) {
+    this.template = template;
+  }
+
+  protected MongoTemplate getMongoTemplate() {
+    return template;
+  }
+  
+  protected Subject getSubject() {
+    return SecurityUtils.getSubject();
+  }
 }

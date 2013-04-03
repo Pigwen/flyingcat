@@ -23,14 +23,11 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.maodian.flyingcat.holder.XMLOutputFactoryHolder;
 import org.maodian.flyingcat.im.IMSession;
-import org.maodian.flyingcat.im.Type;
-import org.maodian.flyingcat.im.Verb;
 import org.maodian.flyingcat.im.entity.Account;
 import org.maodian.flyingcat.im.entity.SimpleUser;
 import org.maodian.flyingcat.im.entity.SimpleUser.Pending;
 import org.maodian.flyingcat.im.entity.SimpleUser.SubState;
 import org.maodian.flyingcat.xmpp.codec.Encoder;
-import org.maodian.flyingcat.xmpp.entity.InfoQuery;
 import org.maodian.flyingcat.xmpp.entity.JabberID;
 import org.maodian.flyingcat.xmpp.entity.Presence;
 import org.maodian.flyingcat.xmpp.entity.Presence.PresenceType;
@@ -50,7 +47,7 @@ public class SubscriptionRequestPipeline implements Pipeline<XmppContext> {
     SimpleUser su = new SimpleUser(cmd.getJabberID().getUid(), null);
     su.setPending(Pending.PENDING_OUT);
     su.setSubState(SubState.NONE);
-    Collection<Account> unreadSubs = (Collection<Account>) session.action(Verb.RETRIEVE, Type.CONTACT, su);
+    Collection<Account> unreadSubs = session.getAccountRepository().getUnreadSubscription(su);
     for (Account a : unreadSubs) {
       SubState subStat = a.getContactList().get(0).getSubState();
       JabberID from = JabberID.createInstance(a.getUsername(), "localhost", null);
