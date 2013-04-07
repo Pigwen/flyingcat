@@ -23,7 +23,8 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.maodian.flyingcat.holder.XMLOutputFactoryHolder;
 import org.maodian.flyingcat.im.IMSession;
-import org.maodian.flyingcat.im.entity.SubscriptionRequest;
+import org.maodian.flyingcat.im.entity.SimpleUser;
+import org.maodian.flyingcat.im.entity.SimpleUser.SubState;
 import org.maodian.flyingcat.xmpp.codec.Encoder;
 import org.maodian.flyingcat.xmpp.entity.JabberID;
 import org.maodian.flyingcat.xmpp.entity.Presence;
@@ -39,23 +40,27 @@ public class SubscriptionRequestPipeline implements Pipeline<XmppContext> {
    * @see org.maodian.flyingcat.xmpp.state.Pipeline#process(java.lang.Object)
    */
   @Override
-  public void process(XmppContext cmd) throws XMLStreamException {
-    IMSession session = cmd.getIMSession();
-    Collection<SubscriptionRequest> srList = session.getAccountRepository().getUnreadSubscription(cmd.getJabberID().getUid());
-    for (SubscriptionRequest sr : srList) {
-      JabberID from = JabberID.createInstance(sr.getFrom(), "localhost", null);
-      JabberID to = cmd.getJabberID();
+  public void process(XmppContext ctx) throws XMLStreamException {
+    IMSession session = ctx.getIMSession();
+    Collection<SimpleUser> srList = session.getAccountRepository().getUnreadSubscription(ctx.getJabberID().getUid());
+    for (SimpleUser sr : srList) {
+      JabberID from = JabberID.createInstance(sr.getUsername(), "localhost", null);
+      JabberID to = ctx.getJabberID();
       Presence p = new Presence();
       p.setFrom(from);
       p.setTo(to);
-      p.setType(PresenceType.fromRequestType(sr.getType()));
+      if (sr.getSubState() == SubState.NONE || sr.getSubState() == SubState.TO) {
+        p.setType(PresenceType.SUBSCRIBE);
+      } else {
+        p.setType(PresenceType.UNSUBSCRIBE);
+      }
       StringWriter writer = new StringWriter();
       XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
-      Encoder encoder = cmd.getApplicationContext().getEncoder(Presence.class);
+      Encoder encoder = ctx.getApplicationContext().getEncoder(Presence.class);
       encoder.encode(p, xmlsw);
-      cmd.getNettyChannelHandlerContext().write(writer.toString());
+      ctx.getNettyChannelHandlerContext().write(writer.toString());
     }
-    cmd.getNettyChannelHandlerContext().flush();
+    ctx.getNettyChannelHandlerContext().flush();
   }
 
 }

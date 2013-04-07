@@ -16,6 +16,7 @@
 package org.maodian.flyingcat.im.repository;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.apache.shiro.SecurityUtils;
 import org.maodian.flyingcat.im.entity.Account;
@@ -52,10 +53,12 @@ class AccountRepositoryImpl extends AbstractRepository implements AccountReposit
    * @see org.maodian.flyingcat.im.repository.AccountRepositoryCustom#getUnreadSubscription(org.maodian.flyingcat.im.entity.SimpleUser)
    */
   @Override
-  public Collection<SubscriptionRequest> getUnreadSubscription(String username) {
-    Query query = Query.query(Criteria.where(Account.USERNAME).is(username));
-    query.fields().include(Account.UNREAD_REQUEST).exclude("_id");
-    return getMongoTemplate().findOne(query, Account.class).getUnreadSubscriptionRequests();
+  public Collection<SimpleUser> getUnreadSubscription(String username) {
+    String kPendingIn = Account.CONTACTS + "." + SimpleUser.PENDING_IN;
+    Query query = Query.query(Criteria.where(Account.USERNAME).is(username).and(kPendingIn).is(true));
+    query.fields().include(Account.CONTACTS + ".$").exclude("_id");
+    Account account = getMongoTemplate().findOne(query, Account.class);
+    return account == null ? Collections.EMPTY_LIST : account.getContactList();
   }
 
   /* (non-Javadoc)
@@ -65,6 +68,39 @@ class AccountRepositoryImpl extends AbstractRepository implements AccountReposit
   public void persistSubscriptionRequest(String username, SubscriptionRequest sr) {
     Query query = Query.query(Criteria.where(Account.USERNAME).is(username));
     Update update = new Update().addToSet(Account.UNREAD_REQUEST, sr);
+    getMongoTemplate().updateFirst(query, update, Account.class);
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.im.repository.AccountRepositoryCustom#getSpecificContact(java.lang.String, java.lang.String)
+   */
+  @Override
+  public SimpleUser getSpecificContact(String uid, String targetUid) {
+    String kContId = Account.CONTACTS + "." + SimpleUser.USERNAME;
+    Query query = Query.query(Criteria.where(Account.USERNAME).is(uid).and(kContId).is(targetUid));
+    query.fields().include(Account.CONTACTS + ".$").exclude("_id");
+    Account account = getMongoTemplate().findOne(query, Account.class);
+    return account == null ? null : account.getContactList().get(0);
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.im.repository.AccountRepositoryCustom#persistContact(java.lang.String, org.maodian.flyingcat.im.entity.SimpleUser)
+   */
+  @Override
+  public void persistContact(String uid, SimpleUser su) {
+    Query query = Query.query(Criteria.where(Account.USERNAME).is(uid));
+    Update update = new Update().addToSet(Account.CONTACTS, su);
+    getMongoTemplate().updateFirst(query, update, Account.class);
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.im.repository.AccountRepositoryCustom#updateContact(java.lang.String, org.maodian.flyingcat.im.entity.SimpleUser)
+   */
+  @Override
+  public void updateContact(String uid, SimpleUser su) {
+    Query query = Query.query(Criteria.where(Account.USERNAME).is(uid).and("cont.uid").is(su.getUsername()));
+    Update update = new Update().set("cont.$.nick", su.getNickname()).set("cont.$.pin", su.isPendingIn())
+        .set("cont.$.pout", su.isPendingOut()).set("cont.$.stat", su.getSubState().name());
     getMongoTemplate().updateFirst(query, update, Account.class);
   }
 

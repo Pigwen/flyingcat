@@ -27,7 +27,8 @@ public class SimpleUser {
   public static final String USERNAME = "uid";
   public static final String NICK = "nick";
   public static final String SUB_STATE = "stat";
-  public static final String PENDING = "pend";
+  public static final String PENDING_OUT = "pout";
+  public static final String PENDING_IN = "pin";
 
   @Field(USERNAME)
   private String username;
@@ -38,8 +39,11 @@ public class SimpleUser {
   @Field(SUB_STATE)
   private SubState subState;
 
-  @Field(PENDING)
-  private Pending pending;
+  @Field(PENDING_OUT)
+  private boolean pendingOut;
+
+  @Field(PENDING_IN)
+  private boolean pendingIn;
 
   /**
    * @param username
@@ -49,7 +53,8 @@ public class SimpleUser {
     this.username = username;
     this.nickname = nickname;
     subState = SubState.NONE;
-    pending = Pending.NONE;
+    pendingOut = false;
+    pendingIn = false;
   }
 
   public String getUsername() {
@@ -68,18 +73,26 @@ public class SimpleUser {
     this.subState = subState;
   }
 
-  public Pending getPending() {
-    return pending;
+  public boolean isPendingOut() {
+    return pendingOut;
   }
 
-  public void setPending(Pending pending) {
-    this.pending = pending;
+  public void setPendingOut(boolean pendingOut) {
+    this.pendingOut = pendingOut;
+  }
+
+  public boolean isPendingIn() {
+    return pendingIn;
+  }
+
+  public void setPendingIn(boolean pendingIn) {
+    this.pendingIn = pendingIn;
   }
 
   @Override
   public String toString() {
-    return "SimpleUser [username=" + username + ", nickname=" + nickname + ", subState=" + subState + ", pending="
-        + pending + "]";
+    return "SimpleUser [username=" + username + ", nickname=" + nickname + ", subState=" + subState + ", pendingOut="
+        + pendingOut + ", pendingIn=" + pendingIn + "]";
   }
 
   public static enum SubState {
@@ -99,25 +112,6 @@ public class SimpleUser {
       default:
         // TODO: STANZAS error
         throw new RuntimeException("SubState not wellformed");
-      }
-    }
-  }
-
-  public static enum Pending {
-    NONE, PENDING_OUT, PENDING_IN;
-
-    public static Pending fromString(String str) {
-      String type = str.toUpperCase();
-      switch (type) {
-      case "PENDING_OUT":
-        return PENDING_OUT;
-      case "PENDING_IN":
-        return PENDING_IN;
-      case "NONE":
-        return NONE;
-      default:
-        // TODO: STANZAS error
-        throw new RuntimeException("PendingDirection not wellformed");
       }
     }
   }

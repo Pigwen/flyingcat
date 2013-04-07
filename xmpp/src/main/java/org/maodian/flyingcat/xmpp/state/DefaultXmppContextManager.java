@@ -136,17 +136,17 @@ public class DefaultXmppContextManager extends AbstractXmppContextListener imple
   public void transfer(JabberID from, JabberID to, Object payload) {
     ConcurrentMap<JabberID, XmppContext> m = pool.get(to.getUid());
     log.info("Transfer payload {} from {} to {}", new Object[] { payload.getClass().getSimpleName(), from, to });
-    if (m == null || m.size() == 0) {
-      log.info("{} is not online", to);
-      if (payload instanceof PersistedVisitee) {
-        PersistedVisitee pv = (PersistedVisitee) payload;
-        DefaultElementVisitor visitor = new DefaultElementVisitor();
-        XmppContext ctx = getXmppContext(from);
-        pv.acceptPersistedVisitor(ctx, visitor);
-      } else {
-        log.info("{} is not persistable", payload.getClass().getSimpleName());
-      }
+    if (payload instanceof PersistedVisitee) {
+      PersistedVisitee pv = (PersistedVisitee) payload;
+      DefaultElementVisitor visitor = new DefaultElementVisitor();
+      XmppContext ctx = getXmppContext(from);
+      pv.acceptPersistedVisitor(ctx, visitor);
     } else {
+      log.info("{} is not persistable", payload.getClass().getSimpleName());
+    }
+    
+    if (m != null && m.size() != 0) {
+      log.info("{} is online", to);
       Collection<XmppContext> ctxs = m.values();
       for (XmppContext ctx : ctxs) {
         ctx.receive(from, payload);

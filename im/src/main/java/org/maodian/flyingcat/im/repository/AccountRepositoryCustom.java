@@ -27,7 +27,13 @@ import org.maodian.flyingcat.im.entity.SubscriptionRequest;
 interface AccountRepositoryCustom {
   void follow(SimpleUser su);
   
-  Collection<SubscriptionRequest> getUnreadSubscription(String username);
+  Collection<SimpleUser> getUnreadSubscription(String username);
   
   void persistSubscriptionRequest(String username, SubscriptionRequest sr);
+  
+  SimpleUser getSpecificContact(String uid, String targetUid);
+  
+  void persistContact(String uid, SimpleUser su);
+  
+  void updateContact(String uid, SimpleUser su);
 }

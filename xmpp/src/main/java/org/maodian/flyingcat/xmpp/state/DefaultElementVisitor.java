@@ -28,9 +28,9 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.maodian.flyingcat.holder.XMLOutputFactoryHolder;
-import org.maodian.flyingcat.im.IMSession;
-import org.maodian.flyingcat.im.entity.SubscriptionRequest;
-import org.maodian.flyingcat.im.entity.SubscriptionRequest.RequestType;
+import org.maodian.flyingcat.im.entity.SimpleUser;
+import org.maodian.flyingcat.im.entity.SimpleUser.SubState;
+import org.maodian.flyingcat.im.repository.AccountRepository;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
 import org.maodian.flyingcat.xmpp.codec.Encoder;
 import org.maodian.flyingcat.xmpp.codec.SecureSslContextFactory;
@@ -156,19 +156,41 @@ public class DefaultElementVisitor implements ElementVisitor, PersistedVisitor {
   @Override
   public void persistPresenceSubscription(XmppContext ctx, Presence p) {
     String from = p.getFrom().getUid();
-    SubscriptionRequest sr = null;
-    IMSession session = ctx.getIMSession();
+    String to = p.getTo().getUid();
+    AccountRepository repo = ctx.getIMSession().getAccountRepository();
+    
+    // check if user has add contact into the roster
+    SimpleUser fSu = repo.getSpecificContact(from, to);
+    if (fSu == null) {
+      fSu = new SimpleUser(to, to);
+      fSu.setSubState(SubState.NONE);
+    }
+    
+    // check if contact has added user into the roster
+    SimpleUser tSu = repo.getSpecificContact(to, from);
+    if (tSu == null) {
+      tSu = new SimpleUser(from, from);
+      tSu.setSubState(SubState.NONE);
+    }
     switch (p.getType()) {
     case SUBSCRIBE:
-      sr = new SubscriptionRequest(from, RequestType.SUBSCRIBE);
-      session.getAccountRepository().persistSubscriptionRequest(p.getTo().getUid(), sr);
+      fSu.setPendingOut(true);
+      tSu.setPendingIn(true);
+      repo.persistContact(from, fSu);
+      repo.persistContact(to, tSu);
       break;
     case SUBSCRIBED:
+      fSu.setPendingIn(false);
+      fSu.setSubState(SubState.FROM);
+      tSu.setPendingOut(false);
+      tSu.setSubState(SubState.TO);
+      repo.updateContact(from, fSu);
+      repo.updateContact(to, tSu);
+      break;
     case UNSUBSCRIBE:
     case UNSUBSCRIBED:
     default:
       throw new RuntimeException("should not reach here");
     }
   }
-
 }
