@@ -17,7 +17,6 @@ package org.maodian.flyingcat.im.repository;
 
 import java.util.Collection;
 
-import org.maodian.flyingcat.im.entity.Account;
 import org.maodian.flyingcat.im.entity.SimpleUser;
 import org.maodian.flyingcat.im.entity.SubscriptionRequest;
 
@@ -28,7 +27,7 @@ import org.maodian.flyingcat.im.entity.SubscriptionRequest;
 interface AccountRepositoryCustom {
   void follow(SimpleUser su);
   
-  Collection<Account> getUnreadSubscription(SimpleUser su);
+  Collection<SubscriptionRequest> getUnreadSubscription(String username);
   
   void persistSubscriptionRequest(String username, SubscriptionRequest sr);
 }

@@ -17,6 +17,7 @@ package org.maodian.flyingcat.xmpp.entity;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.maodian.flyingcat.im.entity.SubscriptionRequest.RequestType;
 import org.maodian.flyingcat.xmpp.state.ElementVisitor;
 import org.maodian.flyingcat.xmpp.state.PersistedVisitor;
 import org.maodian.flyingcat.xmpp.state.State;
@@ -85,6 +86,21 @@ public class Presence implements ElementVisitee, PersistedVisitee {
       default:
         // TODO: STANZAS error
         throw new RuntimeException("JID not wellformed");
+      }
+    }
+    
+    public static PresenceType fromRequestType(RequestType t) {
+      // cant use switch here: http://stackoverflow.com/questions/2663980/why-do-i-get-an-enum-constant-reference-cannot-be-qualified-in-a-case-label
+      if (t == RequestType.SUBSCRIBE) {
+        return PresenceType.SUBSCRIBE;
+      } else if (t == RequestType.SUBSCRIBED) {
+        return PresenceType.SUBSCRIBED;
+      } else if (t == RequestType.UNSUBSCRIBE) {
+        return PresenceType.UNSUBSCRIBE;
+      } else if (t == RequestType.UNSUBSCRIBED) {
+        return PresenceType.UNSUBSCRIBED;
+      } else {
+        throw new RuntimeException("unrecognized request type");
       }
     }
   }

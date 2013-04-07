@@ -23,10 +23,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.maodian.flyingcat.holder.XMLOutputFactoryHolder;
 import org.maodian.flyingcat.im.IMSession;
-import org.maodian.flyingcat.im.entity.Account;
-import org.maodian.flyingcat.im.entity.SimpleUser;
-import org.maodian.flyingcat.im.entity.SimpleUser.Pending;
-import org.maodian.flyingcat.im.entity.SimpleUser.SubState;
+import org.maodian.flyingcat.im.entity.SubscriptionRequest;
 import org.maodian.flyingcat.xmpp.codec.Encoder;
 import org.maodian.flyingcat.xmpp.entity.JabberID;
 import org.maodian.flyingcat.xmpp.entity.Presence;
@@ -44,20 +41,14 @@ public class SubscriptionRequestPipeline implements Pipeline<XmppContext> {
   @Override
   public void process(XmppContext cmd) throws XMLStreamException {
     IMSession session = cmd.getIMSession();
-    SimpleUser su = new SimpleUser(cmd.getJabberID().getUid(), null);
-    su.setPending(Pending.PENDING_OUT);
-    su.setSubState(SubState.NONE);
-    Collection<Account> unreadSubs = session.getAccountRepository().getUnreadSubscription(su);
-    for (Account a : unreadSubs) {
-      SubState subStat = a.getContactList().get(0).getSubState();
-      JabberID from = JabberID.createInstance(a.getUsername(), "localhost", null);
+    Collection<SubscriptionRequest> srList = session.getAccountRepository().getUnreadSubscription(cmd.getJabberID().getUid());
+    for (SubscriptionRequest sr : srList) {
+      JabberID from = JabberID.createInstance(sr.getFrom(), "localhost", null);
       JabberID to = cmd.getJabberID();
       Presence p = new Presence();
       p.setFrom(from);
       p.setTo(to);
-      p.setType(PresenceType.SUBSCRIBE);
-      //TODO:id is not set
-      
+      p.setType(PresenceType.fromRequestType(sr.getType()));
       StringWriter writer = new StringWriter();
       XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
       Encoder encoder = cmd.getApplicationContext().getEncoder(Presence.class);

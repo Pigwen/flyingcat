@@ -20,7 +20,6 @@ import java.util.Collection;
 import org.apache.shiro.SecurityUtils;
 import org.maodian.flyingcat.im.entity.Account;
 import org.maodian.flyingcat.im.entity.SimpleUser;
-import org.maodian.flyingcat.im.entity.SimpleUser.Pending;
 import org.maodian.flyingcat.im.entity.SubscriptionRequest;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -53,13 +52,10 @@ class AccountRepositoryImpl extends AbstractRepository implements AccountReposit
    * @see org.maodian.flyingcat.im.repository.AccountRepositoryCustom#getUnreadSubscription(org.maodian.flyingcat.im.entity.SimpleUser)
    */
   @Override
-  public Collection<Account> getUnreadSubscription(SimpleUser su) {
-    final String kUid = Account.CONTACTS + "." + SimpleUser.USERNAME;
-    final String kPend = Account.CONTACTS + "." + SimpleUser.PENDING;
-    Query query = Query.query(Criteria.where(kUid).is(su.getUsername())
-        .and(kPend).is(Pending.PENDING_OUT.name()));
-    query.fields().include(Account.CONTACTS).include(Account.USERNAME).exclude("_id");
-    return getMongoTemplate().find(query, Account.class);
+  public Collection<SubscriptionRequest> getUnreadSubscription(String username) {
+    Query query = Query.query(Criteria.where(Account.USERNAME).is(username));
+    query.fields().include(Account.UNREAD_REQUEST).exclude("_id");
+    return getMongoTemplate().findOne(query, Account.class).getUnreadSubscriptionRequests();
   }
 
   /* (non-Javadoc)
