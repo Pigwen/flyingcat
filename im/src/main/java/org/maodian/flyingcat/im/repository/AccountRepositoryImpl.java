@@ -21,6 +21,7 @@ import org.apache.shiro.SecurityUtils;
 import org.maodian.flyingcat.im.entity.Account;
 import org.maodian.flyingcat.im.entity.SimpleUser;
 import org.maodian.flyingcat.im.entity.SimpleUser.Pending;
+import org.maodian.flyingcat.im.entity.SubscriptionRequest;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -59,6 +60,16 @@ class AccountRepositoryImpl extends AbstractRepository implements AccountReposit
         .and(kPend).is(Pending.PENDING_OUT.name()));
     query.fields().include(Account.CONTACTS).include(Account.USERNAME).exclude("_id");
     return getMongoTemplate().find(query, Account.class);
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.im.repository.AccountRepositoryCustom#persistSubscriptionRequest(java.lang.String, org.maodian.flyingcat.im.entity.SubscriptionRequest)
+   */
+  @Override
+  public void persistSubscriptionRequest(String username, SubscriptionRequest sr) {
+    Query query = Query.query(Criteria.where(Account.USERNAME).is(username));
+    Update update = new Update().addToSet(Account.UNREAD_REQUEST, sr);
+    getMongoTemplate().updateFirst(query, update, Account.class);
   }
 
 }

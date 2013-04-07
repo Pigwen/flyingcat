@@ -73,6 +73,7 @@ public class DefaultXmppContextManager extends AbstractXmppContextListener imple
     log.debug("Post destroy of XmppContext for {}", jid);
     try {
       lock.acquire();
+      // TODO: jid here might be null when register a new user
       ConcurrentMap<JabberID, XmppContext> m = pool.get(jid.getUid());
       m.remove(jid);
       if (m.size() == 0) {

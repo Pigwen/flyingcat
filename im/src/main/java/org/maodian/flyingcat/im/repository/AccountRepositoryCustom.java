@@ -19,6 +19,7 @@ import java.util.Collection;
 
 import org.maodian.flyingcat.im.entity.Account;
 import org.maodian.flyingcat.im.entity.SimpleUser;
+import org.maodian.flyingcat.im.entity.SubscriptionRequest;
 
 /**
  * @author Cole Wen
@@ -28,4 +29,6 @@ interface AccountRepositoryCustom {
   void follow(SimpleUser su);
   
   Collection<Account> getUnreadSubscription(SimpleUser su);
+  
+  void persistSubscriptionRequest(String username, SubscriptionRequest sr);
 }

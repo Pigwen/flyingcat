@@ -29,9 +29,8 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.maodian.flyingcat.holder.XMLOutputFactoryHolder;
 import org.maodian.flyingcat.im.IMSession;
-import org.maodian.flyingcat.im.entity.SimpleUser;
-import org.maodian.flyingcat.im.entity.SimpleUser.Pending;
-import org.maodian.flyingcat.im.entity.SimpleUser.SubState;
+import org.maodian.flyingcat.im.entity.SubscriptionRequest;
+import org.maodian.flyingcat.im.entity.SubscriptionRequest.RequestType;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
 import org.maodian.flyingcat.xmpp.codec.Encoder;
 import org.maodian.flyingcat.xmpp.codec.SecureSslContextFactory;
@@ -156,14 +155,13 @@ public class DefaultElementVisitor implements ElementVisitor, PersistedVisitor {
    */
   @Override
   public void persistPresenceSubscription(XmppContext ctx, Presence p) {
-    String uid = p.getTo().getUid();
-    SimpleUser su = new SimpleUser(uid, uid);
+    String from = p.getFrom().getUid();
+    SubscriptionRequest sr = null;
     IMSession session = ctx.getIMSession();
     switch (p.getType()) {
     case SUBSCRIBE:
-      su.setPending(Pending.PENDING_OUT);
-      su.setSubState(SubState.NONE);
-      session.getAccountRepository().follow(su);
+      sr = new SubscriptionRequest(from, RequestType.SUBSCRIBE);
+      session.getAccountRepository().persistSubscriptionRequest(p.getTo().getUid(), sr);
       break;
     case SUBSCRIBED:
     case UNSUBSCRIBE:

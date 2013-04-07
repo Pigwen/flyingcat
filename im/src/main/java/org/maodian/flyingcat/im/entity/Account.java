@@ -35,6 +35,7 @@ public class Account extends AbstractEntity {
   public static final String NICK = "nick";
   public static final String PASSWORD = "pwd";
   public static final String CONTACTS = "cont";
+  public static final String UNREAD_REQUEST = "urq";
 
   @Field(USERNAME)
   @Indexed(unique = true)
@@ -48,6 +49,9 @@ public class Account extends AbstractEntity {
 
   @Field(CONTACTS)
   private final List<SimpleUser> contacts = new ArrayList<>();
+
+  @Field(UNREAD_REQUEST)
+  private final List<SubscriptionRequest> unreadSubscriptionRequests = new ArrayList<>();
 
   Account() {
     this(null, null, null);
@@ -100,11 +104,25 @@ public class Account extends AbstractEntity {
   public List<SimpleUser> getContactList() {
     return Collections.unmodifiableList(contacts);
   }
+  
+  public void addUnreadSubscriptionRequest(SubscriptionRequest... reqs) {
+    for (SubscriptionRequest req : reqs) {
+      unreadSubscriptionRequests.add(req);
+    }
+  }
+  
+  public void addUnreadSubscriptionRequest(Collection<SubscriptionRequest> reqs) {
+    unreadSubscriptionRequests.addAll(reqs);
+  }
+
+  public List<SubscriptionRequest> getUnreadSubscriptionRequests() {
+    return Collections.unmodifiableList(unreadSubscriptionRequests);
+  }
 
   @Override
   public String toString() {
-    return "Account [username=" + username + ", nickname=" + nickname + ", contacts=" + contacts + ", toString()="
-        + super.toString() + "]";
+    return "Account [username=" + username + ", nickname=" + nickname + ", password=" + password + ", contacts="
+        + contacts + ", unreadSubscriptionRequests=" + unreadSubscriptionRequests + "]";
   }
 
 }
