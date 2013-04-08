@@ -58,9 +58,8 @@ public class SubscriptionRequestPipeline implements Pipeline<XmppContext> {
       XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
       Encoder encoder = ctx.getApplicationContext().getEncoder(Presence.class);
       encoder.encode(p, xmlsw);
-      ctx.getNettyChannelHandlerContext().write(writer.toString());
+      ctx.flush(writer.toString());
     }
-    ctx.getNettyChannelHandlerContext().flush();
   }
 
 }
