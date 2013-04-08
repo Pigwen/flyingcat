@@ -69,6 +69,7 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
       writeRequiredAttribute(xmlsw, "jid", c.getJabberId());
       writeAttributeIfNotBlank(xmlsw, "name", c.getName());
       writeAttributeIfNotBlank(xmlsw, "subscription", c.getSubscription());
+      writeAttributeIfNotBlank(xmlsw, "ask", c.getAsk());
     }
     xmlsw.writeEndElement();
   }
