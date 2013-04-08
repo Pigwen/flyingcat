@@ -99,8 +99,17 @@ public class DefaultElementVisitor implements ElementVisitor, PersistedVisitor {
       ctx.flush(writer.toString());
     } else {
       JabberID from = ctx.getJabberID();
-      p.setFrom(from);
-      ctx.send(p.getTo(), p);
+      
+      // normalize both from/to to bareJID
+      JabberID f = JabberID.fromString(from.toBareJID());
+      JabberID t = JabberID.fromString(p.getTo().toBareJID());
+      Presence presence = new Presence();
+      presence.setFrom(f);
+      presence.setTo(t);
+      presence.setId(p.getId());
+      presence.setType(p.getType());
+      
+      ctx.send(presence.getTo(), presence);
     }
     return new SelectState();
   }
