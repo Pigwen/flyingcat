@@ -83,7 +83,7 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
     List<SimpleUser> imContacts = session.getAccountRepository().findByUsername(context.getJabberID().getUid()).getContactList();
     List<Contact> xmppContacts = new ArrayList<>();
     for (SimpleUser su : imContacts) {
-      Contact c = new Contact(su.getUsername());
+      Contact c = new Contact(su.getUsername(), su.getSubState().name().toLowerCase());
       c.setName(su.getNickname());
       xmppContacts.add(c);
     }
