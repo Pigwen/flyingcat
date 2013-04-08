@@ -29,4 +29,6 @@ public interface XmppContextListener {
   void onPostBind(XmppContext ctx);
   void onPreSend(XmppContext ctx, Object payload);
   void onPostSend(XmppContext ctx, Object payload);
+  void onPreReceive(XmppContext ctx, Object payload);
+  void onPostReceive(XmppContext ctx, Object payload);
 }

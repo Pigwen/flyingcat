@@ -42,6 +42,65 @@ public class PresenceListener extends AbstractXmppContextListener {
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private XmppContextManager xmppCtxMgr;
 
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.xmpp.state.AbstractXmppContextListener#onPostReceive(org.maodian.flyingcat.xmpp.state.XmppContext, java.lang.Object)
+   */
+  @Override
+  public void onPostReceive(XmppContext ctx, Object payload) {
+    if (payload instanceof Presence) {
+      Presence p = (Presence) payload;
+      switch (p.getType()) {
+      case SUBSCRIBED:
+        postReceiveSubscribed(ctx, p);
+        break;
+      case SUBSCRIBE:
+        break;
+      case UNSUBSCRIBE:
+      case UNSUBSCRIBED:
+      default:
+        throw new RuntimeException("unrecognized presence type:" + p.getType());
+      }
+    }
+  }
+  
+  /**
+   * @param ctx
+   * @param p
+   */
+  private void postReceiveSubscribed(XmppContext ctx, Presence p) {
+    Contact contact = new Contact(p.getFrom().toBareJID(), Contact.SUB_TO);
+    Roster roster = new Roster();
+    roster.addContact(contact);
+    
+    // send roster push to all available resource
+    rosterPush(ctx, roster);
+    deliverPresence(ctx, p);
+  }
+
+  /**
+   * @param ctx
+   * @param p
+   */
+  private void deliverPresence(XmppContext ctx, Presence p) {
+    Collection<XmppContext> sourceCtxs = xmppCtxMgr.getXmppContexts(p.getFrom().getUid());
+    Encoder encoder = ctx.getApplicationContext().getEncoder(Presence.class);
+    for (XmppContext sCtx : sourceCtxs) {
+      Presence presence = new Presence();
+      String id = RandomStringUtils.randomAlphabetic(32);
+      presence.setId(id);
+      presence.setFrom(sCtx.getJabberID());
+      presence.setTo(p.getTo());
+
+      try (Writer writer = new StringWriter();) {
+        XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
+        encoder.encode(presence, xmlsw);
+        sCtx.flush(writer.toString());
+      } catch (XMLStreamException | IOException e) {
+        log.warn("Error when onPostReceive.deliveryPresence", e);
+      }
+    }
+  }
+
   /*
    * (non-Javadoc)
    * 
@@ -53,29 +112,64 @@ public class PresenceListener extends AbstractXmppContextListener {
   public void onPostSend(XmppContext ctx, Object payload) {
     if (payload instanceof Presence) {
       Presence p = (Presence) payload;
-      Contact contact = new Contact(p.getTo().toBareJID());
-      contact.setAsk("subscribe");
-      Roster roster = new Roster();
-      roster.addContact(contact);
-      
-      // send roster push to all available resource
-      Collection<XmppContext> allCtx = xmppCtxMgr.getXmppContexts(ctx.getJabberID().getUid());
-      for (XmppContext xc : allCtx) {
-        String id = RandomStringUtils.randomAlphabetic(32);
-        InfoQuery.Builder builder = new InfoQuery.Builder(id, "set");
-        InfoQuery iq = builder.to(ctx.getJabberID().toFullJID()).payload(roster).build();
-        Encoder encoder = ctx.getApplicationContext().getEncoder(InfoQuery.class);
-        
-        try (Writer writer = new StringWriter();) {
-          XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
-          encoder.encode(iq, xmlsw);
-          xc.flush(writer.toString());
-        } catch (XMLStreamException | IOException e) {
-          log.warn("Error when onPostSend", e);
-        }
+      switch (p.getType()) {
+      case SUBSCRIBE:
+        postSendSubscribe(ctx, p);
+        break;
+      case SUBSCRIBED:
+        postSendSubscribed(ctx, p);
+        break;
+      case UNSUBSCRIBE:
+      case UNSUBSCRIBED:
+      default:
+        throw new RuntimeException("unrecognized presence type:" + p.getType());
       }
-      
     }
+  }
+  
+  private void rosterPush(XmppContext ctx, Roster roster) {
+    Collection<XmppContext> allCtx = xmppCtxMgr.getXmppContexts(ctx.getJabberID().getUid());
+    for (XmppContext xc : allCtx) {
+      String id = RandomStringUtils.randomAlphabetic(32);
+      InfoQuery.Builder builder = new InfoQuery.Builder(id, "set");
+      InfoQuery iq = builder.to(ctx.getJabberID().toFullJID()).payload(roster).build();
+      Encoder encoder = ctx.getApplicationContext().getEncoder(InfoQuery.class);
+      
+      try (Writer writer = new StringWriter();) {
+        XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
+        encoder.encode(iq, xmlsw);
+        xc.flush(writer.toString());
+      } catch (XMLStreamException | IOException e) {
+        log.warn("Error when onPostSend", e);
+      }
+    }
+  }
+
+  /**
+   * @param ctx
+   * @param p
+   */
+  private void postSendSubscribed(XmppContext ctx, Presence p) {
+    Contact contact = new Contact(p.getTo().toBareJID(), Contact.SUB_FROM);
+    Roster roster = new Roster();
+    roster.addContact(contact);
+    
+    // send roster push to all available resource
+    rosterPush(ctx, roster);
+  }
+
+  /**
+   * @param ctx
+   * @param p
+   */
+  private void postSendSubscribe(XmppContext ctx, Presence p) {
+    Contact contact = new Contact(p.getTo().toBareJID());
+    contact.setAsk("subscribe");
+    Roster roster = new Roster();
+    roster.addContact(contact);
+    
+    // send roster push to all available resource
+    rosterPush(ctx, roster);
   }
 
   public void setXmppContextManager(XmppContextManager xmppCtxMgr) {

@@ -38,6 +38,16 @@ public class Contact {
   public Contact(String jabberId) {
     this(jabberId, SUB_NONE, null, false, null);
   }
+  
+  /**
+   * @param jabberId
+   * @param subscription
+   */
+  public Contact(String jabberId, String subscription) {
+    this(jabberId, subscription, null, false, null);
+  }
+
+
 
   /**
    * @param jabberId

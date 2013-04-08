@@ -63,8 +63,13 @@ public class PresenceCodec extends AbstractCodec {
     xmlsw.writeEmptyElement("presence");
     writeAttributeIfNotBlank(xmlsw, "id", p.getId());
     writeRequiredAttribute(xmlsw, "to", p.getTo().toBareJID());
-    writeRequiredAttribute(xmlsw, "from", p.getFrom().toBareJID());
-    writeRequiredAttribute(xmlsw, "type", p.getType().name().toLowerCase());
+    writeRequiredAttribute(xmlsw, "from", StringUtils.isBlank(p.getFrom().getResource()) ? 
+        p.getFrom().toBareJID() : p.getFrom().toFullJID());
+    
+    // if there is a 'type' attribute, then it's a request, otherwise is a notification
+    if (p.getType() != null) {
+      writeRequiredAttribute(xmlsw, "type", p.getType().name().toLowerCase());
+    }
     xmlsw.writeEndDocument();
   }
 

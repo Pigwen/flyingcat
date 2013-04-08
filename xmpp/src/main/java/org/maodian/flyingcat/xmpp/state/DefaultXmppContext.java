@@ -248,13 +248,25 @@ public class DefaultXmppContext implements XmppContext {
    */
   @Override
   public void receive(JabberID from, Object payload) {
+    preReceive(payload);
     Encoder encoder = appCtx.getEncoder(payload.getClass());
     try (Writer writer = new StringWriter();) {
       XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
       encoder.encode(payload, xmlsw);
       flush(writer.toString());
+      postReceive(payload);
     } catch (XMLStreamException | IOException e) {
       throw new RuntimeException("Error when receiving payload", e);
+    }
+  }
+  
+  private void preReceive(Object payload) {
+    
+  }
+  
+  private void postReceive(Object payload) {
+    for (XmppContextListener listener : listeners) {
+      listener.onPostReceive(this, payload);
     }
   }
 }

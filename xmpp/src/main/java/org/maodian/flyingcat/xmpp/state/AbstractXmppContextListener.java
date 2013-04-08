@@ -19,7 +19,7 @@ package org.maodian.flyingcat.xmpp.state;
  * @author Cole Wen
  *
  */
-public class AbstractXmppContextListener implements XmppContextListener {
+public abstract class AbstractXmppContextListener implements XmppContextListener {
 
   /* (non-Javadoc)
    * @see org.maodian.flyingcat.xmpp.state.XmppContextListener#onPreDestroy(org.maodian.flyingcat.xmpp.state.XmppContext)
@@ -89,6 +89,24 @@ public class AbstractXmppContextListener implements XmppContextListener {
    */
   @Override
   public void onPostBind(XmppContext ctx) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.xmpp.state.XmppContextListener#onPreReceive(org.maodian.flyingcat.xmpp.state.XmppContext, java.lang.Object)
+   */
+  @Override
+  public void onPreReceive(XmppContext ctx, Object payload) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.xmpp.state.XmppContextListener#onPostReceive(org.maodian.flyingcat.xmpp.state.XmppContext, java.lang.Object)
+   */
+  @Override
+  public void onPostReceive(XmppContext ctx, Object payload) {
     // TODO Auto-generated method stub
     
   }
