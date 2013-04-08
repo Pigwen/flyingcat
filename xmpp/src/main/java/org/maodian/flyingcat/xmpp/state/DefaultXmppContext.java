@@ -21,6 +21,7 @@ import io.netty.channel.ChannelHandlerContext;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.invoke.MethodHandles;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -36,6 +37,8 @@ import org.maodian.flyingcat.xmpp.GlobalContext;
 import org.maodian.flyingcat.xmpp.codec.Encoder;
 import org.maodian.flyingcat.xmpp.entity.JabberID;
 import org.maodian.flyingcat.xmpp.state.StreamState.OpeningStreamState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -43,6 +46,7 @@ import org.maodian.flyingcat.xmpp.state.StreamState.OpeningStreamState;
  * 
  */
 public class DefaultXmppContext implements XmppContext {
+  private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private final GlobalContext appCtx;
   private final IMSession imSession;
   private ChannelHandlerContext nettyCtx;
@@ -165,6 +169,7 @@ public class DefaultXmppContext implements XmppContext {
 
   @Override
   public void parseXML(final String xml) {
+    log.debug("{} read: {}", jid == null ? null : jid.toFullJID(), xml);
     Result result = state.step(this, xml);
     state = result.getNextState();
   }
@@ -192,6 +197,7 @@ public class DefaultXmppContext implements XmppContext {
   @Override
   public void flush(String str) {
     if (StringUtils.isNotBlank(str)) {
+      log.debug("{} write: {}", jid == null ? null : jid.toFullJID(), str);
       nettyCtx.write(str).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
       nettyCtx.flush();
     }

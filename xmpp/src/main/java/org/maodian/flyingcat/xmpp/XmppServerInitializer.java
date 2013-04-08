@@ -15,17 +15,18 @@
  */
 package org.maodian.flyingcat.xmpp;
 
+import io.netty.buffer.BufType;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 
 import java.nio.charset.StandardCharsets;
 
-import org.maodian.flyingcat.netty.handler.LoggerEnabledStringDecoder;
-import org.maodian.flyingcat.netty.handler.LoggerEnabledStringEncoder;
 import org.maodian.flyingcat.netty.handler.XMLFragmentDecoder;
 import org.maodian.flyingcat.netty.handler.XmppXMLStreamHandler;
 import org.springframework.context.ApplicationContext;
@@ -35,8 +36,10 @@ import org.springframework.context.ApplicationContext;
  * 
  */
 public class XmppServerInitializer extends ChannelInitializer<SocketChannel> implements ChannelHandler {
-  private static final LoggerEnabledStringDecoder DECODER = new LoggerEnabledStringDecoder();
-  private static final LoggerEnabledStringEncoder ENCODER = new LoggerEnabledStringEncoder();
+  //private static final LoggerEnabledStringDecoder DECODER = new LoggerEnabledStringDecoder();
+  //private static final LoggerEnabledStringEncoder ENCODER = new LoggerEnabledStringEncoder();
+  private static final StringDecoder DECODER = new StringDecoder();
+  private static final StringEncoder ENCODER = new StringEncoder(BufType.BYTE, StandardCharsets.UTF_8);
   private final ApplicationContext beanFactory;
 
   /**
