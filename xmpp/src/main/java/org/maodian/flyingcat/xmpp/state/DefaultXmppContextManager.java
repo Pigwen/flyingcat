@@ -158,4 +158,12 @@ public class DefaultXmppContextManager extends AbstractXmppContextListener imple
     this.postBindHandler = postBindHandler;
   }
 
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.xmpp.state.XmppContextManager#transfer(org.maodian.flyingcat.xmpp.entity.JabberID, java.util.Collection, java.lang.Object)
+   */
+  @Override
+  public void transfer(JabberID from, Collection<JabberID> to, Object payload) {
+    
+  }
+
 }

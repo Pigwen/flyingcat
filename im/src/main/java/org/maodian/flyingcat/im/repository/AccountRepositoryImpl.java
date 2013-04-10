@@ -21,6 +21,7 @@ import java.util.Collections;
 import org.apache.shiro.SecurityUtils;
 import org.maodian.flyingcat.im.entity.Account;
 import org.maodian.flyingcat.im.entity.SimpleUser;
+import org.maodian.flyingcat.im.entity.SimpleUser.SubState;
 import org.maodian.flyingcat.im.entity.SubscriptionRequest;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -102,6 +103,19 @@ class AccountRepositoryImpl extends AbstractRepository implements AccountReposit
     Update update = new Update().set("cont.$.nick", su.getNickname()).set("cont.$.pin", su.isPendingIn())
         .set("cont.$.pout", su.isPendingOut()).set("cont.$.stat", su.getSubState().name());
     getMongoTemplate().updateFirst(query, update, Account.class);
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.im.repository.AccountRepositoryCustom#getSubscribers(java.lang.String)
+   */
+  @Override
+  public Collection<SimpleUser> getSubscribers(String uid) {
+    String kState = Account.CONTACTS + "." + SimpleUser.SUB_STATE;
+    Query query = Query.query(Criteria.where(Account.USERNAME).is(uid)
+        .orOperator(Criteria.where(kState).is(SubState.FROM.name()), Criteria.where(kState).is(SubState.BOTH.name())));
+    query.fields().include(Account.CONTACTS + ".$").exclude("_id");
+    Account account = getMongoTemplate().findOne(query, Account.class); 
+    return account.getContactList();
   }
 
 }

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.invoke.MethodHandles;
+import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -33,9 +34,11 @@ import org.maodian.flyingcat.holder.XMLOutputFactoryHolder;
 import org.maodian.flyingcat.im.IMException;
 import org.maodian.flyingcat.im.IMSession;
 import org.maodian.flyingcat.im.entity.Account;
+import org.maodian.flyingcat.im.entity.SimpleUser;
 import org.maodian.flyingcat.xmpp.GlobalContext;
 import org.maodian.flyingcat.xmpp.codec.Encoder;
 import org.maodian.flyingcat.xmpp.entity.JabberID;
+import org.maodian.flyingcat.xmpp.entity.Presence;
 import org.maodian.flyingcat.xmpp.state.StreamState.OpeningStreamState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -273,6 +276,21 @@ public class DefaultXmppContext implements XmppContext {
   private void postReceive(Object payload) {
     for (XmppContextListener listener : listeners) {
       listener.onPostReceive(this, payload);
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see org.maodian.flyingcat.xmpp.state.XmppContext#broadcast(java.lang.Object)
+   */
+  @Override
+  public void broadcastPresence() {
+    Collection<SimpleUser> subscribers = imSession.getAccountRepository().getSubscribers(jid.getUid());
+    for (SimpleUser su : subscribers) {
+      JabberID to = JabberID.createInstance(su.getUsername(), "localhost", null);
+      Presence presence = new Presence();
+      presence.setFrom(getJabberID());
+      presence.setTo(to);
+      xmppCtxMgr.transfer(getJabberID(), to, presence);
     }
   }
 }

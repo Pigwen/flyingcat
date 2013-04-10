@@ -91,12 +91,8 @@ public class DefaultElementVisitor implements ElementVisitor, PersistedVisitor {
     StringWriter writer = new StringWriter();
     XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
     
-    if (p.getType() == null && p.getTo() == null) {
-      xmlsw.writeEmptyElement("presence");
-      xmlsw.writeAttribute("from", ctx.getJabberID().toFullJID());
-      xmlsw.writeAttribute("to", ctx.getJabberID().toBareJID());
-      xmlsw.writeEndDocument();
-      ctx.flush(writer.toString());
+    if (p.isBroadcast()) {
+      ctx.broadcastPresence();
     } else {
       JabberID from = ctx.getJabberID();
       
@@ -164,42 +160,44 @@ public class DefaultElementVisitor implements ElementVisitor, PersistedVisitor {
    */
   @Override
   public void persistPresenceSubscription(XmppContext ctx, Presence p) {
-    String from = p.getFrom().getUid();
-    String to = p.getTo().getUid();
-    AccountRepository repo = ctx.getIMSession().getAccountRepository();
-    
-    // check if user has add contact into the roster
-    SimpleUser fSu = repo.getSpecificContact(from, to);
-    if (fSu == null) {
-      fSu = new SimpleUser(to, to);
-      fSu.setSubState(SubState.NONE);
-    }
-    
-    // check if contact has added user into the roster
-    SimpleUser tSu = repo.getSpecificContact(to, from);
-    if (tSu == null) {
-      tSu = new SimpleUser(from, from);
-      tSu.setSubState(SubState.NONE);
-    }
-    switch (p.getType()) {
-    case SUBSCRIBE:
-      fSu.setPendingOut(true);
-      tSu.setPendingIn(true);
-      repo.persistContact(from, fSu);
-      repo.persistContact(to, tSu);
-      break;
-    case SUBSCRIBED:
-      fSu.setPendingIn(false);
-      fSu.setSubState(SubState.FROM);
-      tSu.setPendingOut(false);
-      tSu.setSubState(SubState.TO);
-      repo.updateContact(from, fSu);
-      repo.updateContact(to, tSu);
-      break;
-    case UNSUBSCRIBE:
-    case UNSUBSCRIBED:
-    default:
-      throw new RuntimeException("should not reach here");
+    if (!p.isBroadcast()) {
+      String from = p.getFrom().getUid();
+      String to = p.getTo().getUid();
+      AccountRepository repo = ctx.getIMSession().getAccountRepository();
+
+      // check if user has add contact into the roster
+      SimpleUser fSu = repo.getSpecificContact(from, to);
+      if (fSu == null) {
+        fSu = new SimpleUser(to, to);
+        fSu.setSubState(SubState.NONE);
+      }
+
+      // check if contact has added user into the roster
+      SimpleUser tSu = repo.getSpecificContact(to, from);
+      if (tSu == null) {
+        tSu = new SimpleUser(from, from);
+        tSu.setSubState(SubState.NONE);
+      }
+      switch (p.getType()) {
+      case SUBSCRIBE:
+        fSu.setPendingOut(true);
+        tSu.setPendingIn(true);
+        repo.persistContact(from, fSu);
+        repo.persistContact(to, tSu);
+        break;
+      case SUBSCRIBED:
+        fSu.setPendingIn(false);
+        fSu.setSubState(SubState.FROM);
+        tSu.setPendingOut(false);
+        tSu.setSubState(SubState.TO);
+        repo.updateContact(from, fSu);
+        repo.updateContact(to, tSu);
+        break;
+      case UNSUBSCRIBE:
+      case UNSUBSCRIBED:
+      default:
+        throw new RuntimeException("should not reach here");
+      }
     }
   }
 }

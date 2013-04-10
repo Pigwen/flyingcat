@@ -33,4 +33,6 @@ public interface XmppContextManager {
    * @param payload
    */
   void transfer(JabberID from, JabberID to, Object payload); 
+  
+  void transfer(JabberID from, Collection<JabberID> to, Object payload);
 }

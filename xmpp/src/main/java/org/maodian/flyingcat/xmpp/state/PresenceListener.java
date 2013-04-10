@@ -47,18 +47,21 @@ public class PresenceListener extends AbstractXmppContextListener {
    */
   @Override
   public void onPostReceive(XmppContext ctx, Object payload) {
+    
     if (payload instanceof Presence) {
       Presence p = (Presence) payload;
-      switch (p.getType()) {
-      case SUBSCRIBED:
-        postReceiveSubscribed(ctx, p);
-        break;
-      case SUBSCRIBE:
-        break;
-      case UNSUBSCRIBE:
-      case UNSUBSCRIBED:
-      default:
-        throw new RuntimeException("unrecognized presence type:" + p.getType());
+      if (!p.isBroadcast()) {
+        switch (p.getType()) {
+        case SUBSCRIBED:
+          postReceiveSubscribed(ctx, p);
+          break;
+        case SUBSCRIBE:
+          break;
+        case UNSUBSCRIBE:
+        case UNSUBSCRIBED:
+        default:
+          throw new RuntimeException("unrecognized presence type:" + p.getType());
+        }
       }
     }
   }

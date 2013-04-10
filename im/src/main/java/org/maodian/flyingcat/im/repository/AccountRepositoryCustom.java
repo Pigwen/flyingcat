@@ -36,4 +36,6 @@ interface AccountRepositoryCustom {
   void persistContact(String uid, SimpleUser su);
   
   void updateContact(String uid, SimpleUser su);
+  
+  Collection<SimpleUser> getSubscribers(String uid);
 }

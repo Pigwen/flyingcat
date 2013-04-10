@@ -68,9 +68,13 @@ public class Presence implements ElementVisitee, PersistedVisitee {
   public void setType(PresenceType type) {
     this.type = type;
   }
+  
+  public boolean isBroadcast() {
+    return to == null && (type == null || type == PresenceType.UNAVAILABLE);
+  }
 
   public enum PresenceType {
-    SUBSCRIBE, UNSUBSCRIBE, SUBSCRIBED, UNSUBSCRIBED;
+    SUBSCRIBE, UNSUBSCRIBE, SUBSCRIBED, UNSUBSCRIBED, UNAVAILABLE;
 
     public static PresenceType fromString(String str) {
       String type = str.toUpperCase();
@@ -83,6 +87,8 @@ public class Presence implements ElementVisitee, PersistedVisitee {
         return SUBSCRIBED;
       case "UNSUBSCRIBED":
         return UNSUBSCRIBED;
+      case "UNAVAILABLE":
+        return UNAVAILABLE;
       default:
         // TODO: STANZAS error
         throw new RuntimeException("JID not wellformed");

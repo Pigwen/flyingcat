@@ -64,6 +64,8 @@ public interface XmppContext {
   void flush(String str);
   
   void send(JabberID to, Object payload);
+  
+  void broadcastPresence();
 
   /**
    * @param from
