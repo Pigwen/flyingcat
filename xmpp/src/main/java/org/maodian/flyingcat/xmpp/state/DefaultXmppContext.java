@@ -33,8 +33,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.maodian.flyingcat.holder.XMLOutputFactoryHolder;
 import org.maodian.flyingcat.im.IMException;
 import org.maodian.flyingcat.im.IMSession;
-import org.maodian.flyingcat.im.entity.Account;
-import org.maodian.flyingcat.im.entity.SimpleUser;
+import org.maodian.flyingcat.im.entity.sql.AccountEntity;
+import org.maodian.flyingcat.im.entity.sql.ContactEntity;
 import org.maodian.flyingcat.xmpp.GlobalContext;
 import org.maodian.flyingcat.xmpp.codec.Encoder;
 import org.maodian.flyingcat.xmpp.entity.JabberID;
@@ -229,7 +229,7 @@ public class DefaultXmppContext implements XmppContext {
    */
   @Override
   public void send(JabberID to, Object payload) {
-    Account ta = (Account) imSession.getAccountRepository().findByUsername(to.getUid());
+    AccountEntity ta = imSession.getAccountRepository().findByUid(to.getUid());
     if (ta == null) {
       throw new RuntimeException("User does not existed");
     }
@@ -284,9 +284,10 @@ public class DefaultXmppContext implements XmppContext {
    */
   @Override
   public void broadcastPresence() {
-    Collection<SimpleUser> subscribers = imSession.getAccountRepository().getSubscribers(jid.getUid());
-    for (SimpleUser su : subscribers) {
-      JabberID to = JabberID.createInstance(su.getUsername(), "localhost", null);
+    AccountEntity owner = imSession.getAccountRepository().findByUid(jid.getUid());
+    Collection<ContactEntity> subscribers = imSession.getContactRepository().findByOwnerAndFrom(owner, true);
+    for (ContactEntity su : subscribers) {
+      JabberID to = JabberID.createInstance(su.getUid(), "localhost", null);
       Presence presence = new Presence();
       presence.setFrom(getJabberID());
       presence.setTo(to);

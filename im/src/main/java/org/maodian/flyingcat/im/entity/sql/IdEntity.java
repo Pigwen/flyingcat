@@ -13,16 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flyingcat.im.repository;
-
-import org.maodian.flyingcat.im.repository.sql.AccountRepository;
-import org.maodian.flyingcat.im.repository.sql.ContactReporitory;
+package org.maodian.flyingcat.im.entity.sql;
 
 /**
  * @author Cole Wen
  *
  */
-public interface RepositoryAware {
-  AccountRepository getAccountRepository();
-  ContactReporitory getContactRepository();
+public interface IdEntity {
+  Long getId();
 }

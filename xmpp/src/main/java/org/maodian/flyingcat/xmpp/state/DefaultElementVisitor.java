@@ -28,9 +28,10 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.maodian.flyingcat.holder.XMLOutputFactoryHolder;
-import org.maodian.flyingcat.im.entity.SimpleUser;
-import org.maodian.flyingcat.im.entity.SimpleUser.SubState;
-import org.maodian.flyingcat.im.repository.AccountRepository;
+import org.maodian.flyingcat.im.entity.sql.AccountEntity;
+import org.maodian.flyingcat.im.entity.sql.ContactEntity;
+import org.maodian.flyingcat.im.repository.sql.AccountRepository;
+import org.maodian.flyingcat.im.repository.sql.ContactReporitory;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
 import org.maodian.flyingcat.xmpp.codec.Encoder;
 import org.maodian.flyingcat.xmpp.codec.SecureSslContextFactory;
@@ -164,34 +165,37 @@ public class DefaultElementVisitor implements ElementVisitor, PersistedVisitor {
       String from = p.getFrom().getUid();
       String to = p.getTo().getUid();
       AccountRepository repo = ctx.getIMSession().getAccountRepository();
+      ContactReporitory contactRepo = ctx.getIMSession().getContactRepository();
 
       // check if user has add contact into the roster
-      SimpleUser fSu = repo.getSpecificContact(from, to);
-      if (fSu == null) {
-        fSu = new SimpleUser(to, to);
-        fSu.setSubState(SubState.NONE);
+      AccountEntity user = repo.findByUid(from);
+      ContactEntity fCont = user.getContact(to);
+      if (fCont == null) {
+        fCont = new ContactEntity(to, to);
+        fCont.setOwner(user);
       }
 
       // check if contact has added user into the roster
-      SimpleUser tSu = repo.getSpecificContact(to, from);
-      if (tSu == null) {
-        tSu = new SimpleUser(from, from);
-        tSu.setSubState(SubState.NONE);
+      AccountEntity targetUser = repo.findByUid(to);
+      ContactEntity rCont = targetUser.getContact(from);
+      if (rCont == null) {
+        rCont = new ContactEntity(to, to);
+        rCont.setOwner(targetUser);
       }
       switch (p.getType()) {
       case SUBSCRIBE:
-        fSu.setPendingOut(true);
-        tSu.setPendingIn(true);
-        repo.persistContact(from, fSu);
-        repo.persistContact(to, tSu);
+        fCont.setOutbound(true);
+        rCont.setInbound(true);
+        contactRepo.save(fCont);
+        contactRepo.save(rCont);
         break;
       case SUBSCRIBED:
-        fSu.setPendingIn(false);
-        fSu.setSubState(SubState.FROM);
-        tSu.setPendingOut(false);
-        tSu.setSubState(SubState.TO);
-        repo.updateContact(from, fSu);
-        repo.updateContact(to, tSu);
+        fCont.setInbound(false);
+        fCont.setSubFrom(true);
+        rCont.setOutbound(false);
+        rCont.setSubTo(true);
+        contactRepo.save(fCont);
+        contactRepo.save(rCont);
         break;
       case UNSUBSCRIBE:
       case UNSUBSCRIBED:

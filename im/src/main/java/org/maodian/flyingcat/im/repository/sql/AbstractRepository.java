@@ -13,16 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flyingcat.im.repository;
+package org.maodian.flyingcat.im.repository.sql;
 
-import org.maodian.flyingcat.im.repository.sql.AccountRepository;
-import org.maodian.flyingcat.im.repository.sql.ContactReporitory;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 
 /**
  * @author Cole Wen
- *
+ * 
  */
-public interface RepositoryAware {
-  AccountRepository getAccountRepository();
-  ContactReporitory getContactRepository();
+abstract class AbstractRepository {
+  @PersistenceContext
+  private EntityManager entityManager;
+
+  public EntityManager getEntityManager() {
+    return entityManager;
+  }
+
+  protected Subject getSubject() {
+    return SecurityUtils.getSubject();
+  }
 }

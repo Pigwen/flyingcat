@@ -16,9 +16,7 @@
 
   <bean id="securityManager" class="org.apache.shiro.mgt.DefaultSecurityManager">
     <property name="realm">
-      <bean class="org.maodian.flyingcat.im.shiro.MongoRealm">
-        <property name="mongoTemplate" ref="mongoTemplate"/>
-      </bean>
+      <bean class="org.maodian.flyingcat.im.shiro.SQLRealm"/>
     </property>
     
     <!-- <property name="sessionManager">

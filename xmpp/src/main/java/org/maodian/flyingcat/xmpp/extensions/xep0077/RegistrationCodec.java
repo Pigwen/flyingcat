@@ -27,7 +27,7 @@ import org.maodian.flyingcat.im.IMException;
 import org.maodian.flyingcat.im.IMSession;
 import org.maodian.flyingcat.im.ServerError;
 import org.maodian.flyingcat.im.UserError;
-import org.maodian.flyingcat.im.entity.Account;
+import org.maodian.flyingcat.im.entity.sql.AccountEntity;
 import org.maodian.flyingcat.xmpp.codec.AbstractCodec;
 import org.maodian.flyingcat.xmpp.codec.InfoQueryProcessor;
 import org.maodian.flyingcat.xmpp.entity.InfoQuery;
@@ -104,7 +104,7 @@ public class RegistrationCodec extends AbstractCodec implements InfoQueryProcess
     
     IMSession session = context.getIMSession();
     try {
-      Account u = new Account(username);
+      AccountEntity u = new AccountEntity(username);
       u.setPassword(password);
       session.getAccountRepository().save(u);
       return null;

@@ -16,6 +16,7 @@
 package org.maodian.flyingcat.xmpp.codec;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -23,7 +24,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.maodian.flyingcat.im.IMSession;
-import org.maodian.flyingcat.im.entity.SimpleUser;
+import org.maodian.flyingcat.im.entity.sql.ContactEntity;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
 import org.maodian.flyingcat.xmpp.entity.Contact;
 import org.maodian.flyingcat.xmpp.entity.InfoQuery;
@@ -81,11 +82,11 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
   public Object processGet(XmppContext context, InfoQuery iq) {
     IMSession session = context.getIMSession();
     // null means get profile of current user
-    List<SimpleUser> imContacts = session.getAccountRepository().findByUsername(context.getJabberID().getUid()).getContactList();
+    Collection<ContactEntity> imContacts = session.getAccountRepository().findByUid(context.getJabberID().getUid()).getContacts();
     List<Contact> xmppContacts = new ArrayList<>();
-    for (SimpleUser su : imContacts) {
-      Contact c = new Contact(su.getUsername(), su.getSubState().name().toLowerCase());
-      c.setName(su.getNickname());
+    for (ContactEntity su : imContacts) {
+      Contact c = new Contact(su.getUid(), su.getRelationship().name().toLowerCase());
+      c.setName(su.getNick());
       xmppContacts.add(c);
     }
     

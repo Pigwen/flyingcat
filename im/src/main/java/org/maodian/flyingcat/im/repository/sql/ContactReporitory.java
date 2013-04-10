@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.maodian.flyingcat.im.repository;
+package org.maodian.flyingcat.im.repository.sql;
 
-import org.maodian.flyingcat.im.repository.sql.AccountRepository;
-import org.maodian.flyingcat.im.repository.sql.ContactReporitory;
+import java.util.Collection;
+
+import org.maodian.flyingcat.im.entity.sql.AccountEntity;
+import org.maodian.flyingcat.im.entity.sql.ContactEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  * @author Cole Wen
  *
  */
-public interface RepositoryAware {
-  AccountRepository getAccountRepository();
-  ContactReporitory getContactRepository();
+public interface ContactReporitory extends JpaRepository<ContactEntity, Long> {
+  Collection<ContactEntity> findByOwnerAndSubFrom(AccountEntity owner, boolean from);
+  Collection<ContactEntity> findByOwnerAndInbound(AccountEntity owner, boolean inbound);
 }

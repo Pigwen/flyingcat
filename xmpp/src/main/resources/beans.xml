@@ -31,9 +31,7 @@
   <bean id="xmppContext" class="org.maodian.flyingcat.xmpp.state.DefaultXmppContext" scope="prototype">
     <constructor-arg ref="appContex"/>
     <constructor-arg>
-      <bean class="org.maodian.flyingcat.im.MongoSession">
-        <property name="mongoTemplate" ref="mongoTemplate"/>
-      </bean>
+      <bean class="org.maodian.flyingcat.im.SQLSession"/>
     </constructor-arg>
     <property name="xmppContextManger" ref="xmppContextManager"/>
     <property name="listeners">

@@ -15,7 +15,7 @@
  */
 package org.maodian.flyingcat.im;
 
-import org.maodian.flyingcat.im.entity.Account;
+import org.maodian.flyingcat.im.entity.sql.AccountEntity;
 import org.maodian.flyingcat.im.repository.RepositoryAware;
 
 /**
@@ -24,9 +24,9 @@ import org.maodian.flyingcat.im.repository.RepositoryAware;
  */
 public interface IMSession extends RepositoryAware {
 
-  void register(Account user) throws IMException;
+  void register(AccountEntity user) throws IMException;
   
-  void removeContact(Account user);
+  void removeContact(AccountEntity user);
   
   void login(String username, String password);
   

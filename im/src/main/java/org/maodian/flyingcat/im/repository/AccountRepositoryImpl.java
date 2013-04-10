@@ -26,13 +26,12 @@ import org.maodian.flyingcat.im.entity.SubscriptionRequest;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.stereotype.Repository;
 
 /**
  * @author Cole Wen
  * 
  */
-@Repository
+//@Repository
 class AccountRepositoryImpl extends AbstractRepository implements AccountRepositoryCustom {
 
   /*

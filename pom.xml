@@ -47,6 +47,12 @@
       <name>SpringSource Repository</name>
       <url>http://repo.springsource.org/release</url>
     </repository>
+
+    <repository>
+      <id>jboss-repo</id>
+      <name>JBoss Repository</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+    </repository>
   </repositories>
 
   <build>
@@ -101,6 +107,12 @@
       </dependency>
 
       <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-orm</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.apache.shiro</groupId>
         <artifactId>shiro-core</artifactId>
         <version>${shiro.version}</version>
@@ -111,6 +123,7 @@
         <artifactId>shiro-spring</artifactId>
         <version>${shiro.version}</version>
       </dependency>
+
 
       <!-- <dependency> <groupId>org.apache.shiro</groupId> <artifactId>shiro-guice</artifactId> <version>${shiro.version}</version> 
         </dependency> -->

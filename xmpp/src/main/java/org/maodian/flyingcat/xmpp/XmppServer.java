@@ -63,7 +63,7 @@ public class XmppServer {
     } else {
         port = 5222;
     }
-    ApplicationContext beanFactory = new ClassPathXmlApplicationContext("beans.xml", "shiro.xml", "mongo.xml");
+    ApplicationContext beanFactory = new ClassPathXmlApplicationContext("beans.xml", "shiro.xml", "jpa.xml");
     new XmppServer(port).preRun(beanFactory).run(beanFactory);
   }
 

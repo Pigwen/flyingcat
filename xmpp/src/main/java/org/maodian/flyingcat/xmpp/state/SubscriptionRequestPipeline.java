@@ -23,8 +23,9 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.maodian.flyingcat.holder.XMLOutputFactoryHolder;
 import org.maodian.flyingcat.im.IMSession;
-import org.maodian.flyingcat.im.entity.SimpleUser;
-import org.maodian.flyingcat.im.entity.SimpleUser.SubState;
+import org.maodian.flyingcat.im.entity.sql.AccountEntity;
+import org.maodian.flyingcat.im.entity.sql.ContactEntity;
+import org.maodian.flyingcat.im.entity.sql.ContactEntity.Relationship;
 import org.maodian.flyingcat.xmpp.codec.Encoder;
 import org.maodian.flyingcat.xmpp.entity.JabberID;
 import org.maodian.flyingcat.xmpp.entity.Presence;
@@ -42,14 +43,15 @@ public class SubscriptionRequestPipeline implements Pipeline<XmppContext> {
   @Override
   public void process(XmppContext ctx) throws XMLStreamException {
     IMSession session = ctx.getIMSession();
-    Collection<SimpleUser> srList = session.getAccountRepository().getUnreadSubscription(ctx.getJabberID().getUid());
-    for (SimpleUser sr : srList) {
-      JabberID from = JabberID.createInstance(sr.getUsername(), "localhost", null);
+    AccountEntity owner = session.getAccountRepository().findByUid(ctx.getJabberID().getUid());
+    Collection<ContactEntity> srList = session.getContactRepository().findByOwnerAndPendingIn(owner, true);
+    for (ContactEntity sr : srList) {
+      JabberID from = JabberID.createInstance(sr.getUid(), "localhost", null);
       JabberID to = ctx.getJabberID();
       Presence p = new Presence();
       p.setFrom(from);
       p.setTo(to);
-      if (sr.getSubState() == SubState.NONE || sr.getSubState() == SubState.TO) {
+      if (sr.getRelationship() == Relationship.NONE || sr.getRelationship() == Relationship.TO) {
         p.setType(PresenceType.SUBSCRIBE);
       } else {
         p.setType(PresenceType.UNSUBSCRIBE);
