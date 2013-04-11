@@ -33,6 +33,7 @@ import org.maodian.flyingcat.xmpp.state.StreamError;
 import org.maodian.flyingcat.xmpp.state.XmppContext;
 import org.maodian.flyingcat.xmpp.state.XmppException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Cole Wen
@@ -79,14 +80,15 @@ public class RosterCodec extends AbstractCodec implements InfoQueryProcessor {
    * @see org.maodian.flyingcat.xmpp.codec.InfoQueryProcessor#processGet(org.maodian.flyingcat.xmpp.state.XmppContext, org.maodian.flyingcat.xmpp.InfoQuery)
    */
   @Override
+  @Transactional(readOnly = true)
   public Object processGet(XmppContext context, InfoQuery iq) {
     IMSession session = context.getIMSession();
     // null means get profile of current user
     Collection<ContactEntity> imContacts = session.getAccountRepository().findByUid(context.getJabberID().getUid()).getContacts();
     List<Contact> xmppContacts = new ArrayList<>();
-    for (ContactEntity su : imContacts) {
-      Contact c = new Contact(su.getUid(), su.getRelationship().name().toLowerCase());
-      c.setName(su.getNick());
+    for (ContactEntity ce : imContacts) {
+      Contact c = new Contact(ce.getUid(), ce.getRelationship().name().toLowerCase());
+      c.setName(ce.getNick());
       xmppContacts.add(c);
     }
     

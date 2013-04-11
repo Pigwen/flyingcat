@@ -46,14 +46,14 @@ public class SubscriptionRequestPipeline implements Pipeline<XmppContext> {
   public void process(XmppContext ctx) throws XMLStreamException {
     IMSession session = ctx.getIMSession();
     AccountEntity owner = session.getAccountRepository().findByUid(ctx.getJabberID().getUid());
-    Collection<ContactEntity> srList = session.getContactRepository().findByOwnerAndInbound(owner, true);
-    for (ContactEntity sr : srList) {
-      JabberID from = JabberID.createInstance(sr.getUid(), "localhost", null);
+    Collection<ContactEntity> ceList = session.getContactRepository().findByOwnerAndInbound(owner, true);
+    for (ContactEntity ce : ceList) {
+      JabberID from = JabberID.createInstance(ce.getUid(), "localhost", null);
       JabberID to = ctx.getJabberID();
       Presence p = new Presence();
       p.setFrom(from);
       p.setTo(to);
-      if (sr.getRelationship() == Relationship.NONE || sr.getRelationship() == Relationship.TO) {
+      if (ce.getRelationship() == Relationship.NONE || ce.getRelationship() == Relationship.TO) {
         p.setType(PresenceType.SUBSCRIBE);
       } else {
         p.setType(PresenceType.UNSUBSCRIBE);
