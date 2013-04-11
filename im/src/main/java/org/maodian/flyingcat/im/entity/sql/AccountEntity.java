@@ -39,6 +39,12 @@ public class AccountEntity extends AbstractEntity {
   private Map<String, ContactEntity> contacts = new HashMap<>();
 
   /**
+   * 
+   */
+  public AccountEntity() {
+  }
+
+  /**
    * @param username
    */
   public AccountEntity(String uid) {
@@ -70,12 +76,12 @@ public class AccountEntity extends AbstractEntity {
   public void setPassword(String password) {
     this.password = password;
   }
-  
+
   @Transient
   public Collection<ContactEntity> getContacts() {
     return getContactsMap().values();
   }
-  
+
   @Transient
   public ContactEntity getContact(String uid) {
     return getContactsMap().get(uid);

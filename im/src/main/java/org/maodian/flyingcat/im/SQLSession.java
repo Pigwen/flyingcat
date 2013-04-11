@@ -19,6 +19,9 @@ import java.lang.invoke.MethodHandles;
 
 import javax.inject.Inject;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.maodian.flyingcat.im.entity.sql.AccountEntity;
 import org.maodian.flyingcat.im.repository.sql.AccountRepository;
@@ -70,7 +73,17 @@ public class SQLSession implements IMSession {
    */
   @Override
   public void login(String username, String password) {
-
+    if ((subject != null && subject.isAuthenticated())) {
+      throw new IllegalStateException("The user has already been authenticated");
+    }
+    subject = SecurityUtils.getSubject();
+    UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+    try {
+      SecurityUtils.getSubject().login(token);
+    } catch (AuthenticationException e) {
+      log.warn("User [{}] login failed", token.getPrincipal());
+      throw IMException.wrap(e, UserError.AUTHENTICATED_FAILS);
+    };
   }
 
   /* (non-Javadoc)

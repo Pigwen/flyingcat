@@ -29,6 +29,7 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.maodian.flyingcat.im.entity.sql.AccountEntity;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Cole Wen
@@ -51,13 +52,14 @@ public class SQLRealm extends AuthorizingRealm {
    * @see org.apache.shiro.realm.AuthenticatingRealm#doGetAuthenticationInfo(org.apache.shiro.authc.AuthenticationToken)
    */
   @Override
+  @Transactional(readOnly = true)
   protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
     UsernamePasswordToken upToken = (UsernamePasswordToken) token;
     String username = upToken.getUsername();
     if (StringUtils.isBlank(username)) {
       throw new AccountException("Null or blank usernames are not allowed by this realm.");
     }
-    String hql = "select a from a where a.uid = :uid";
+    String hql = "select a from AccountEntity a where a.uid = :uid";
     AccountEntity user = entityManager.createQuery(hql, AccountEntity.class).setParameter("uid", username).getSingleResult();
     if (user == null) {
       throw new AccountException("No user found for username:" + username);
