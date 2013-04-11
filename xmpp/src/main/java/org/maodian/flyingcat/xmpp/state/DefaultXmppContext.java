@@ -285,7 +285,7 @@ public class DefaultXmppContext implements XmppContext {
   @Override
   public void broadcastPresence() {
     AccountEntity owner = imSession.getAccountRepository().findByUid(jid.getUid());
-    Collection<ContactEntity> subscribers = imSession.getContactRepository().findByOwnerAndFrom(owner, true);
+    Collection<ContactEntity> subscribers = imSession.getContactRepository().findByOwnerAndSubFrom(owner, true);
     for (ContactEntity su : subscribers) {
       JabberID to = JabberID.createInstance(su.getUid(), "localhost", null);
       Presence presence = new Presence();
