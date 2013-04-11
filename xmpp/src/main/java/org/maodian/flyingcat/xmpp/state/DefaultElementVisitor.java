@@ -89,9 +89,6 @@ public class DefaultElementVisitor implements ElementVisitor, PersistedVisitor {
    */
   @Override
   public State handlePresence(XmppContext ctx, Presence p) throws XMLStreamException {
-    StringWriter writer = new StringWriter();
-    XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
-    
     if (p.isBroadcast()) {
       ctx.broadcastPresence();
     } else {
