@@ -30,6 +30,7 @@ import org.maodian.flyingcat.xmpp.codec.Encoder;
 import org.maodian.flyingcat.xmpp.entity.JabberID;
 import org.maodian.flyingcat.xmpp.entity.Presence;
 import org.maodian.flyingcat.xmpp.entity.Presence.PresenceType;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Cole Wen
@@ -41,6 +42,7 @@ public class SubscriptionRequestPipeline implements Pipeline<XmppContext> {
    * @see org.maodian.flyingcat.xmpp.state.Pipeline#process(java.lang.Object)
    */
   @Override
+  @Transactional(readOnly = true)
   public void process(XmppContext ctx) throws XMLStreamException {
     IMSession session = ctx.getIMSession();
     AccountEntity owner = session.getAccountRepository().findByUid(ctx.getJabberID().getUid());
