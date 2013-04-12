@@ -19,21 +19,29 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
+import javax.inject.Inject;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.maodian.flyingcat.holder.XMLInputFactoryHolder;
 import org.maodian.flyingcat.xmpp.codec.Decoder;
 import org.maodian.flyingcat.xmpp.entity.ElementVisitee;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Cole Wen
- *
+ * 
  */
+@Component
 public class SelectState implements State {
+  private ElementVisitor elementVisitor;
 
-  /* (non-Javadoc)
-   * @see org.maodian.flycat.xmpp.state.State#step(org.maodian.flycat.xmpp.state.XmppContext, java.lang.String)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.maodian.flycat.xmpp.state.State#step(org.maodian.flycat.xmpp.state.
+   * XmppContext, java.lang.String)
    */
   @Override
   public Result step(XmppContext context, String xml) {
@@ -44,10 +52,9 @@ public class SelectState implements State {
         // skip stream tag
         xmlsr.nextTag();
         xmlsr.nextTag();
-        Decoder decoder = context.getApplicationContext().getDecoder(xmlsr.getName());
+        Decoder decoder = context.getGlobalContext().getDecoder(xmlsr.getName());
         ElementVisitee elem = (ElementVisitee) decoder.decode(xmlsr);
-        ElementVisitor handler = new DefaultElementVisitor();
-        State nextState = elem.acceptElementVisitor(context, handler);
+        State nextState = elem.acceptElementVisitor(context, elementVisitor);
         Result result = new DefaultResult(nextState);
         return result;
       } catch (XMLStreamException e) {
@@ -58,4 +65,10 @@ public class SelectState implements State {
       throw new XmppException(ioe, StreamError.INTERNAL_SERVER_ERROR);
     }
   }
+
+  @Inject
+  public void setElementVisitor(ElementVisitor elementVisitor) {
+    this.elementVisitor = elementVisitor;
+  }
+
 }

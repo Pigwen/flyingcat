@@ -86,7 +86,7 @@ public class PresenceListener extends AbstractXmppContextListener {
    */
   private void deliverPresence(XmppContext ctx, Presence p) {
     Collection<XmppContext> sourceCtxs = xmppCtxMgr.getXmppContexts(p.getFrom().getUid());
-    Encoder encoder = ctx.getApplicationContext().getEncoder(Presence.class);
+    Encoder encoder = ctx.getGlobalContext().getEncoder(Presence.class);
     for (XmppContext sCtx : sourceCtxs) {
       Presence presence = new Presence();
       String id = RandomStringUtils.randomAlphabetic(32);
@@ -136,7 +136,7 @@ public class PresenceListener extends AbstractXmppContextListener {
       String id = RandomStringUtils.randomAlphabetic(32);
       InfoQuery.Builder builder = new InfoQuery.Builder(id, "set");
       InfoQuery iq = builder.to(ctx.getJabberID().toFullJID()).payload(roster).build();
-      Encoder encoder = ctx.getApplicationContext().getEncoder(InfoQuery.class);
+      Encoder encoder = ctx.getGlobalContext().getEncoder(InfoQuery.class);
       
       try (Writer writer = new StringWriter();) {
         XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);

@@ -67,7 +67,7 @@ public class DefaultXmppContext implements XmppContext {
     this.appCtx = appCtx;
     this.imSession = imSession;
     listeners = new CopyOnWriteArraySet<>();
-    state = new OpeningStreamState();
+    state = appCtx.getOpenStreamState();
   }
 
   @Override
@@ -172,7 +172,7 @@ public class DefaultXmppContext implements XmppContext {
 
   @Override
   public void parseXML(final String xml) {
-    log.debug("{} read: {}", jid == null ? null : jid.toFullJID(), xml);
+    log.debug("READ {}: {}", jid == null ? null : jid.toFullJID(), xml);
     Result result = state.step(this, xml);
     state = result.getNextState();
   }
@@ -188,7 +188,7 @@ public class DefaultXmppContext implements XmppContext {
    * @see org.maodian.flyingcat.xmpp.state.XmppContext#getApplicationContext()
    */
   @Override
-  public GlobalContext getApplicationContext() {
+  public GlobalContext getGlobalContext() {
     return appCtx;
   }
 

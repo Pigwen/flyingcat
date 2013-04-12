@@ -40,10 +40,9 @@ import org.maodian.flyingcat.xmpp.entity.InfoQuery;
 import org.maodian.flyingcat.xmpp.entity.JabberID;
 import org.maodian.flyingcat.xmpp.entity.Presence;
 import org.maodian.flyingcat.xmpp.entity.TLS;
-import org.maodian.flyingcat.xmpp.state.StreamState.AuthenticatedStreamState;
-import org.maodian.flyingcat.xmpp.state.StreamState.TLSStreamState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Cole Wen
@@ -60,17 +59,17 @@ public class DefaultElementVisitor implements ElementVisitor, PersistedVisitor {
     InfoQuery.Builder iqBuilder = new InfoQuery.Builder(iq.getId(), "result").from("localhost").to(iq.getFrom())
         .language("en");
     Object reqPayload = iq.getPayload();
-    Encoder encoder = ctx.getApplicationContext().getEncoder(InfoQuery.class);
+    Encoder encoder = ctx.getGlobalContext().getEncoder(InfoQuery.class);
     Object rspPayload = null;
     switch (iq.getType()) {
     case InfoQuery.GET:
-      rspPayload = ctx.getApplicationContext().getProcessor(reqPayload.getClass()).processGet(ctx, iq);
+      rspPayload = ctx.getGlobalContext().getProcessor(reqPayload.getClass()).processGet(ctx, iq);
       break;
     case InfoQuery.SET:
-      rspPayload = ctx.getApplicationContext().getProcessor(reqPayload.getClass()).processSet(ctx, iq);
+      rspPayload = ctx.getGlobalContext().getProcessor(reqPayload.getClass()).processSet(ctx, iq);
       break;
     case InfoQuery.RESULT:
-      return new SelectState();
+      return ctx.getGlobalContext().getSelectState();
     default:
       throw new IllegalStateException("Unrecognized state: " + iq.getType());
     }
@@ -81,7 +80,7 @@ public class DefaultElementVisitor implements ElementVisitor, PersistedVisitor {
     XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
     encoder.encode(iqBuilder.build(), xmlsw);
     ctx.flush(writer.toString());
-    return new SelectState();
+    return ctx.getGlobalContext().getSelectState();
   }
 
   /* (non-Javadoc)
@@ -105,7 +104,7 @@ public class DefaultElementVisitor implements ElementVisitor, PersistedVisitor {
       
       ctx.send(presence.getTo(), presence);
     }
-    return new SelectState();
+    return ctx.getGlobalContext().getSelectState();
   }
 
   /* (non-Javadoc)
@@ -134,7 +133,7 @@ public class DefaultElementVisitor implements ElementVisitor, PersistedVisitor {
     xmlsw.writeNamespace("", XmppNamespace.TLS);
     xmlsw.writeEndDocument();
     xmppCtx.flush(writer.toString());
-    return new TLSStreamState();
+    return xmppCtx.getGlobalContext().getTlsStreamState();
   }
 
   /* (non-Javadoc)
@@ -150,13 +149,14 @@ public class DefaultElementVisitor implements ElementVisitor, PersistedVisitor {
     xmlsw.writeDefaultNamespace(XmppNamespace.SASL);
     xmlsw.writeEndDocument();
     ctx.flush(writer.toString());
-    return new AuthenticatedStreamState();
+    return ctx.getGlobalContext().getAuthenticatedStreamState();
   }
 
   /* (non-Javadoc)
    * @see org.maodian.flyingcat.xmpp.state.PersistedVisitor#persistPresenceSubscription(org.maodian.flyingcat.xmpp.state.XmppContext, org.maodian.flyingcat.xmpp.entity.PersistedVisitee)
    */
   @Override
+  @Transactional
   public void persistPresenceSubscription(XmppContext ctx, Presence p) {
     if (!p.isBroadcast()) {
       String from = p.getFrom().getUid();
@@ -166,7 +166,7 @@ public class DefaultElementVisitor implements ElementVisitor, PersistedVisitor {
 
       // check if user has add contact into the roster
       AccountEntity user = repo.findByUid(from);
-      ContactEntity fCont = user.getContact(to);
+      ContactEntity fCont = user.getContactsMap().get(to);
       if (fCont == null) {
         fCont = new ContactEntity(to, to);
         fCont.setOwner(user);
@@ -176,7 +176,7 @@ public class DefaultElementVisitor implements ElementVisitor, PersistedVisitor {
       AccountEntity targetUser = repo.findByUid(to);
       ContactEntity rCont = targetUser.getContact(from);
       if (rCont == null) {
-        rCont = new ContactEntity(to, to);
+        rCont = new ContactEntity(from, from);
         rCont.setOwner(targetUser);
       }
       switch (p.getType()) {

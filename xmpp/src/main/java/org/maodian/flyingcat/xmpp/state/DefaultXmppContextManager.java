@@ -21,6 +21,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
 
+import javax.inject.Inject;
+
 import org.maodian.flyingcat.xmpp.entity.JabberID;
 import org.maodian.flyingcat.xmpp.entity.PersistedVisitee;
 import org.slf4j.Logger;
@@ -35,6 +37,7 @@ public class DefaultXmppContextManager extends AbstractXmppContextListener imple
   private final ConcurrentMap<String, ConcurrentMap<JabberID, XmppContext>> pool = new ConcurrentHashMap<>();
   private final Semaphore lock = new Semaphore(1);
   private PostBindHandler postBindHandler;
+  private PersistedVisitor persistedVisitor;
 
   /*
    * (non-Javadoc)
@@ -58,6 +61,12 @@ public class DefaultXmppContextManager extends AbstractXmppContextListener imple
   @Override
   public Collection<XmppContext> getXmppContexts(String uid) {
     return pool.get(uid).values();
+  }
+  
+  
+  @Inject
+  public void setPersistedVisitor(PersistedVisitor persistedVisitor) {
+    this.persistedVisitor = persistedVisitor;
   }
 
   /*
@@ -138,9 +147,8 @@ public class DefaultXmppContextManager extends AbstractXmppContextListener imple
     log.info("Transfer payload {} from {} to {}", new Object[] { payload.getClass().getSimpleName(), from, to });
     if (payload instanceof PersistedVisitee) {
       PersistedVisitee pv = (PersistedVisitee) payload;
-      DefaultElementVisitor visitor = new DefaultElementVisitor();
       XmppContext ctx = getXmppContext(from);
-      pv.acceptPersistedVisitor(ctx, visitor);
+      pv.acceptPersistedVisitor(ctx, persistedVisitor);
     } else {
       log.info("{} is not persistable", payload.getClass().getSimpleName());
     }

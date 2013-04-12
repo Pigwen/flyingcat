@@ -37,12 +37,22 @@ import org.maodian.flyingcat.xmpp.entity.InfoQuery;
 import org.maodian.flyingcat.xmpp.entity.Presence;
 import org.maodian.flyingcat.xmpp.entity.Roster;
 import org.maodian.flyingcat.xmpp.entity.Session;
+import org.maodian.flyingcat.xmpp.state.SelectState;
+import org.maodian.flyingcat.xmpp.state.StreamState.AuthenticatedStreamState;
+import org.maodian.flyingcat.xmpp.state.StreamState.OpeningStreamState;
+import org.maodian.flyingcat.xmpp.state.StreamState.TLSStreamState;
 
 /**
  * @author Cole Wen
  * 
  */
-public class DefaultApplicationContext implements GlobalContext {
+public class DefaultGlobalContext implements GlobalContext {
+  /** state **/
+  private OpeningStreamState openStreamState;
+  private TLSStreamState tlsStreamState;
+  private AuthenticatedStreamState authenticatedStreamState;
+  private SelectState selectState;
+
   private Map<QName, Decoder> decoderMap = new ConcurrentHashMap<>();
   private Map<Class<?>, Encoder> encoderMap = new ConcurrentHashMap<>();
   private Map<Class<?>, InfoQueryProcessor> processorMap = new ConcurrentHashMap<>();
@@ -57,7 +67,7 @@ public class DefaultApplicationContext implements GlobalContext {
 
   private boolean init = false;
 
-  DefaultApplicationContext() {
+  DefaultGlobalContext() {
 
   }
 
@@ -143,6 +153,42 @@ public class DefaultApplicationContext implements GlobalContext {
   @Inject
   public void setPresenceCodec(PresenceCodec presenceCodec) {
     this.presenceCodec = presenceCodec;
+  }
+
+  public TLSStreamState getTlsStreamState() {
+    return tlsStreamState;
+  }
+
+  @Inject
+  void setTlsStreamState(TLSStreamState tlsStreamState) {
+    this.tlsStreamState = tlsStreamState;
+  }
+
+  public AuthenticatedStreamState getAuthenticatedStreamState() {
+    return authenticatedStreamState;
+  }
+
+  @Inject
+  void setAuthenticatedStreamState(AuthenticatedStreamState authenticatedStreamState) {
+    this.authenticatedStreamState = authenticatedStreamState;
+  }
+
+  public SelectState getSelectState() {
+    return selectState;
+  }
+
+  @Inject
+  void setSelectState(SelectState selectState) {
+    this.selectState = selectState;
+  }
+
+  public OpeningStreamState getOpenStreamState() {
+    return openStreamState;
+  }
+
+  @Inject
+  void setOpenStreamState(OpeningStreamState openStreamState) {
+    this.openStreamState = openStreamState;
   }
 
 }

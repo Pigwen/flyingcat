@@ -31,6 +31,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.maodian.flyingcat.holder.XMLInputFactoryHolder;
 import org.maodian.flyingcat.holder.XMLOutputFactoryHolder;
 import org.maodian.flyingcat.xmpp.XmppNamespace;
+import org.springframework.stereotype.Component;
 
 
 
@@ -57,7 +58,7 @@ public abstract class StreamState implements State {
         doHandle(context, xmlsr, xmlsw);
         context.setStreamTag(xml);
         context.flush(writer.toString());
-        Result result = new DefaultResult(new SelectState());
+        Result result = new DefaultResult(context.getGlobalContext().getSelectState());
         return result;
       } catch (XMLStreamException e) {
         throw new XmppException(e, StreamError.BAD_FORMAT);
@@ -108,6 +109,7 @@ public abstract class StreamState implements State {
    */
   protected abstract void writeFeatures(XMLStreamWriter xmlsw) throws XMLStreamException;
   
+  @Component
   public static class OpeningStreamState extends StreamState {
     /**
      * @param xmlsw
@@ -121,6 +123,7 @@ public abstract class StreamState implements State {
     }
   }
   
+  @Component
   public static class TLSStreamState extends StreamState {
 
     /* (non-Javadoc)
@@ -137,6 +140,7 @@ public abstract class StreamState implements State {
     }
   }
   
+  @Component
   public static class AuthenticatedStreamState extends StreamState {
 
     /* (non-Javadoc)

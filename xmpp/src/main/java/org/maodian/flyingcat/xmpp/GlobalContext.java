@@ -20,6 +20,10 @@ import javax.xml.namespace.QName;
 import org.maodian.flyingcat.xmpp.codec.Decoder;
 import org.maodian.flyingcat.xmpp.codec.Encoder;
 import org.maodian.flyingcat.xmpp.codec.InfoQueryProcessor;
+import org.maodian.flyingcat.xmpp.state.SelectState;
+import org.maodian.flyingcat.xmpp.state.StreamState.AuthenticatedStreamState;
+import org.maodian.flyingcat.xmpp.state.StreamState.OpeningStreamState;
+import org.maodian.flyingcat.xmpp.state.StreamState.TLSStreamState;
 
 /**
  * @author Cole Wen
@@ -39,4 +43,12 @@ public interface GlobalContext {
   Encoder getEncoder(Class<?> clazz);
   
   InfoQueryProcessor getProcessor(Class<?> clazz);
+  
+  OpeningStreamState getOpenStreamState();
+  
+  SelectState getSelectState();
+  
+  AuthenticatedStreamState getAuthenticatedStreamState();
+  
+  TLSStreamState getTlsStreamState();
 }

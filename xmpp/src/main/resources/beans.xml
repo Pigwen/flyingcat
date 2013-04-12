@@ -16,7 +16,7 @@
 
   <context:component-scan base-package="org.maodian.flyingcat"/>
 
-  <bean id="appContex" class="org.maodian.flyingcat.xmpp.DefaultApplicationContext"></bean>
+  <bean id="appContex" class="org.maodian.flyingcat.xmpp.DefaultGlobalContext"></bean>
   <bean id="xmppContextManager" class="org.maodian.flyingcat.xmpp.state.DefaultXmppContextManager">
     <property name="postBindHandler">
       <bean class="org.maodian.flyingcat.xmpp.state.DefaultPostBindHandler">
@@ -40,6 +40,8 @@
       </set>
     </property>
   </bean>
+  
+  <bean id="visitor" class="org.maodian.flyingcat.xmpp.state.DefaultElementVisitor"/>
   
   <!-- XmppContextListener START -->
   <bean id="presenceListener" class="org.maodian.flyingcat.xmpp.state.PresenceListener">

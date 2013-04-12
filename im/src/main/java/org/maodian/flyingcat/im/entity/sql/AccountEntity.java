@@ -89,7 +89,7 @@ public class AccountEntity extends AbstractEntity {
 
   @OneToMany(mappedBy = "owner")
   @MapKey(name = "uid")
-  Map<String, ContactEntity> getContactsMap() {
+  public Map<String, ContactEntity> getContactsMap() {
     return contacts;
   }
 

@@ -49,7 +49,7 @@ public interface XmppContext {
   
   void setNettyChannelHandlerContext(ChannelHandlerContext nettyCtx);
   
-  GlobalContext getApplicationContext();
+  GlobalContext getGlobalContext();
   
   String wrapStreamTag(String xml);
   
