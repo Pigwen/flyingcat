@@ -171,7 +171,7 @@ public class DefaultXmppContext implements XmppContext {
 
   @Override
   public void parseXML(final String xml) {
-    log.debug("READ {}: {}", jid == null ? null : jid.toFullJID(), xml);
+    log.debug("{} SEND: {}", jid == null ? null : jid.toFullJID(), xml);
     Result result = state.step(this, xml);
     state = result.getNextState();
   }
@@ -199,7 +199,7 @@ public class DefaultXmppContext implements XmppContext {
   @Override
   public void flush(String str) {
     if (StringUtils.isNotBlank(str)) {
-      log.debug("{} write: {}", jid == null ? null : jid.toFullJID(), str);
+      log.debug("{} RECEIVED: {}", jid == null ? null : jid.toFullJID(), str);
       nettyCtx.write(str).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
       nettyCtx.flush();
     }
