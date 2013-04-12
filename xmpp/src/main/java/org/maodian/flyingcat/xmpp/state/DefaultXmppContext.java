@@ -39,7 +39,6 @@ import org.maodian.flyingcat.xmpp.GlobalContext;
 import org.maodian.flyingcat.xmpp.codec.Encoder;
 import org.maodian.flyingcat.xmpp.entity.JabberID;
 import org.maodian.flyingcat.xmpp.entity.Presence;
-import org.maodian.flyingcat.xmpp.state.StreamState.OpeningStreamState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
