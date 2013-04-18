@@ -284,6 +284,8 @@ public class DefaultXmppContext implements XmppContext {
   @Override
   public void broadcastPresence() {
     AccountEntity owner = imSession.getAccountRepository().findByUid(jid.getUid());
+    
+    // broadcast availability to contacts
     Collection<ContactEntity> subscribers = imSession.getContactRepository().findByOwnerAndSubFrom(owner, true);
     for (ContactEntity su : subscribers) {
       JabberID to = JabberID.createInstance(su.getUid(), "localhost", null);
@@ -292,5 +294,12 @@ public class DefaultXmppContext implements XmppContext {
       presence.setTo(to);
       xmppCtxMgr.transfer(getJabberID(), to, presence);
     }
+    
+    // broadcast to user's other availability resource
+    JabberID to = JabberID.createInstance(getJabberID().getUid(), "localhost", null);
+    Presence presence = new Presence();
+    presence.setFrom(getJabberID());
+    presence.setTo(to);
+    send(to, presence);
   }
 }

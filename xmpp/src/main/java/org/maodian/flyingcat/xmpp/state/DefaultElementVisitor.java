@@ -88,7 +88,7 @@ public class DefaultElementVisitor implements ElementVisitor, PersistedVisitor {
    */
   @Override
   public State handlePresence(XmppContext ctx, Presence p) throws XMLStreamException {
-    if (p.isBroadcast()) {
+    if (p.isSignalAvailability()) {
       ctx.broadcastPresence();
     } else {
       JabberID from = ctx.getJabberID();
@@ -158,7 +158,7 @@ public class DefaultElementVisitor implements ElementVisitor, PersistedVisitor {
   @Override
   @Transactional
   public void persistPresenceSubscription(XmppContext ctx, Presence p) {
-    if (!p.isBroadcast()) {
+    if (!p.isSignalAvailability()) {
       String from = p.getFrom().getUid();
       String to = p.getTo().getUid();
       AccountRepository repo = ctx.getIMSession().getAccountRepository();

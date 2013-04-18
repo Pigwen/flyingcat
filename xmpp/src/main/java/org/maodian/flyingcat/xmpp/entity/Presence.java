@@ -69,8 +69,8 @@ public class Presence implements ElementVisitee, PersistedVisitee {
     this.type = type;
   }
   
-  public boolean isBroadcast() {
-    return to == null && (type == null || type == PresenceType.UNAVAILABLE);
+  public boolean isSignalAvailability() {
+    return type == null || type == PresenceType.UNAVAILABLE;
   }
 
   public enum PresenceType {

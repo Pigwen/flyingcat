@@ -50,7 +50,7 @@ public class PresenceListener extends AbstractXmppContextListener {
     
     if (payload instanceof Presence) {
       Presence p = (Presence) payload;
-      if (!p.isBroadcast()) {
+      if (!p.isSignalAvailability()) {
         switch (p.getType()) {
         case SUBSCRIBED:
           postReceiveSubscribed(ctx, p);
@@ -115,17 +115,19 @@ public class PresenceListener extends AbstractXmppContextListener {
   public void onPostSend(XmppContext ctx, Object payload) {
     if (payload instanceof Presence) {
       Presence p = (Presence) payload;
-      switch (p.getType()) {
-      case SUBSCRIBE:
-        postSendSubscribe(ctx, p);
-        break;
-      case SUBSCRIBED:
-        postSendSubscribed(ctx, p);
-        break;
-      case UNSUBSCRIBE:
-      case UNSUBSCRIBED:
-      default:
-        throw new RuntimeException("unrecognized presence type:" + p.getType());
+      if (!p.isSignalAvailability()) {
+        switch (p.getType()) {
+        case SUBSCRIBE:
+          postSendSubscribe(ctx, p);
+          break;
+        case SUBSCRIBED:
+          postSendSubscribed(ctx, p);
+          break;
+        case UNSUBSCRIBE:
+        case UNSUBSCRIBED:
+        default:
+          throw new RuntimeException("unrecognized presence type:" + p.getType());
+        }
       }
     }
   }
