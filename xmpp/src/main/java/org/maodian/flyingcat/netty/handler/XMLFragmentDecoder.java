@@ -44,7 +44,7 @@ public class XMLFragmentDecoder extends MessageToMessageDecoder<String> {
   
   private int depth = 0;
   private StringBuilder xml;
-  private boolean acceptXMLDeclaration = true;
+  //private boolean acceptXMLDeclaration = true;
   
   /* (non-Javadoc)
    * @see io.netty.handler.codec.MessageToMessageDecoder#decode(io.netty.channel.ChannelHandlerContext, java.lang.Object)
@@ -63,14 +63,15 @@ public class XMLFragmentDecoder extends MessageToMessageDecoder<String> {
       throw new XmppException(StreamError.RESTRICTED_XML).set("xml", msg);
     }
     
-    // only accept xml declaration once
+    // always accept xml declaration to improve compability with some client
     if (StringUtils.startsWith(msg, "<?xml ")) {
-      if (acceptXMLDeclaration) {
+      return msg;
+      /*if (acceptXMLDeclaration) {
         acceptXMLDeclaration = false;
         return msg;
       } else {
         throw new XmppException("XML declaration has been already received before", StreamError.NOT_WELL_FORMED).set("xml", msg);
-      }
+      }*/
     }
     
     // deal with stream tag
