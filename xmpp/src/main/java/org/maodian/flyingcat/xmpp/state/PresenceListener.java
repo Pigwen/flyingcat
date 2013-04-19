@@ -77,15 +77,16 @@ public class PresenceListener extends AbstractXmppContextListener {
     
     // send roster push to all available resource
     rosterPush(ctx, roster);
-    deliverPresence(ctx, p);
+    deliverContactPresence(ctx, p);
   }
 
   /**
    * @param ctx
    * @param p
    */
-  private void deliverPresence(XmppContext ctx, Presence p) {
+  private void deliverContactPresence(XmppContext ctx, Presence p) {
     Collection<XmppContext> sourceCtxs = xmppCtxMgr.getXmppContexts(p.getFrom().getUid());
+    Collection<XmppContext> currentCtxs = xmppCtxMgr.getXmppContexts(p.getTo().getUid());
     Encoder encoder = ctx.getGlobalContext().getEncoder(Presence.class);
     for (XmppContext sCtx : sourceCtxs) {
       Presence presence = new Presence();
@@ -94,12 +95,14 @@ public class PresenceListener extends AbstractXmppContextListener {
       presence.setFrom(sCtx.getJabberID());
       presence.setTo(p.getTo());
 
-      try (Writer writer = new StringWriter();) {
-        XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
-        encoder.encode(presence, xmlsw);
-        sCtx.flush(writer.toString());
-      } catch (XMLStreamException | IOException e) {
-        log.warn("Error when onPostReceive.deliveryPresence", e);
+      for (XmppContext tCtx : currentCtxs) {
+        try (Writer writer = new StringWriter();) {
+          XMLStreamWriter xmlsw = XMLOutputFactoryHolder.getXMLOutputFactory().createXMLStreamWriter(writer);
+          encoder.encode(presence, xmlsw);
+          tCtx.flush(writer.toString());
+        } catch (XMLStreamException | IOException e) {
+          log.warn("Error when onPostReceive.deliveryPresence", e);
+        }
       }
     }
   }
